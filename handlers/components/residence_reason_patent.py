@@ -10,11 +10,11 @@ from states.components.residence_reason_patent import ResidenceReasonPatentState
 from localization import _
 from data_manager import SecureDataManager
 
-residence_reason_router = Router()
+residence_reason_patient_router = Router()
 data_manager = SecureDataManager()
 
 
-@residence_reason_router.callback_query(F.data == "residence_reason_patent")
+@residence_reason_patient_router.callback_query(F.data == "residence_reason_patent")
 async def handle_residence_reason_patent(callback: CallbackQuery, state: FSMContext):
     """Handle the selection of residence reason patent input method."""
 
@@ -28,7 +28,6 @@ async def handle_residence_reason_patent(callback: CallbackQuery, state: FSMCont
     await callback.message.edit_text(
         text=text, reply_markup=get_residence_reason_photo_or_manual_keyboard(lang)
     )
-
 
 
 async def func_residence_reason_patent(message: Message, state: FSMContext, text_key):
@@ -47,7 +46,10 @@ async def func_residence_reason_patent(message: Message, state: FSMContext, text
         text=text, reply_markup=get_residence_reason_photo_or_manual_keyboard(lang)
     )
 
-@residence_reason_router.callback_query(F.data == "start_residence_reason_manual")
+
+@residence_reason_patient_router.callback_query(
+    F.data == "start_residence_reason_patent_manual"
+)
 async def handle_start_manual(callback: CallbackQuery, state: FSMContext):
     """Handle the start of manual input for residence reason patent."""
 
@@ -61,7 +63,7 @@ async def handle_start_manual(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(text=text)
 
 
-@residence_reason_router.message(ResidenceReasonPatentStates.patient_numper)
+@residence_reason_patient_router.message(ResidenceReasonPatentStates.patient_numper)
 async def get_patient_number(message: Message, state: FSMContext):
     """Handle the input of patient number for residence reason patent."""
     patient_number = message.text.strip()
@@ -76,7 +78,7 @@ async def get_patient_number(message: Message, state: FSMContext):
     await message.answer(text=text)
 
 
-@residence_reason_router.message(ResidenceReasonPatentStates.issue_date)
+@residence_reason_patient_router.message(ResidenceReasonPatentStates.issue_date)
 async def get_issue_date(message: Message, state: FSMContext):
     """Handle the input of issue date for residence reason patent."""
 
