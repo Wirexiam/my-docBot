@@ -51,6 +51,7 @@ async def main():
         from handlers.registration_renewal import registration_renewal_router
         from handlers.doc_child_stay_extension import doc_child_stay_extension_router
         from handlers.components.child_data import child_data_router
+        from handlers.work_activity import work_activity_router
 
 
 
@@ -70,6 +71,7 @@ async def main():
         dp.include_router(migration_manual_router)
         dp.include_router(doc_child_stay_extension_router)
         dp.include_router(child_data_router)
+        dp.include_router(work_activity_router)
 
 
         await dp.start_polling(bot)
