@@ -30,3 +30,19 @@ async def wa_start(callback: CallbackQuery, state: FSMContext):
         text=text,
         reply_markup=kbs_patent_work_activity_start(lang)
     )
+
+
+@work_activity_router.callback_query(F.data == "start_work_act")
+async def handler_full_name_of_the_department(callback: CallbackQuery, state: FSMContext):
+    """Запрашиваем у пользователя полное название отдела"""
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    await state.set_state(PatentedWorkActivity.input_department)
+
+    text = f"{_.get_text("work_activity_department_name.title", lang)}\n\n{_.get_text("work_activity_department_name.example_text", lang)}"
+
+    await callback.message.edit_text(
+        text=text
+    )
