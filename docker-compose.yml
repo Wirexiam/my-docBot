@@ -1,0 +1,54 @@
+
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      default:
+    # network_mode: host
+    volumes:
+      - media-volume:/docbot
+    restart: always
+    # dns:
+    #   - 8.8.8.8
+    #   - 8.8.4.4
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1450
+
+volumes:
+  media-volume:
+
+
+# services:
+#   caddy:
+#     image: lucaslorentz/caddy-docker-proxy:2.9.1-alpine
+#     ports:
+#       - 80:80
+#       - 443:443
+#     environment:
+#       - CADDY_INGRESS_NETWORKS=caddy
+#       - CADDY_DOCKER_CADDYFILE_PATH=/etc/caddy/Caddyfile
+#     networks:
+#       caddy:
+#         priority: 100
+#       nextcloud-aio:
+#         priority: 10
+#     dns: 172.28.0.4
+#     volumes:
+#       - /var/run/docker.sock:/var/run/docker.sock
+#       - caddy_data:/data
+#       - /mnt/data/caddy/caddyfile/Caddyfile:/etc/caddy/Caddyfile
+#     restart: unless-stopped
+# networks:
+#   caddy:
+#     external: true
+#   nextcloud-aio:
+#     external: true
+
+# volumes:
+#   caddy_data: {}

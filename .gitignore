@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+/tmp/
+*.log
+.vscode/
+.idea/
+doc_gen/
+docbot/
