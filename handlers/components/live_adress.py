@@ -10,6 +10,37 @@ from data_manager import SecureDataManager
 live_adress_router = Router()
 data_manager = SecureDataManager()
 
+@live_adress_router.callback_query(LiveAdress.adress)
+async def handle_live_adress_input(call: CallbackQuery, state: FSMContext):
+    """Обработка ввода адреса проживания в РФ"""
+    # Получение данных состояния
+    state_data = await state.get_data()
+    lang = state_data.get("language", "ru")
+
+    # # Сохранение адреса в менеджер данных
+    # session_id = state_data.get("session_id")
+    # user_data = {
+    #     waiting_data: message.text.strip(),
+    # }
+    # await state.update_data({waiting_data: message.text.strip()})
+    # data_manager.save_user_data(message.from_user.id, session_id, user_data)
+    photo = FSInputFile("static/live_adress_example.png")
+    # Отправка подтверждения пользователю
+
+    text = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
+    await call.message.answer_photo(caption=text, photo=photo)
+    await state.update_data(waiting_data="live_adress")
+    next_states = state_data.get("next_states", [])
+    from_action = state_data.get("from_action")
+    if len(next_states) == 1:
+        await state.set_state(from_action)
+    elif len(next_states) > 0:
+        next_state = next_states[1:][0]
+        await state.update_data(next_states=next_states[1:])
+        await state.set_state(next_state)
+    else:
+        # If no next states, return to the previous action
+        await state.set_state(from_action)
 
 @live_adress_router.message(LiveAdress.adress)
 async def handle_live_adress_input(message: Message, state: FSMContext):

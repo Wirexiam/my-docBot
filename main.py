@@ -53,6 +53,7 @@ async def main():
         from handlers.components.child_data import child_data_router
         from handlers.work_activity import work_activity_router
         from handlers.components.home_migr_data import home_migr_data
+        from handlers.components.organization import organization_router
 
 
 
@@ -74,6 +75,7 @@ async def main():
         dp.include_router(child_data_router)
         dp.include_router(work_activity_router)
         dp.include_router(home_migr_data)
+        dp.include_router(organization_router)
 
 
         await dp.start_polling(bot)
