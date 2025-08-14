@@ -205,10 +205,77 @@ async def get_number_phone(message: Message, state: FSMContext):
     )
 
     await state.update_data(
-        from_action=PatentedWorkActivity.medical_policy_number
+        next_states=[PatentedWorkActivity.medical_policy_number]
     )
 
     await state.set_state(PhoneNumberStates.phone_number_input)
-
     await handle_phone_number_input(message, state)
+
+
+@work_activity_router.message(PatentedWorkActivity.medical_policy_number)
+async def get_medical_policy_number(message: Message, state: FSMContext):
+    """Сохраняем phone number и запрашиваем номер ДМС"""
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+    session_id = state_data.get("session_id")
+
+    phone_number = message.text.split()
+
+    user_data = {
+        "phone_number": phone_number
+    }
+
+    data_manager.save_user_data(message.from_user.id, session_id, user_data)
+
+    text = f"{_.get_text("wa_patent.wa_patent_medical_policy_number.title",lang)}\n\n{_.get_text("wa_patent.wa_patent_medical_policy_number.description", lang)}\n{_.get_text("wa_patent.wa_patent_medical_policy_number.example", lang)}"
+
+    await state.update_data(
+        phone_number=phone_number
+    )
+
+    await state.set_state(PatentedWorkActivity.medical_policy_company)
+    await message.answer(
+        text=text
+    )
+
+@work_activity_router.message(PatentedWorkActivity.medical_policy_company)
+async def get_insurance_company(message: Message, state: FSMContext):
+    """Сохраняем ДМС номер и запрашиваем название страховой компании"""
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    policy_number = message.text.split()
+
+    await state.update_data(
+        policy_number=policy_number
+    )
+    text = f"{_.get_text("wa_patent.wa_patent_insurance_company.title", lang)}\n{_.get_text("wa_patent.wa_patent_insurance_company.example")}"
+
+    await state.set_state(PatentedWorkActivity.medical_policy_validity_period)
+    await message.answer(
+        text=text
+    )
+
+
+@work_activity_router.message(PatentedWorkActivity.medical_policy_validity_period)
+async def get_medical_policy_validity_period(message: Message, state: FSMContext):
+    """Сохраняем имя страховой компании, запрашиваем срок действия полиса ДМС"""
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    medical_policy_company = message.text.split()
+
+    await state.update_data(
+        medical_policy_company=medical_policy_company
+    )
+    text = f"{_.get_text("wa_patent.wa_polis_date.title", lang)}\n\n{_.get_text("wa_patent.wa_polis_date.description")}"
+
+    await state.set_state(PatentedWorkActivity.medical_policy_polis_date)
+
+    await message.answer(
+        text=text
+    )
 
