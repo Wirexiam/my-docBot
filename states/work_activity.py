@@ -8,3 +8,6 @@ class PatentedWorkActivity(StatesGroup):
 
     passport_data = State()
     patent_entry = State()
+
+    medical_policy_start = State()
+    medical_policy_emp_adress = State()
