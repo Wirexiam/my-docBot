@@ -86,5 +86,5 @@ async def handler_passport_check(callback: CallbackQuery, state: FSMContext):
 
     await callback.message.edit_text(
         text=text,
-        reply_markup=kbs_wa_passport_entry
+        reply_markup=kbs_wa_passport_entry(lang)
     )

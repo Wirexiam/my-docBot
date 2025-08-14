@@ -51,7 +51,7 @@ def kbs_wa_passport_entry(lang: str = "ru"):
 
     builder.button(
         text=_.get_text("work_activity_passport_req.buttons.photo_manual", lang),
-        callback_data="manual_passport_entry_start"
+        callback_data="passport_manual_start"
     )
 
     builder.adjust(1)
