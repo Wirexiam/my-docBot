@@ -11,3 +11,5 @@ class PatentedWorkActivity(StatesGroup):
 
     medical_policy_start = State()
     medical_policy_emp_adress = State()
+    medical_policy_inn = State()
+    medical_policy_number = State()

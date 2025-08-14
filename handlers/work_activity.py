@@ -5,8 +5,10 @@ from aiogram.fsm.context import FSMContext
 from localization import _
 from data_manager import SecureDataManager
 from handlers.components.passport_manual import handle_passport_manual_start
+from handlers.components.phone_number import handle_phone_number_input
 
 from states.work_activity import PatentedWorkActivity
+from states.components.phone_number import PhoneNumberStates
 
 from keyboards.work_activity import (
     kbs_patent_work_activity_start, kbs_wa_validation_department_name, kbs_wa_passport_entry,
@@ -171,12 +173,42 @@ async def get_name_work(message: Message, state: FSMContext):
 
 @work_activity_router.message(PatentedWorkActivity.medical_policy_emp_adress)
 async def get_INN(message: Message, state: FSMContext):
-    """Сохраняем Адрес работодателя, получаем ИНН"""
+    """Сохраняем Адрес работодателя, запрашиваем ИНН"""
 
     emp_adress = message.text.split()
 
     state_data = await state.get_data()
     lang = state_data.get("language")
 
+    await state.update_data(
+        emp_adress=emp_adress
+    )
 
+    text = f"{_.get_text("wa_patent.wa_patent_medical_policy.INN.title", lang)}\n\n{_.get_text("wa_patent.wa_patent_medical_policy.INN.format", lang)}\n\n{_.get_text("wa_patent.wa_patent_medical_policy.INN.example", lang)}"
+
+    await state.set_state(PatentedWorkActivity.medical_policy_inn)
+
+    await message.answer(
+        text=text
+    )
+
+@work_activity_router.message(PatentedWorkActivity.medical_policy_inn)
+async def get_number_phone(message: Message, state: FSMContext):
+    """Сохраняем ИНН, запрашиваем номер телефона"""
+    inn = message.text.split()
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    await state.update_data(
+        inn=inn
+    )
+
+    await state.update_data(
+        from_action=PatentedWorkActivity.medical_policy_number
+    )
+
+    await state.set_state(PhoneNumberStates.phone_number_input)
+
+    await handle_phone_number_input(message, state)
 
