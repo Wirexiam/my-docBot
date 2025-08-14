@@ -5,6 +5,8 @@ from aiogram.fsm.context import FSMContext
 from states.arrival import Arrival_transfer
 from states.components.passport_manual import PassportManualStates
 
+from states.components.home_migr_data import HomeMigrData
+
 from keyboards.nortification_arrival import *
 from keyboards.migration_card import *
 
@@ -87,7 +89,10 @@ async def arrival_migr_card(message: Message, state: FSMContext):
     }
     session_id = state_data.get("session_id")
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
-    
+    next_states = [HomeMigrData.adress, Arrival_transfer.after_about_home]
+    await state.update_data(
+        next_states=next_states
+    )
     await state.update_data(passport_title="name_migr_card_arrival.title")
     text = f"{_.get_text('migr_card_arrival.title', lang)}\n{_.get_text('migr_card_arrival.description', lang)}"
     # Отправка сообщения с клавиатурой ожидания подтверждения
@@ -96,32 +101,46 @@ async def arrival_migr_card(message: Message, state: FSMContext):
         reply_markup=kbs_migr_arrival(lang),
     )
 
-@nortification_arrival.message(Arrival_transfer.migration_card)
+@nortification_arrival.message(Arrival_transfer.after_about_home)
 async def arrival_migr_card(message: Message, state: FSMContext):
     """Обработка cценария по миграционной карте"""
 
     # Установка состояния
     # await state.set_state(Arrival_transfer.waiting_confirm_start)
-    passport_data = await state.get_data()
-    passport_data = passport_data.get("passport_data")
-    passport_issue_place = message.text.strip()
-    passport_data["passport_issue_place"] = passport_issue_place
+    migration_data = await state.get_data()
+    migration_data = migration_data.get("migration_data")
+    document_about_home = message.text.strip()
+    migration_data["document_about_home"] = document_about_home
 
     # Get the user's language preference from state data
     state_data = await state.get_data()
     lang = state_data.get("language")
-    # Update the state with the passport issue place
-    await state.update_data(passport_data=passport_data)
+
+    # Update the state with the passport expiry date
+    await state.update_data(migration_data=migration_data)
     user_data = {
-        "passport_data": passport_data,
+        "migration_data": migration_data,
     }
     session_id = state_data.get("session_id")
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
-    
-    await state.update_data(passport_title="name_migr_card_arrival.title")
-    text = f"{_.get_text('migr_card_arrival.title', lang)}\n{_.get_text('migr_card_arrival.description', lang)}"
+    text = f"{_.get_text('place_by_migr_card_arrival.title', lang)}"
     # Отправка сообщения с клавиатурой ожидания подтверждения
     await message.answer(
+        text=text,
+        reply_markup=kbs_migr_arrival(lang),
+    )
+
+@nortification_arrival.callback_query(Arrival_transfer.after_about_home)
+async def arrival_migr_card(call: CallbackQuery, state: FSMContext):
+    """Обработка cценария по миграционной карте"""
+
+    # Get the user's language preference from state data
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    # Отправка сообщения с клавиатурой ожидания подтверждения
+    text = f"{_.get_text('place_by_migr_card_arrival.title', lang)}"
+    await call.message.answer(
         text=text,
         reply_markup=kbs_migr_arrival(lang),
     )

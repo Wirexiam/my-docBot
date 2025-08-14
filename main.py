@@ -52,14 +52,15 @@ async def main():
         from handlers.doc_child_stay_extension import doc_child_stay_extension_router
         from handlers.components.child_data import child_data_router
         from handlers.work_activity import work_activity_router
+        from handlers.components.home_migr_data import home_migr_data
 
 
 
         from handlers.migrat_card import migration_manual_router
-        from handlers.components.residence_reason_patent import residence_reason_router
+        from handlers.components.residence_reason_patent import residence_reason_patient_router
 
         dp.include_router(onboarding_router)
-        dp.include_router(residence_reason_router)
+        dp.include_router(residence_reason_patient_router)
         dp.include_router(registration_renewal_router)
         dp.include_router(main_menu)
         dp.include_router(stamp_transfer_router)
@@ -72,6 +73,7 @@ async def main():
         dp.include_router(doc_child_stay_extension_router)
         dp.include_router(child_data_router)
         dp.include_router(work_activity_router)
+        dp.include_router(home_migr_data)
 
 
         await dp.start_polling(bot)

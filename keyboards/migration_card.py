@@ -2,7 +2,6 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from localization import _
 
 
-
 def kbs_migr_arrival(lang: str):
     builder = InlineKeyboardBuilder()
     builder.button(
@@ -39,6 +38,18 @@ def kbs_for_goals(lang: str):
     )
     builder.button(
         text=_.get_text("goals_migr_card_arrival.goals.other", lang), callback_data="other"
+    )
+    builder.adjust(1)
+    return builder.as_markup()
+
+def kbs_who_accept(lang: str):
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text=_.get_text("place_by_migr_card_arrival.option_one", lang), callback_data="individual"
+    )
+    builder.button(
+        text=_.get_text("place_by_migr_card_arrival.option_two", lang),
+        callback_data="organization",
     )
     builder.adjust(1)
     return builder.as_markup()

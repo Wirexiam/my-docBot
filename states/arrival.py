@@ -8,3 +8,4 @@ class Arrival_transfer(StatesGroup):
     # after_old_passport = State()
     after_passport = State()
     after_migr_card = State()
+    after_about_home = State()
