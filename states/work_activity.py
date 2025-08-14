@@ -16,3 +16,5 @@ class PatentedWorkActivity(StatesGroup):
     medical_policy_company = State()
     medical_policy_validity_period = State()
     medical_policy_polis_date = State()
+
+    edit_medical_policy = State()

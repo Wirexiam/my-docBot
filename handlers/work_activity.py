@@ -12,7 +12,7 @@ from states.components.phone_number import PhoneNumberStates
 
 from keyboards.work_activity import (
     kbs_patent_work_activity_start, kbs_wa_validation_department_name, kbs_wa_passport_entry,
-    kbs_policy_data_confirmation
+    kbs_policy_data_confirmation, kbs_edit_policy_data
 )
 from keyboards.components.residence_reason_patent import get_residence_reason_photo_or_manual_keyboard
 
@@ -304,3 +304,28 @@ async def get_medical_policy_polis_date(message: Message, state: FSMContext):
         text=text,
         reply_markup=kbs_policy_data_confirmation(lang)
     )
+
+
+@work_activity_router.callback_query(F.data == "edit_police_data")
+async def edit_police_data(query: CallbackQuery, state: FSMContext):
+    """Тут мы можем начать редактирование данных полиса ДМС"""
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    text = f"{_.get_text("wa_patent.wa_edit_police_data.title", lang)}"
+
+    await query.message.edit_text(
+        text=text,
+        reply_markup=kbs_edit_policy_data(lang)
+    )
+
+
+@work_activity_router.callback_query(F.data.startswith("wa_edit_"))
+async def wa_edit_policy_field(query: CallbackQuery, state: FSMContext):
+    """Тут мы принимаем callback_data поля, которые мы хотим отредактировать в полисе ДМС"""
+    value = query.data[len("wa_edit_"):] 
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+

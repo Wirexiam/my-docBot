@@ -74,3 +74,36 @@ def kbs_policy_data_confirmation(lang: str = "ru"):
 
     builder.adjust(1)
     return builder.as_markup()
+
+
+def kbs_edit_policy_data(lang: str = "ru"):
+    """Клавиатура выбора поля для редактирования"""
+
+    builder = InlineKeyboardBuilder()
+
+    #Номер полиса
+    builder.button(
+        text=_.get_text("wa_patent.wa_edit_police_data.buttons.number_polis", lang), 
+        callback_data="wa_edit_number_police"
+    )
+
+    #Компания выдавшая полис
+    builder.button(
+        text=_.get_text("wa_patent.wa_edit_police_data.buttons.company_polis", lang),
+        callback_data="wa_edit_company_polis"
+    )
+
+    #Срок действия полиса
+    builder.button(
+        text=_.get_text("wa_patent.wa_edit_police_data.buttons.dateof_polise", lang),
+        callback_data="wa_edit_dateof_polise"
+    )
+
+    #Назад
+    builder.button(
+        text=_.get_text("a_patent.wa_edit_police_data.buttons.back_polise", lang),
+        callback_data="back_polise"
+    )
+
+    builder.adjust(1)
+    return builder.as_markup()
