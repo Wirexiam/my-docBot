@@ -102,44 +102,44 @@ async def arrival_migr_card(message: Message, state: FSMContext):
         reply_markup=kbs_migr_arrival(lang),
     )
 
-@nortification_arrival.message(Arrival_transfer.after_about_home)
-async def arrival_migr_card(message: Message, state: FSMContext):
-    """Обработка cценария по миграционной карте"""
+# @nortification_arrival.message(Arrival_transfer.after_about_home)
+# async def arrival_migr_card(message: Message, state: FSMContext):
+#     """Обработка cценария по миграционной карте"""
 
-    # Установка состояния
-    # await state.set_state(Arrival_transfer.waiting_confirm_start)
-    migration_data = await state.get_data()
-    migration_data = migration_data.get("migration_data")
-    document_about_home = message.text.strip()
-    migration_data["document_about_home"] = document_about_home
+#     # Установка состояния
+#     # await state.set_state(Arrival_transfer.waiting_confirm_start)
+#     migration_data = await state.get_data()
+#     migration_data = migration_data.get("migration_data")
+#     document_about_home = message.text.strip()
+#     migration_data["document_about_home"] = document_about_home
 
-    # Get the user's language preference from state data
-    state_data = await state.get_data()
-    lang = state_data.get("language")
+#     # Get the user's language preference from state data
+#     state_data = await state.get_data()
+#     lang = state_data.get("language")
 
-    # Update the state with the passport expiry date
-    await state.update_data(migration_data=migration_data)
-    user_data = {
-        "migration_data": migration_data,
-    }
-    session_id = state_data.get("session_id")
-    data_manager.save_user_data(message.from_user.id, session_id, user_data)
-    text = f"{_.get_text('place_by_migr_card_arrival.title', lang)}"
-    # Отправка сообщения с клавиатурой ожидания подтверждения
-    await message.answer(
-        text=text,
-        reply_markup=kbs_who_accept(lang),
-    )
+#     # Update the state with the passport expiry date
+#     await state.update_data(migration_data=migration_data)
+#     user_data = {
+#         "migration_data": migration_data,
+#     }
+#     session_id = state_data.get("session_id")
+#     data_manager.save_user_data(message.from_user.id, session_id, user_data)
+#     text = f"{_.get_text('place_by_migr_card_arrival.title', lang)}"
+#     # Отправка сообщения с клавиатурой ожидания подтверждения
+#     await message.answer(
+#         text=text,
+#         reply_markup=kbs_who_accept(lang),
+#     )
 
 @nortification_arrival.callback_query(Arrival_transfer.after_about_home)
-async def arrival_migr_card(call: CallbackQuery, state: FSMContext):
+async def arrival_migr_card_about_home(call: CallbackQuery, state: FSMContext):
     """Обработка cценария по миграционной карте"""
 
     # Get the user's language preference from state data
+    print('Смотрим проверяем после данных о доме')
     state_data = await state.get_data()
     lang = state_data.get("language")
 
-    # Отправка сообщения с клавиатурой ожидания подтверждения
     next_states = [Arrival_transfer.after_organisation]
     await state.update_data(
         next_states=next_states
@@ -149,6 +149,7 @@ async def arrival_migr_card(call: CallbackQuery, state: FSMContext):
         text=text,
         reply_markup=kbs_who_accept(lang),
     )
+    print('Смотрим проверяем после данных о доме')
     
 
 @nortification_arrival.message(Arrival_transfer.after_organisation)
@@ -159,6 +160,10 @@ async def arrival_migr_card(message: Message, state: FSMContext):
     state_data = await state.get_data()
     lang = state_data.get("language")
 
+    next_states = [Arrival_transfer.after_organisation]
+    await state.update_data(
+        next_states=next_states
+    )
     # Отправка сообщения с клавиатурой ожидания подтверждения
     text = f"{_.get_text('place_by_migr_card_arrival.title', lang)}"
     await message.edit_text(

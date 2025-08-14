@@ -18,6 +18,7 @@ data_manager = SecureDataManager()
 @home_migr_data.message(HomeMigrData.adress)
 async def handle_adress_migr_input(message: Message, state: FSMContext):
     """Обработка ввода адреса проживания в РФ"""
+    
     # Получение данных состояния
     state_data = await state.get_data()
     lang = state_data.get("language", "ru")

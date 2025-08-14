@@ -12,9 +12,11 @@ organization_router = Router()
 data_manager = SecureDataManager()
 
 
-@organization_router.callback_query(F.data == "organization")
+@organization_router.callback_query(F.data == "organization_accept")
 async def handle_organization_start(callback: CallbackQuery, state: FSMContext):
     """Handle the start of manual passport input."""
+    
+    print('Оббработчик')
 
     # Set the state for manual passport handling
     await state.set_state(OrganizationStates.name_organization)
@@ -32,7 +34,7 @@ async def handle_organization_start(callback: CallbackQuery, state: FSMContext):
     await state.set_state(OrganizationStates.inn)
     # Send the initial message to the user
     await callback.message.edit_text(
-        text=text, reply_markup=inn_organization(lang)  # No keyboard for this step
+        text=text, reply_markup=inn_organization(lang)
     )
 
 
