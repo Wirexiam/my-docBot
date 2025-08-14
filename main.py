@@ -47,21 +47,29 @@ async def main():
         from handlers.components.passport_manual import passport_manual_router
         from handlers.components.phone_number import phone_number_router
         from handlers.components.live_adress import live_adress_router
-        from handlers.nortification_arrival import nortification_arrival
+
+        # from handlers.nortification_arrival import nortification_arrival
         from handlers.registration_renewal import registration_renewal_router
         from handlers.doc_child_stay_extension import doc_child_stay_extension_router
         from handlers.components.child_data import child_data_router
         from handlers.work_activity import work_activity_router
         from handlers.components.home_migr_data import home_migr_data
         from handlers.components.organization import organization_router
-
-
-
         from handlers.migrat_card import migration_manual_router
-        from handlers.components.residence_reason_patent import residence_reason_patient_router
+        from handlers.components.residence_reason_patent import (
+            residence_reason_patient_router,
+        )
+        from handlers.components.residence_reason_child import (
+            residence_reason_child_router,
+        )
+        from handlers.components.residence_reason_marriage import (
+            residence_reason_marriage_router,
+        )
 
-        dp.include_router(onboarding_router)
+        dp.include_router(residence_reason_child_router)
         dp.include_router(residence_reason_patient_router)
+        dp.include_router(residence_reason_marriage_router)
+        dp.include_router(onboarding_router)
         dp.include_router(registration_renewal_router)
         dp.include_router(main_menu)
         dp.include_router(stamp_transfer_router)
@@ -69,14 +77,13 @@ async def main():
         dp.include_router(passport_manual_router)
         dp.include_router(phone_number_router)
         dp.include_router(live_adress_router)
-        dp.include_router(nortification_arrival)
+        # dp.include_router(nortification_arrival)
         dp.include_router(migration_manual_router)
         dp.include_router(doc_child_stay_extension_router)
         dp.include_router(child_data_router)
         dp.include_router(work_activity_router)
         dp.include_router(home_migr_data)
         dp.include_router(organization_router)
-
 
         await dp.start_polling(bot)
     finally:

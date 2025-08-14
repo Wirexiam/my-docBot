@@ -1,6 +1,6 @@
 from pprint import pprint
 from aiogram import Router, F
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, FSInputFile
 from aiogram.fsm.context import FSMContext
 
 from states.registration_renewal import RegistrationRenewalStates
@@ -92,6 +92,35 @@ async def handle_registration_renewal_after_passport(
     )
 
 
+@registration_renewal_router.callback_query(
+    F.data.startswith("residence_reason_child_")
+)
+async def handle_residence_reason_child(callback: CallbackQuery, state: FSMContext):
+    who_for_child = callback.data.split("child_")[1]
+    print(f"Selected who for child: {who_for_child}")
+    await state.update_data(who_for_child=who_for_child)
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+    photo = FSInputFile("static/live_adress_example.png")
+    # Отправка подтверждения пользователю
+
+    text = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
+
+    await callback.message.answer_photo(caption=text, photo=photo)
+    await state.update_data(waiting_data="live_adress")
+    next_states = state_data.get("next_states", [])
+    from_action = state_data.get("from_action")
+    if len(next_states) == 1:
+        await state.set_state(from_action)
+    elif len(next_states) > 0:
+        next_state = next_states[1:][0]
+        await state.update_data(next_states=next_states[1:])
+        await state.set_state(next_state)
+    else:
+        # If no next states, return to the previous action
+        await state.set_state(from_action)
+
+
 @registration_renewal_router.message(
     RegistrationRenewalStates.after_residence_reason_and_location
 )
@@ -118,16 +147,45 @@ async def handle_registration_renewal_after_residence_reason_and_location(
         "passport_issue_date", "Не найдено"
     )
     passport_issue_place = state_data.get("passport_issue_place", "Не найдено")
-    text = f"{_.get_text('registration_renewal_patient_check_data.title', lang)}\n\n"
-    text += f"{_.get_text('registration_renewal_patient_check_data.full_name', lang)}{state_data.get("passport_data",{}).get("full_name","Не найдено")}\n"
-    text += f"{_.get_text('registration_renewal_patient_check_data.birth_date', lang)}{state_data.get("passport_data",{}).get("birth_date","Не найдено")}\n"
-    text += f"{_.get_text('registration_renewal_patient_check_data.citizenship', lang)}{state_data.get("passport_data",{}).get("citizenship","Не найдено")}\n"
-    text += f"{_.get_text('registration_renewal_patient_check_data.passport', lang)}{passport_number}{_.get_text("registration_renewal_patient_check_data.issue_date")}{passport_issue_date} {passport_issue_place}\n"
-    text += f"{_.get_text('registration_renewal_patient_check_data.adress', lang)}{state_data.get("live_adress","Не найдено")}\n"
-    text += f"{_.get_text('registration_renewal_patient_check_data.residence_reason', lang)}Патент\n"
-    text += f"{_.get_text('registration_renewal_patient_check_data.patient_number', lang)}{state_data.get("patient_number","Не найдено")}\n"
-    text += f"{_.get_text('registration_renewal_patient_check_data.patient_date', lang)}{state_data.get("patient_date","Не найдено")}\n"
-    text += f"{_.get_text('registration_renewal_patient_check_data.patient_issue_place', lang)}{state_data.get("patient_issue_place","Не найдено")}\n\n"
+    residence_reason = state_data.get("residence_reason", "Не найдено")
+    if residence_reason == "residence_reason_patent":
+        text = (
+            f"{_.get_text('registration_renewal_patient_check_data.title', lang)}\n\n"
+        )
+        text += f"{_.get_text('registration_renewal_patient_check_data.full_name', lang)}{state_data.get("passport_data",{}).get("full_name","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_patient_check_data.birth_date', lang)}{state_data.get("passport_data",{}).get("birth_date","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_patient_check_data.citizenship', lang)}{state_data.get("passport_data",{}).get("citizenship","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_patient_check_data.passport', lang)}{passport_number}{_.get_text("registration_renewal_patient_check_data.issue_date")}{passport_issue_date} {passport_issue_place}\n"
+        text += f"{_.get_text('registration_renewal_patient_check_data.adress', lang)}{state_data.get("live_adress","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_patient_check_data.residence_reason', lang)}\n"
+        text += f"{_.get_text('registration_renewal_patient_check_data.patient_number', lang)}{state_data.get("patient_number","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_patient_check_data.patient_date', lang)}{state_data.get("patient_date","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_patient_check_data.patient_issue_place', lang)}{state_data.get("patient_issue_place","Не найдено")}\n\n"
+    elif residence_reason == "residence_reason_marriage":
+        text = (
+            f"{_.get_text('registration_renewal_marriage_check_data.title', lang)}\n\n"
+        )
+        text += f"{_.get_text('registration_renewal_marriage_check_data.full_name', lang)}{state_data.get("passport_data",{}).get("full_name","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_marriage_check_data.birth_date', lang)}{state_data.get("passport_data",{}).get("birth_date","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_marriage_check_data.citizenship', lang)}{state_data.get("passport_data",{}).get("citizenship","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_marriage_check_data.passport', lang)}{passport_number}{_.get_text("registration_renewal_marriage_check_data.issue_date")}{passport_issue_date} {passport_issue_place}\n"
+        text += f"{_.get_text('registration_renewal_marriage_check_data.adress', lang)}{state_data.get("live_adress","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_marriage_check_data.residence_reason', lang)}\n"
+        text += f"{_.get_text('registration_renewal_marriage_check_data.spouse_fio', lang)}{state_data.get("spouse_fio","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_marriage_check_data.marriage_citizenship', lang)}\n"
+        text += f"{_.get_text('registration_renewal_marriage_check_data.marriage_certificate_number', lang)}{state_data.get("marriage_number","Не найдено")}{_.get_text("registration_renewal_marriage_check_data.issue_place")}\n{state_data.get("issue_date","Не найдено")} {state_data.get("marriage_issue_place","Не найдено")}"
+    elif residence_reason == "residence_reason_child":
+        text = f"{_.get_text('registration_renewal_child_check_data.title', lang)}\n\n"
+        text += f"{_.get_text('registration_renewal_child_check_data.full_name', lang)}{state_data.get("passport_data",{}).get("full_name","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_child_check_data.birth_date', lang)}{state_data.get("passport_data",{}).get("birth_date","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_child_check_data.citizenship', lang)}{state_data.get("passport_data",{}).get("citizenship","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_child_check_data.passport', lang)}{passport_number}{_.get_text("registration_renewal_child_check_data.issue_date")}{passport_issue_date} {passport_issue_place}\n"
+        text += f"{_.get_text('registration_renewal_child_check_data.adress', lang)}{state_data.get("live_adress","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_child_check_data.residence_reason', lang)}\n"
+        text += f"{_.get_text('registration_renewal_child_check_data.child_fio', lang)}{state_data.get("child_fio","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_child_check_data.child_birth_date', lang)}{state_data.get("child_birth_date","Не найдено")}\n"
+        text += f"{_.get_text('registration_renewal_child_check_data.child_citizenship', lang)}\n"
+        text += f"{_.get_text('registration_renewal_child_check_data.child_certificate_number', lang)}{state_data.get("child_certificate_number","Не найдено")}{_.get_text("registration_renewal_child_check_data.issue_place")}\n{state_data.get("child_certificate_issue_place","Не найдено")}"
 
     await message.answer(
         text=text,
