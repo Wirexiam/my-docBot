@@ -5,3 +5,6 @@ class PatentedWorkActivity(StatesGroup):
     input_department = State()
 
     passport_check = State()
+
+    passport_data = State()
+    patent_entry = State()
