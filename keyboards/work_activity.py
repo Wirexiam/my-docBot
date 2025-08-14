@@ -58,19 +58,18 @@ def kbs_wa_passport_entry(lang: str = "ru"):
     return builder.as_markup()
 
 
-def kbs_panetn_entry_start(lang: str = "ru"):
-    """Начинаем процесс ввода патента"""
-
+def kbs_policy_data_confirmation(lang: str = "ru"):
+    """Клавиатура подтверждения данных полиса"""
     builder = InlineKeyboardBuilder()
 
     builder.button(
-        text=_.get_text("wa_patent.wa_patent_start.buttons.patent_photo", lang),
-
+        text=_.get_text("wa_patent.wa_police_prof.buttons.accept", lang),
+        callback_data="accept_police_data"
     )
 
     builder.button(
-        text=_.get_text("wa_patent.wa_patent_start.buttons.patent_manual", lang),
-        callback_data="residence_reason_patent"
+        text=_.get_text("wa_patent.wa_police_prof.buttons.edit", lang),
+        callback_data="edit_police_data"
     )
 
     builder.adjust(1)

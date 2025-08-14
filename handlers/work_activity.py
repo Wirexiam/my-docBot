@@ -12,7 +12,7 @@ from states.components.phone_number import PhoneNumberStates
 
 from keyboards.work_activity import (
     kbs_patent_work_activity_start, kbs_wa_validation_department_name, kbs_wa_passport_entry,
-    kbs_panetn_entry_start
+    kbs_policy_data_confirmation
 )
 from keyboards.components.residence_reason_patent import get_residence_reason_photo_or_manual_keyboard
 
@@ -175,7 +175,7 @@ async def get_name_work(message: Message, state: FSMContext):
 async def get_INN(message: Message, state: FSMContext):
     """Сохраняем Адрес работодателя, запрашиваем ИНН"""
 
-    emp_adress = message.text.split()
+    emp_adress = message.text.strip()
 
     state_data = await state.get_data()
     lang = state_data.get("language")
@@ -192,10 +192,11 @@ async def get_INN(message: Message, state: FSMContext):
         text=text
     )
 
+
 @work_activity_router.message(PatentedWorkActivity.medical_policy_inn)
 async def get_number_phone(message: Message, state: FSMContext):
     """Сохраняем ИНН, запрашиваем номер телефона"""
-    inn = message.text.split()
+    inn = message.text.strip()
 
     state_data = await state.get_data()
     lang = state_data.get("language")
@@ -205,7 +206,7 @@ async def get_number_phone(message: Message, state: FSMContext):
     )
 
     await state.update_data(
-        next_states=[PatentedWorkActivity.medical_policy_number]
+        from_action=PatentedWorkActivity.medical_policy_number
     )
 
     await state.set_state(PhoneNumberStates.phone_number_input)
@@ -220,7 +221,7 @@ async def get_medical_policy_number(message: Message, state: FSMContext):
     lang = state_data.get("language")
     session_id = state_data.get("session_id")
 
-    phone_number = message.text.split()
+    phone_number = message.text.strip()
 
     user_data = {
         "phone_number": phone_number
@@ -246,7 +247,7 @@ async def get_insurance_company(message: Message, state: FSMContext):
     state_data = await state.get_data()
     lang = state_data.get("language")
 
-    policy_number = message.text.split()
+    policy_number = message.text.strip()
 
     await state.update_data(
         policy_number=policy_number
@@ -266,7 +267,7 @@ async def get_medical_policy_validity_period(message: Message, state: FSMContext
     state_data = await state.get_data()
     lang = state_data.get("language")
 
-    medical_policy_company = message.text.split()
+    medical_policy_company = message.text.strip()
 
     await state.update_data(
         medical_policy_company=medical_policy_company
@@ -279,3 +280,27 @@ async def get_medical_policy_validity_period(message: Message, state: FSMContext
         text=text
     )
 
+@work_activity_router.message(PatentedWorkActivity.medical_policy_polis_date)
+async def get_medical_policy_polis_date(message: Message, state: FSMContext):
+    """Сохраняем срок действия полиса и подтверждаем валидность данных"""
+
+    medical_policy_polis_date = message.text.strip()
+    await state.update_data(
+        medical_policy_polis_date=medical_policy_polis_date
+    )
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    text = (
+        f"{_.get_text("wa_patent.wa_police_prof.title", lang)}\n\n" #Тайтл
+        f"{_.get_text("wa_patent.wa_police_prof.policy", lang)}\n"
+        f"{_.get_text("wa_patent.wa_police_prof.number_policy", lang)} {state_data.get("policy_number")}\n" #Номер полиса
+        f"{_.get_text("wa_patent.wa_police_prof.company", lang)} {state_data.get("medical_policy_company")}\n" #Компания выдавшая полис
+        f"{_.get_text("wa_patent.wa_police_prof.valid", lang)} {state_data.get("medical_policy_polis_date")}" #Срок действия полиса
+    )
+
+    await message.answer(
+        text=text,
+        reply_markup=kbs_policy_data_confirmation(lang)
+    )
