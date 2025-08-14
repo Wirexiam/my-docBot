@@ -18,6 +18,7 @@ data_manager = SecureDataManager()
 @home_migr_data.message(HomeMigrData.adress)
 async def handle_adress_migr_input(message: Message, state: FSMContext):
     """Обработка ввода адреса проживания в РФ"""
+    
     # Получение данных состояния
     state_data = await state.get_data()
     lang = state_data.get("language", "ru")
@@ -89,7 +90,7 @@ async def handle_access_doc(call: CallbackQuery, state: FSMContext):
     text = f"{_.get_text('doc_details_migr_card_arrival.title', lang)}\n{_.get_text('doc_details_migr_card_arrival.example', lang)}"
     
     await call.message.answer(text=text, reply_markup=None)
-    await state.set_state(Arrival_transfer.after_about_home)
+    # await state.set_state(Arrival_transfer.after_about_home)
     
     next_states = state_data.get("next_states", [])
     from_action = state_data.get("from_action")

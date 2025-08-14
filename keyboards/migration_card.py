@@ -49,7 +49,7 @@ def kbs_who_accept(lang: str):
     )
     builder.button(
         text=_.get_text("place_by_migr_card_arrival.option_two", lang),
-        callback_data="organization",
+        callback_data="organization_accept"
     )
     builder.adjust(1)
     return builder.as_markup()

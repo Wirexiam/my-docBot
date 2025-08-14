@@ -20,6 +20,7 @@ async def handle_residence_reason_marriage(callback: CallbackQuery, state: FSMCo
 
     # Set the state for choosing photo or manual input
     await state.set_state(ResidenceReasonMarriageStates.choose_photo_or_manual)
+    await state.update_data(residence_reason="residence_reason_marriage")
     state_data = await state.get_data()
     lang = state_data.get("language")
 
