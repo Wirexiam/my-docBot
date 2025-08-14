@@ -12,7 +12,7 @@ from states.components.phone_number import PhoneNumberStates
 
 from keyboards.work_activity import (
     kbs_patent_work_activity_start, kbs_wa_validation_department_name, kbs_wa_passport_entry,
-    kbs_policy_data_confirmation, kbs_edit_policy_data
+    kbs_policy_data_confirmation
 )
 from keyboards.components.residence_reason_patent import get_residence_reason_photo_or_manual_keyboard
 
@@ -103,6 +103,12 @@ async def handler_passport_check(callback: CallbackQuery, state: FSMContext):
 @work_activity_router.message(PatentedWorkActivity.passport_data)
 async def handle_passport_data(message: Message, state: FSMContext):
     """Получаем данные ввода паспорта. Предлагаем пользователю ввести данные патента"""
+
+    passport_issued = message.text.strip()
+
+    passport_data = (await state.get_data()).get("passport_data", {})
+    passport_data["passport_issued"] = passport_issued
+    await state.update_data(passport_data=passport_data)
 
     state_data = await state.get_data()
     lang = state_data.get("language")
@@ -292,40 +298,21 @@ async def get_medical_policy_polis_date(message: Message, state: FSMContext):
     state_data = await state.get_data()
     lang = state_data.get("language")
 
+    passport = state_data.get("passport_data", {})
+
     text = (
-        f"{_.get_text("wa_patent.wa_police_prof.title", lang)}\n\n" #Тайтл
-        f"{_.get_text("wa_patent.wa_police_prof.policy", lang)}\n"
-        f"{_.get_text("wa_patent.wa_police_prof.number_policy", lang)} {state_data.get("policy_number")}\n" #Номер полиса
-        f"{_.get_text("wa_patent.wa_police_prof.company", lang)} {state_data.get("medical_policy_company")}\n" #Компания выдавшая полис
-        f"{_.get_text("wa_patent.wa_police_prof.valid", lang)} {state_data.get("medical_policy_polis_date")}" #Срок действия полиса
+        f"{_.get_text("wa_patent.edit_wa_data.title", lang)}\n\n"
+        f"{_.get_text("wa_patent.edit_wa_data.full_name", lang)} {passport.get('full_name')}\n"
+        f"{_.get_text("wa_patent.edit_wa_data.passport", lang)} {passport.get('passport_serial_number')}, {passport.get('passport_issue_date')}, {passport.get('passport_issued')}, {passport.get('passport_expiry_date')}\n"
+        f"{_.get_text("wa_patent.edit_wa_data.patent", lang)} {state_data.get('patient_number')}, {state_data.get('patient_date')}, {state_data.get('patient_issue_place')}\n"
+        f"{_.get_text("wa_patent.edit_wa_data.work_adress", lang)} {state_data.get('emp_adress')}\n"
+        f"{_.get_text("wa_patent.edit_wa_data.profession", lang)} {state_data.get('work_name')}\n"
+        f"{_.get_text("wa_patent.edit_wa_data.inn", lang)} {state_data.get('inn')}\n"
+        f"{_.get_text("wa_patent.edit_wa_data.policy", lang)} {state_data.get('policy_number')}, {state_data.get('medical_policy_company')}, {state_data.get('medical_policy_polis_date')}\n"
+        f"{_.get_text("wa_patent.edit_wa_data.phone_number", lang)} {state_data.get('phone_number')}"
     )
 
     await message.answer(
         text=text,
         reply_markup=kbs_policy_data_confirmation(lang)
     )
-
-
-@work_activity_router.callback_query(F.data == "edit_police_data")
-async def edit_police_data(query: CallbackQuery, state: FSMContext):
-    """Тут мы можем начать редактирование данных полиса ДМС"""
-
-    state_data = await state.get_data()
-    lang = state_data.get("language")
-
-    text = f"{_.get_text("wa_patent.wa_edit_police_data.title", lang)}"
-
-    await query.message.edit_text(
-        text=text,
-        reply_markup=kbs_edit_policy_data(lang)
-    )
-
-
-@work_activity_router.callback_query(F.data.startswith("wa_edit_"))
-async def wa_edit_policy_field(query: CallbackQuery, state: FSMContext):
-    """Тут мы принимаем callback_data поля, которые мы хотим отредактировать в полисе ДМС"""
-    value = query.data[len("wa_edit_"):] 
-
-    state_data = await state.get_data()
-    lang = state_data.get("language")
-
