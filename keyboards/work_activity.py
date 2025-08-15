@@ -185,3 +185,25 @@ def kbs_sub_editor_passport(lang: str = "ru"):
 
     builder.adjust(1)
     return builder.as_markup()
+
+def kbs_sub_editor_patient(lang: str = "ru"):
+
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text=_.get_text("wa_patent.wa_data_editor.sub_editor_data.patent.buttons.serial_number", lang),
+        callback_data="edit_patent_patient_number"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.wa_data_editor.sub_editor_data.patent.buttons.date_issue", lang),
+        callback_data="edit_patent_patient_date"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.wa_data_editor.sub_editor_data.patent.buttons.issued_by", lang),
+        callback_data="edit_patent_patient_issue_place"
+    )
+
+    builder.adjust(1)
+    return builder.as_markup()

@@ -12,7 +12,8 @@ from states.components.phone_number import PhoneNumberStates
 
 from keyboards.work_activity import (
     kbs_patent_work_activity_start, kbs_wa_validation_department_name, kbs_wa_passport_entry,
-    kbs_policy_data_confirmation, kbs_edit_wa_data, kbs_sub_editor_policy, kbs_sub_editor_passport
+    kbs_policy_data_confirmation, kbs_edit_wa_data, kbs_sub_editor_policy, kbs_sub_editor_passport,
+    kbs_sub_editor_patient
 )
 from keyboards.components.residence_reason_patent import get_residence_reason_photo_or_manual_keyboard
 
@@ -170,7 +171,6 @@ async def get_name_work(message: Message, state: FSMContext):
 
     if state_data.get("edit_mode"):
         await state.update_data(edit_mode=False)
-        await state.set_state(PatentedWorkActivity.medical_policy_polis_date)
         await get_medical_policy_polis_date(message, state)
         return
 
@@ -198,7 +198,6 @@ async def get_INN(message: Message, state: FSMContext):
 
     if state_data.get("edit_mode"):
         await state.update_data(edit_mode=False)
-        await state.set_state(PatentedWorkActivity.medical_policy_polis_date)
         await get_medical_policy_polis_date(message, state)
         return
 
@@ -226,7 +225,6 @@ async def get_number_phone(message: Message, state: FSMContext):
 
     if state_data.get("edit_mode"):
         await state.update_data(edit_mode=False)
-        await state.set_state(PatentedWorkActivity.medical_policy_polis_date)
         await get_medical_policy_polis_date(message, state)
         return
 
@@ -259,7 +257,6 @@ async def get_medical_policy_number(message: Message, state: FSMContext):
 
     if state_data.get("edit_mode"):
         await state.update_data(edit_mode=False)
-        await state.set_state(PatentedWorkActivity.medical_policy_polis_date)
         await get_medical_policy_polis_date(message, state)
         return
 
@@ -286,7 +283,6 @@ async def get_insurance_company(message: Message, state: FSMContext):
 
     if state_data.get("edit_mode"):
         await state.update_data(edit_mode=False)
-        await state.set_state(PatentedWorkActivity.medical_policy_polis_date)
         await get_medical_policy_polis_date(message, state)
         return
 
@@ -313,7 +309,6 @@ async def get_medical_policy_validity_period(message: Message, state: FSMContext
 
     if state_data.get("edit_mode"):
         await state.update_data(edit_mode=False)
-        await state.set_state(PatentedWorkActivity.medical_policy_polis_date)
         await get_medical_policy_polis_date(message, state)
         return
     
@@ -329,15 +324,19 @@ async def get_medical_policy_validity_period(message: Message, state: FSMContext
 async def get_medical_policy_polis_date(message: Message, state: FSMContext):
     """Сохраняем срок действия полиса и подтверждаем валидность данных"""
 
-    medical_policy_polis_date = message.text.strip()
-    await state.update_data(
-        medical_policy_polis_date=medical_policy_polis_date
-    )
-
     state_data = await state.get_data()
     lang = state_data.get("language")
-
     passport = state_data.get("passport_data", {})
+
+
+    current_state = await state.get_state()
+    if current_state == PatentedWorkActivity.medical_policy_polis_date.state:
+        medical_policy_polis_date = message.text.strip()
+        await state.update_data(
+            medical_policy_polis_date=medical_policy_polis_date
+        )
+        state_data = await state.get_data()
+
 
     text = (
         f"{_.get_text("wa_patent.edit_wa_data.title", lang)}\n\n"
@@ -395,7 +394,10 @@ async def wa_editor(query: CallbackQuery, state: FSMContext):
         )
 
     elif param_to_edit == "patent":
-        ...
+        await query.message.edit_text(
+            text=_.get_text("wa_patent.wa_data_editor.sub_editor_data.patent.title", lang),
+            reply_markup=kbs_sub_editor_patient(lang)
+        )
     elif param_to_edit == "profession":
         text = f"{_.get_text("wa_patent.wa_patent_medical_policy.name_work.title", lang)}\n\n{_.get_text("wa_patent.wa_patent_medical_policy.name_work.description", lang)}\n\n{_.get_text("wa_patent.wa_patent_medical_policy.name_work.example", lang)}"
         await query.message.edit_text(text)
@@ -509,5 +511,36 @@ async def edit_passport_fields(message: Message, state: FSMContext):
     await state.update_data(passport=passport)
 
     await state.update_data(edit_passport_field=None)
+
+    await get_medical_policy_polis_date(message, state)
+
+
+@work_activity_router.callback_query(F.data.startswith("edit_patent_"))
+async def edit_patent_data_fields(query: CallbackQuery, state: FSMContext):
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    param_to_edit = query.data[len("edit_patent_"):]
+
+    if param_to_edit in ["patient_number", "patient_date", "patient_issue_place"]:
+
+        text = _.get_text(f"wa_patent.wa_data_editor.sub_editor_data.patent.{param_to_edit}")
+        await query.message.edit_text(
+            text=text
+        )
+        await state.set_state(PatentedWorkActivity.edit_patent_fields)
+        await state.update_data(edit_patent_fields=param_to_edit)
+    
+
+@work_activity_router.message(PatentedWorkActivity.edit_patent_fields)
+async def edit_passport_fields(message: Message, state: FSMContext):
+    """Хендлер принимает параметр патента и редактирует его"""
+
+    state_data = await state.get_data()
+    field = state_data.get("edit_patent_fields")
+
+    await state.update_data({field: message.text.strip()})
+    await state.update_data(edit_patent_fields=None)
 
     await get_medical_policy_polis_date(message, state)
