@@ -556,3 +556,71 @@ async def edit_passport_fields(message: Message, state: FSMContext):
     await state.update_data(edit_patent_fields=None)
 
     await get_medical_policy_polis_date(message, state)
+
+
+@work_activity_router.callback_query(F.data == "accept_wa_patent_data")
+async def accept_wa_patent_data(query: CallbackQuery, state: FSMContext):
+    """
+        Сохраняет данные пользователя.
+
+        Формат сохраняемых данных:
+        {
+            "language": str,  # Язык (например, "ru")
+            "department_full_name": str,  # Полное название отдела/организации
+            "passport_data": {
+                "full_name": str,  # ФИО
+                "birth_date": str,  # Дата рождения
+                "citizenship": str,  # Гражданство
+                "passport_serial_number": str,  # Серия и номер документа
+                "passport_issue_date": str,  # Дата выдачи документа
+                "passport_expiry_date": str  # Срок действия паспорта
+            },
+            "patient_data": {
+                "patient_number": str,  # Номер патента
+                "patient_date": str,  # Дата выдачи патента
+                "patient_issue_place": str  # Кем выдан патент
+            },
+            "phone_number": str,  # Актуальный номер телефона
+            "medical_policy": {
+                "policy_number": str,  # Номер ДМС
+                "medical_policy_company": str,  # Страховая компания
+                "medical_policy_polis_date": str  # Срок действия ДМС
+            },
+            "inn": str,  # ИНН
+            "work_data": {
+                "emp_adress": str,  # Юридический адрес работодателя
+                "work_name": str  # Должность/профессия
+            }
+        }
+
+        Args:
+            query (CallbackQuery): Объект callback-запроса от Telegram.
+            state (FSMContext): Контекст состояния пользователя.
+    """
+
+
+    state_data = await state.get_data()
+    session_id = state_data.get("session_id")
+
+    user_data = {
+        "medical_policy": {
+            "policy_number": state_data.get("policy_number"),
+            "medical_policy_company": state_data.get("medical_policy_company"),
+            "medical_policy_polis_date": state_data.get("medical_policy_polis_date"),
+        },
+        "inn": state_data.get("inn"),
+        "phone_number": state_data.get("phone_number"),
+        "work_data": {
+            "emp_adress": state_data.get("emp_adress"),
+            "work_name": state_data.get("work_name"),
+        }
+    }
+
+    data_manager.save_user_data(
+        user_id=query.from_user.id,
+        session_id=session_id,
+        data=user_data
+    )
+
+    data_manager.load_user_data(query.from_user.id, session_id)
+
