@@ -3,6 +3,9 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
+from aiogram.enums import ParseMode
+from aiogram.client.default import DefaultBotProperties
+
 from config import BOT_TOKEN, API_TOKEN
 from data_manager import SecureDataManager
 from ocr.ocr import DocumentsOcr
@@ -16,7 +19,7 @@ logger = logging.getLogger(__name__)
 # Глобальные объекты
 DocMaster = DocumentsOcr(api_key=API_TOKEN)
 data_manager = SecureDataManager()
-bot = Bot(token=BOT_TOKEN)
+bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher(storage=MemoryStorage())
 
 
@@ -65,6 +68,9 @@ async def main():
         from handlers.components.residence_reason_marriage import (
             residence_reason_marriage_router,
         )
+        from handlers.doc_residence_notification import doc_residence_notification_router
+        from handlers.components.residence_permit import residence_permit_router
+        from handlers.components.sema_components import sema_components_router
 
         dp.include_router(residence_reason_child_router)
         dp.include_router(residence_reason_patient_router)
@@ -84,6 +90,9 @@ async def main():
         dp.include_router(work_activity_router)
         dp.include_router(home_migr_data)
         dp.include_router(organization_router)
+        dp.include_router(doc_residence_notification_router)
+        dp.include_router(residence_permit_router)
+        dp.include_router(sema_components_router)
 
         await dp.start_polling(bot)
     finally:
