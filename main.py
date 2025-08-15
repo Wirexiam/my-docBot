@@ -48,7 +48,7 @@ async def main():
         from handlers.components.phone_number import phone_number_router
         from handlers.components.live_adress import live_adress_router
 
-        # from handlers.nortification_arrival import nortification_arrival
+        from handlers.nortification_arrival import nortification_arrival
         from handlers.registration_renewal import registration_renewal_router
         from handlers.doc_child_stay_extension import doc_child_stay_extension_router
         from handlers.components.child_data import child_data_router
@@ -77,7 +77,7 @@ async def main():
         dp.include_router(passport_manual_router)
         dp.include_router(phone_number_router)
         dp.include_router(live_adress_router)
-        # dp.include_router(nortification_arrival)
+        dp.include_router(nortification_arrival)
         dp.include_router(migration_manual_router)
         dp.include_router(doc_child_stay_extension_router)
         dp.include_router(child_data_router)
