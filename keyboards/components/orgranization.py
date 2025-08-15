@@ -25,3 +25,14 @@ def ur_work(lang: str):
     )
     builder.adjust(1)
     return builder.as_markup()
+
+def true_or_change_final_doc(lang: str):
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text=_.get_text("organisation_info_correct.true_in_organization_doc", lang), callback_data="d"
+    )
+    builder.button(
+        text=_.get_text("organisation_info_correct.change_in_organization_doc", lang), callback_data="d"
+    )
+    builder.adjust(1)
+    return builder.as_markup()

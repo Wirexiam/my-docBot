@@ -15,11 +15,7 @@ data_manager = SecureDataManager()
 @organization_router.callback_query(F.data == "organization_accept")
 async def handle_organization_start(callback: CallbackQuery, state: FSMContext):
     """Handle the start of manual passport input."""
-    
     print('Оббработчик')
-
-    # Set the state for manual passport handling
-    await state.set_state(OrganizationStates.name_organization)
 
     # Get the user's language preference from state data
     state_data = await state.get_data()
@@ -34,7 +30,7 @@ async def handle_organization_start(callback: CallbackQuery, state: FSMContext):
     await state.set_state(OrganizationStates.inn)
     # Send the initial message to the user
     await callback.message.edit_text(
-        text=text, reply_markup=inn_organization(lang)
+        text=text, reply_markup=None
     )
 
 
@@ -56,11 +52,11 @@ async def request_inn_organization_input(message: Message, state: FSMContext):
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
 
     text = f"{_.get_text('inn_org_migr_card_arrival.title', lang)}\n{_.get_text('inn_org_migr_card_arrival.example', lang)}"
-    await message.answer(text=text, reply_markup=None)  # No keyboard for this step
+    await message.answer(text=text, reply_markup=inn_organization(lang))
     # Move to the next state
-    await state.set_state(OrganizationStates.inn)
+    await state.set_state(OrganizationStates.adress)
     
-@organization_router.message(OrganizationStates.inn)
+@organization_router.message(OrganizationStates.adress)
 async def handle_inn_inp(message: Message, state: FSMContext):
     """Handle the input of the birth date in manual passport handling."""
     organization_data= await state.get_data()
@@ -81,10 +77,10 @@ async def handle_inn_inp(message: Message, state: FSMContext):
     text = f"{_.get_text('addres_by_migr_card_arrival.title', lang)}\n{_.get_text('addres_by_migr_card_arrival.example', lang)}"
     await message.answer(text=text, reply_markup=None)
 
-    await state.set_state(OrganizationStates.adress)
+    await state.set_state(OrganizationStates.full_name_contact_of_organization)
 
 
-@organization_router.message(OrganizationStates.adress)
+@organization_router.message(OrganizationStates.full_name_contact_of_organization)
 async def handle_adress_inp(message: Message, state: FSMContext):
     """Handle the input of the birth date in manual passport handling."""
     organization_data= await state.get_data()
@@ -105,10 +101,10 @@ async def handle_adress_inp(message: Message, state: FSMContext):
     text = f"{_.get_text('fio_migr_card_arrival.title', lang)}\n{_.get_text('fio_migr_card_arrival.example', lang)}"
     await message.answer(text=text, reply_markup=None)
 
-    await state.set_state(OrganizationStates.full_name_contact_of_organization)
+    await state.set_state(OrganizationStates.phone_contact_of_organization)
 
 
-@organization_router.message(OrganizationStates.full_name_contact_of_organization)
+@organization_router.message(OrganizationStates.phone_contact_of_organization)
 async def handle_full_name_contact_of_organization(message: Message, state: FSMContext):
     """Handle the input of the citizenship in manual passport handling."""
     organization_data = await state.get_data()
@@ -127,14 +123,15 @@ async def handle_full_name_contact_of_organization(message: Message, state: FSMC
     }
     session_id = state_data.get("session_id")
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
-
-    text = f"{_.get_text('fio_migr_card_arrival.title', lang)}\n{_.get_text('fio_migr_card_arrival.example', lang)}"
+    text_first = f"{_.get_text('success_data_by.title', lang)}\n{_.get_text('success_data_by.issue_info', lang)}{"Юридическое лицо"}"
+    text = f"{_.get_text('phone_contact_of_organization.title', lang)}\n{_.get_text('phone_contact_of_organization.example', lang)}"
+    await message.answer(text=text_first, reply_markup=None)
     await message.answer(text=text, reply_markup=None)
 
-    await state.set_state(OrganizationStates.phone_contact_of_organization)
+    await state.set_state(OrganizationStates.profession)
 
 
-@organization_router.message(OrganizationStates.phone_contact_of_organization)
+@organization_router.message(OrganizationStates.profession)
 async def handle_job(message: Message, state: FSMContext):
     """Handle the input of the passport serial number in manual passport handling."""
     organization_data = await state.get_data()
@@ -172,5 +169,5 @@ async def handle_job(message: Message, state: FSMContext):
         print("No next states found, returning to from_action")
         # If no next states, return to the previous action
         await state.set_state(from_action)
-    print(f"Next state set to: {next_state if next_states else from_action}")
+    # print(f"Next state set to: {next_state if next_states else from_action}")
 

@@ -207,6 +207,7 @@ async def handle_number_migr_card_pretria_period(message: Message, state: FSMCon
     user_data = {
         "migration_data": migration_data,
     }
+    await state.update_data(fill_goal = True)
     session_id = state_data.get("session_id")
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
 
