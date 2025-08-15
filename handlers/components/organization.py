@@ -61,17 +61,17 @@ async def handle_inn_inp(call: CallbackQuery, state: FSMContext):
     """Handle the input of the birth date in manual passport handling."""
     organization_data= await state.get_data()
     organization_data = organization_data.get("organization_data")
-    # organization_data["inn"] = inn
+    organization_data["inn"] = ''
     # Get the user's language preference from state data
     state_data = await state.get_data()
     lang = state_data.get("language")
     # Update the state with the full name
-    # await state.update_data(organization_data=organization_data)
-    # user_data = {
-    #     "organization_data ": organization_data,
-    # }
-    # session_id = state_data.get("session_id")
-    # data_manager.save_user_data(message.from_user.id, session_id, user_data)
+    await state.update_data(organization_data=organization_data)
+    user_data = {
+        "organization_data ": organization_data,
+    }
+    session_id = state_data.get("session_id")
+    data_manager.save_user_data(message.from_user.id, session_id, user_data)
 
     text = f"{_.get_text('addres_by_migr_card_arrival.title', lang)}\n{_.get_text('addres_by_migr_card_arrival.example', lang)}"
     await call.message.edit_text(text=text, reply_markup=None)
