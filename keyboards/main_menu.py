@@ -19,10 +19,10 @@ def get_documents_menu_keyboard(lang: str = "ru"):
         text=_.get_text("main_menu.documents.work_activity", lang),
         callback_data="doc_work_activity",
     )
-    builder.button(
-        text=_.get_text("main_menu.documents.patent_extension", lang),
-        callback_data="doc_patent_extension",
-    )
+    # builder.button(
+    #     text=_.get_text("main_menu.documents.patent_extension", lang),
+    #     callback_data="doc_patent_extension",
+    # )
     builder.button(
         text=_.get_text("main_menu.documents.family_stay_extension", lang),
         callback_data="registration_renewal",
