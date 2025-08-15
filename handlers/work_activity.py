@@ -364,7 +364,6 @@ async def edit_wa_data(query: CallbackQuery, state: FSMContext):
     Выводим пользователю инфу которую можно отредактировать
     
     """
-    print(f"[DEBUG] Raw callback data: {repr(query.data)}")
     state_data = await state.get_data()
     lang = state_data.get("language")
 
@@ -390,8 +389,11 @@ async def wa_editor(query: CallbackQuery, state: FSMContext):
         await get_medical_policy_polis_date(query.message, state)
     elif param_to_edit == "full_name":
         ...
+
     elif param_to_edit == "passport":
         ...
+
+
     elif param_to_edit == "patent":
         ...
     elif param_to_edit == "profession":
@@ -415,7 +417,6 @@ async def wa_editor(query: CallbackQuery, state: FSMContext):
             text=text,
             reply_markup=kbs_sub_editor_policy(lang)
         )
-
     elif param_to_edit == "phone_number":
         await state.update_data(from_action=PatentedWorkActivity.medical_policy_number)
         await state.set_state(PhoneNumberStates.phone_number_input)
@@ -458,3 +459,43 @@ async def medical_policy_editor(query: CallbackQuery, state: FSMContext):
             text=text
         )
         await state.set_state(PatentedWorkActivity.medical_policy_polis_date)
+
+    
+@work_activity_router.callback_query(F.data.startswith("edit_passport_"))
+async def edit_passport_data_fields(query: CallbackQuery, state: FSMContext):
+    """Получаем параметр паспорта который нужно отредактировать"""
+
+    param_to_edit = query.data[len("edit_passport_"):]
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    if param_to_edit == "full_name":
+        text = f"{_.get_text("passport_manual_full_name.description", lang)}"
+        await query.message.edit_text(
+            text=text
+        )
+        await state.update_data(
+            edit_passport_field=param_to_edit
+        )
+    
+    if param_to_edit in ["passport_serial_number", "passport_issue_date", "passport_issued", "passport_expiry_date"]:
+        ...
+
+    await state.set_state(PatentedWorkActivity.edit_passport_fields)
+
+
+@work_activity_router.message(PatentedWorkActivity.edit_passport_fields)
+async def edit_passport_fields(message: Message, state: FSMContext):
+    """Хендлер принимает параметр паспорта и редактирует его"""
+
+    state_data = await state.get_data()
+
+    field = state_data.get("edit_passport_field")
+    passport = state_data.get("passport", {})
+    passport[field] = message.text.strip()
+    await state.update_data(passport=passport)
+
+    await state.update_data(edit_passport_field=None)
+
+    await get_medical_policy_polis_date(message, state)
