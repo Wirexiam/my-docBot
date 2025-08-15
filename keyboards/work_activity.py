@@ -75,3 +75,85 @@ def kbs_policy_data_confirmation(lang: str = "ru"):
     builder.adjust(1)
     return builder.as_markup()
 
+
+def kbs_edit_wa_data(lang: str = "ru"):
+    """Клавиатура выбора документа или значения для редактирования"""
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text=_.get_text("wa_patent.edit_wa_data.full_name", lang),
+        callback_data="wa_edit_full_name"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.edit_wa_data.passport", lang),
+        callback_data="wa_edit_passport"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.edit_wa_data.patent", lang),
+        callback_data="wa_edit_patent"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.edit_wa_data.work_adress", lang),
+        callback_data="wa_edit_work_adress"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.edit_wa_data.profession", lang),
+        callback_data="wa_edit_profession"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.edit_wa_data.inn", lang),
+        callback_data="wa_edit_inn"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.edit_wa_data.policy", lang),
+        callback_data="wa_edit_policy"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.edit_wa_data.phone_number", lang),
+        callback_data="wa_edit_phone_number"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.edit_wa_data.buttons.back_button", lang),
+        callback_data="wa_edit_back_to_data"
+    )
+
+
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def kbs_sub_editor_policy(lang: str = "ru"):
+    """Клавиатура выбора редактирования полиса ДМС"""
+
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text=_.get_text("wa_patent.wa_data_editor.sub_editor_data.policy.buttons.policy_number", lang),
+        callback_data="edit_policy_number"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.wa_data_editor.sub_editor_data.policy.buttons.company", lang),
+        callback_data="edit_policy_company"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.wa_data_editor.sub_editor_data.policy.buttons.dateof", lang),
+        callback_data="edit_policy_dateof"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.edit_wa_data.buttons.back_button", lang),
+        callback_data="edit_wa_patent_data"
+    )
+
+    builder.adjust(1)
+    return builder.as_markup()
