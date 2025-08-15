@@ -53,6 +53,19 @@ async def get_worked_last_year_msg(callback, state):
         text = f"{_.get_text("worked_last_year.hiring_date.title", lang)}"
         await callback.message.edit_text(text)
 
+
+async def get_worked_last_year_msg_choose(callback, state):
+            state_data = await state.get_data()
+            lang = state_data.get("language")
+
+            text = f"{_.get_text("worked_last_year.start.title", lang)}"
+            btns = {
+                'worked_last_year.start.btn_yes':'y',
+                'worked_last_year.start.btn_no':'n',
+            }
+            await callback.message.edit_text(text, reply_markup=get_callback_btns(btns, lang))
+            await state.set_state(DocResidenceNotificationStates.start_worked_last_year)
+
 async def get_income_last_year_msg(callback, state):
     state_data = await state.get_data()
     lang = state_data.get("language")
@@ -143,7 +156,6 @@ async def handle_live_adress_data(message: Message, state: FSMContext):
 
 
         state_data = await state.get_data()
-        print(state_data)
 
 
         await state.update_data(
@@ -173,13 +185,14 @@ async def handle_after_adress(message: Message, state: FSMContext):
         await state.update_data(**user_data)
         data_manager.save_user_data(message.from_user.id, session_id, user_data)
 
+        await state.set_state(TravelOutsideRuStates.start)
         text = f"{_.get_text("travel_outside_Ru.message_0.title", lang)}"
         await message.answer(text, reply_markup=get_travel_outside_Ru_keyboard(lang))
         
         
 
 
-@doc_residence_notification_router.callback_query(F.data.startswith('travel_outside_Ru'))
+@doc_residence_notification_router.callback_query(F.data.startswith('travel_outside_Ru'), TravelOutsideRuStates.start)
 async def handle_travel_outside_Ru(callback: CallbackQuery, state: FSMContext):
     is_travel_outside_Ru = callback.data.split('_')[-1]
     state_data = await state.get_data()
@@ -190,13 +203,7 @@ async def handle_travel_outside_Ru(callback: CallbackQuery, state: FSMContext):
     if is_travel_outside_Ru =='y':
         await get_travel_outside_Ru_msg(callback, state)
     else:
-            text = f"{_.get_text("worked_last_year.start.title", lang)}"
-            btns = {
-                'worked_last_year.start.btn_yes':'y',
-                'worked_last_year.start.btn_no':'n',
-            }
-            await callback.message.edit_text(text, reply_markup=get_callback_btns(btns, lang))
-            await state.set_state(WorkedLastYearStates.start)
+        await get_worked_last_year_msg_choose(callback, state)
     
 
 
@@ -236,7 +243,7 @@ async def handle_travel_outside_Ru_place(message: Message, state: FSMContext):
 
     state_data = await state.get_data()
 
-    info = [f'<b>{i}. {' — '.join(data)}</b>' for i, data in enumerate(state_data['travel_outside_Ru'].items(), 1)] if 'travel_outside_Ru' in state_data.keys() else []
+    info = [f'<b>{i}. {data['date']} — {data['place']}</b>' for i, data in enumerate(state_data['travel_outside_Ru'], 1)] if 'travel_outside_Ru' in state_data.keys() else []
 
 
     info += [f'<b>{len(info)+1}. {state_data['date']} — {state_data['place']}</b>']
@@ -257,10 +264,10 @@ async def handle_travel_outside_Ru_callback(callback: CallbackQuery, state: FSMC
         await get_travel_outside_Ru_msg(callback, state)
     else:
         old_travel_outside_Ru = state_data.get('travel_outside_Ru')
-        travel_outside_Ru = {state_data['date']:state_data['place']}
+        travel_outside_Ru = [{"date":state_data['date'], "place":state_data['place']}]
 
         if old_travel_outside_Ru:
-            travel_outside_Ru.update(old_travel_outside_Ru)
+            travel_outside_Ru.extend(old_travel_outside_Ru)
 
 
         session_id = state_data.get("session_id")
@@ -271,13 +278,8 @@ async def handle_travel_outside_Ru_callback(callback: CallbackQuery, state: FSMC
         data_manager.save_user_data(callback.from_user.id, session_id, user_data)
         if is_travel_outside_Ru =='y':
 
-            text = f"{_.get_text("worked_last_year.start.title", lang)}"
-            btns = {
-                'worked_last_year.start.btn_yes':'y',
-                'worked_last_year.start.btn_no':'n',
-            }
-            await callback.message.edit_text(text, reply_markup=get_callback_btns(btns, lang))
-            await state.set_state(WorkedLastYearStates.start)
+            await get_worked_last_year_msg_choose(callback, state)
+
 
         else:
             await get_travel_outside_Ru_msg(callback, state)
@@ -285,7 +287,7 @@ async def handle_travel_outside_Ru_callback(callback: CallbackQuery, state: FSMC
     
     
 
-@doc_residence_notification_router.callback_query(WorkedLastYearStates.start, F.data)
+@doc_residence_notification_router.callback_query(DocResidenceNotificationStates.start_worked_last_year, F.data)
 async def worked_last_year_callback_hendler(callback: CallbackQuery, state: FSMContext):
     is_worked_last_year = callback.data.split('_')[-1]
     state_data = await state.get_data()
@@ -411,18 +413,13 @@ async def handle_income_last_year_start(callback: CallbackQuery, state: FSMConte
 
     if callback_data =='btn_back':
         old_worked_last_year = state_data.get('worked_last_year')
-        
-        if old_worked_last_year is None:
-            text = f"{_.get_text("worked_last_year.start.title", lang)}"
-            btns = {
-                'worked_last_year.start.btn_yes':'y',
-                'worked_last_year.start.btn_no':'n',
-            }
-            await callback.message.edit_text(text, reply_markup=get_callback_btns(btns, lang))
-            await state.set_state(WorkedLastYearStates.start)
+        org_name = state_data.get('org_name')
 
-            return
         
+        if old_worked_last_year is None or org_name is None:
+            await get_worked_last_year_msg_choose(callback, state)
+            return
+
         old_worked_last_year.pop()
 
         session_id = state_data.get("session_id")
@@ -437,7 +434,7 @@ async def handle_income_last_year_start(callback: CallbackQuery, state: FSMConte
     elif callback_data =='btn_0':
         session_id = state_data.get("session_id")
         user_data = {
-                "income_last_year": {'no': 0},
+                "income_last_year": [{"form_NDFL":"no", "income":0}],
             }
         await state.update_data(**user_data)
         data_manager.save_user_data(callback.from_user.id, session_id, user_data)
@@ -475,8 +472,8 @@ async def handle_income_last_year_income(message: Message, state: FSMContext):
 
     
         info = [
-            f'{_.get_text('income_last_year.message_3.source_amount', lang)}{_.get_text(f"income_last_year.message_1.{form_NDFL}", lang)}\n{_.get_text('income_last_year.message_3.income_amount', lang)}{income}'
-            for form_NDFL, income in state_data['income_last_year'].items()
+            f'{_.get_text('income_last_year.message_3.source_amount', lang)}{_.get_text(f"income_last_year.message_1.{data["form_NDFL"]}", lang)}\n{_.get_text('income_last_year.message_3.income_amount', lang)}{data["income"]}'
+            for data in state_data['income_last_year']
             ] if 'income_last_year' in state_data.keys() else []
 
         info += [
@@ -509,10 +506,12 @@ async def handle_income_last_year_after_income(callback: CallbackQuery, state: F
         await get_income_last_year_msg(callback, state)
     else:
         old_income_last_year = state_data.get('income_last_year')
-        income_last_year = {state_data['form_NDFL']:state_data['income']}
+        income_last_year = [{"form_NDFL":state_data['form_NDFL'], "income":state_data['income']}]
+
 
         if old_income_last_year:
-            income_last_year.update(old_income_last_year)
+            income_last_year.extend(old_income_last_year)
+
 
 
         session_id = state_data.get("session_id")
@@ -523,7 +522,6 @@ async def handle_income_last_year_after_income(callback: CallbackQuery, state: F
         data_manager.save_user_data(callback.from_user.id, session_id, user_data)
 
         state_data = await state.get_data()
-        print(state_data)
 
         if income_last_year_callback =='y':
             await check_doc_residence_notification(callback, state)
@@ -563,18 +561,17 @@ async def check_doc_residence_notification(callback: CallbackQuery, state: FSMCo
     # Локализация для доходов
     income_last_year = data['income_last_year']
     income_last_year_str = '\n'.join([
-        f"{_.get_text(f'income_last_year.message_1.{form_ndfl}', lang)}, {income}" if income != 0 
+        f"{_.get_text(f'income_last_year.message_1.{data["form_NDFL"]}', lang)}, {data["income"]}" if data["income"] != 0 
         else _.get_text('doc_residence_notification.no_income', lang) 
-        for form_ndfl, income in income_last_year.items()
+        for data in income_last_year
     ])
 
     # Локализация для поездок
     travel = data.get('travel_outside_Ru')
     travel_str = (
         _.get_text('doc_residence_notification.no_travel', lang) if travel is None 
-        else '\n'.join([f' {date} - {place}' for date, place in travel.items()])
+        else '\n'.join([f' {data["date"]} - {data["place"]}' for data in travel])
     )
-
     # Формирование сообщения с локализацией
     message_lines = [
         _.get_text('doc_residence_notification.title', lang),

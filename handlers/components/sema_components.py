@@ -61,12 +61,12 @@ async def start_dialogue(message: Message, state: FSMContext, callback_data=None
 
     
     all_states = state_obj.__all_states__
-    print(all_states)
+    # print(all_states)
     current_index = all_states.index(current_state)
 
     current_state_class, current_state_name = tuple(str(current_state).split(':'))
     msgs = dialogue_msgs[current_state_class]
-    print(current_state_name)
+    # print(current_state_name)
 
 
     if msgs[current_state_name].get('btns') is not None and callback_data is None:
@@ -106,7 +106,7 @@ async def start_dialogue(message: Message, state: FSMContext, callback_data=None
             
     await state.update_data({current_state_name:data_to_add})
     state_data = await state.get_data()
-    print(state_data)
+    # print(state_data)
     lang = state_data.get("language")
         
 
