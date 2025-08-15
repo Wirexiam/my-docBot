@@ -82,7 +82,7 @@ def kbs_edit_wa_data(lang: str = "ru"):
 
     builder.button(
         text=_.get_text("wa_patent.edit_wa_data.full_name", lang),
-        callback_data="wa_edit_full_name"
+        callback_data="edit_passport_full_name"
     )
 
     builder.button(
@@ -153,6 +153,34 @@ def kbs_sub_editor_policy(lang: str = "ru"):
     builder.button(
         text=_.get_text("wa_patent.edit_wa_data.buttons.back_button", lang),
         callback_data="edit_wa_patent_data"
+    )
+
+    builder.adjust(1)
+    return builder.as_markup()
+
+def kbs_sub_editor_passport(lang: str = "ru"):
+    """Клавиатура редактирования параметров паспорта"""
+
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text=_.get_text("wa_patent.wa_data_editor.sub_editor_data.passport.buttons.serial_number", lang),
+        callback_data="edit_passport_passport_serial_number"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.wa_data_editor.sub_editor_data.passport.buttons.date_issue", lang),
+        callback_data="edit_passport_passport_issue_date"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.wa_data_editor.sub_editor_data.passport.buttons.issued_by", lang),
+        callback_data="edit_passport_passport_issued"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.wa_data_editor.sub_editor_data.passport.buttons.validity_period", lang),
+        callback_data="edit_passport_passport_expiry_date"
     )
 
     builder.adjust(1)
