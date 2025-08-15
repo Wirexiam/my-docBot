@@ -4,12 +4,17 @@ from aiogram.fsm.context import FSMContext
 
 from localization import _
 from data_manager import SecureDataManager
+from handlers.components.passport_manual import handle_passport_manual_start
+from handlers.components.phone_number import handle_phone_number_input
 
 from states.work_activity import PatentedWorkActivity
+from states.components.phone_number import PhoneNumberStates
 
 from keyboards.work_activity import (
-    kbs_patent_work_activity_start, kbs_wa_validation_department_name, kbs_wa_passport_entry
+    kbs_patent_work_activity_start, kbs_wa_validation_department_name, kbs_wa_passport_entry,
+    kbs_policy_data_confirmation
 )
+from keyboards.components.residence_reason_patent import get_residence_reason_photo_or_manual_keyboard
 
 
 work_activity_router = Router()
@@ -24,7 +29,7 @@ async def wa_start(callback: CallbackQuery, state: FSMContext):
     lang = state_data.get("language")
     await state.set_state(PatentedWorkActivity.work_activity_start)
 
-    text = f"{_.get_text("work_activity_start.title", lang)}\n{_.get_text("work_activity_start.description")}\n{_.get_text("work_activity_start.documents_to_prepare")}"
+    text = f"{_.get_text("work_activity_start.title", lang)}\n{_.get_text("work_activity_start.description", lang)}\n{_.get_text("work_activity_start.documents_to_prepare", lang)}"
 
     await callback.message.edit_text(
         text=text,
@@ -84,7 +89,230 @@ async def handler_passport_check(callback: CallbackQuery, state: FSMContext):
 
     text = f"{_.get_text("work_activity_passport_req.title", lang)}\n\n{_.get_text("work_activity_passport_req.description", lang)}"
 
+    await state.update_data(from_action=PatentedWorkActivity.passport_data,
+                         passport_title="wa_passport_title")
+
     await callback.message.edit_text(
         text=text,
-        reply_markup=kbs_wa_passport_entry
+        reply_markup=kbs_wa_passport_entry(lang)
+    )
+
+    # await handle_passport_manual_start(callback, state)
+
+
+@work_activity_router.message(PatentedWorkActivity.passport_data)
+async def handle_passport_data(message: Message, state: FSMContext):
+    """Получаем данные ввода паспорта. Предлагаем пользователю ввести данные патента"""
+
+    passport_issued = message.text.strip()
+
+    passport_data = (await state.get_data()).get("passport_data", {})
+    passport_data["passport_issued"] = passport_issued
+    await state.update_data(passport_data=passport_data)
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    session_id = state_data.get("session_id")
+
+    passport_data = state_data.get("passport_data")
+    if passport_data:
+        await state.update_data(from_action=(PatentedWorkActivity.patent_entry))
+    
+    text = f"{_.get_text("wa_patent.wa_patent_start.title", lang)}\n{_.get_text("wa_patent.wa_patent_start.description", lang)}"
+
+    await message.answer(
+        text=text,
+        reply_markup=get_residence_reason_photo_or_manual_keyboard(lang)
+    )
+
+
+@work_activity_router.message(PatentedWorkActivity.patent_entry)
+async def handle_patient_data(message: Message, state: FSMContext):
+    """Сохраняем данные патента и запрашиваем данные ДМС"""
+
+    issue_place = message.text.strip()
+    await state.update_data(patient_issue_place=issue_place)
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    session_id = state_data.get("session_id")
+
+    patient_data = {
+        "patient_number": state_data.get("patient_number"),
+        "patient_date": state_data.get("patient_date"),
+        "patient_issue_place": state_data.get("patient_issue_place"),
+    }
+
+    data_manager.save_user_data(message.from_user.id, session_id, {"patient_data": patient_data})
+
+    text = f"{_.get_text("wa_patent.wa_patent_medical_policy.name_work.title", lang)}\n\n{_.get_text("wa_patent.wa_patent_medical_policy.name_work.description", lang)}\n\n{_.get_text("wa_patent.wa_patent_medical_policy.name_work.example", lang)}"
+
+    await state.set_state(PatentedWorkActivity.medical_policy_start)
+
+    await message.answer(
+        text=text
+    )
+
+
+@work_activity_router.message(PatentedWorkActivity.medical_policy_start)
+async def get_name_work(message: Message, state: FSMContext):
+    """Сохраняем название профессии, запрашиваем адрес работодателя"""
+    work_name = message.text.strip()
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    await state.update_data(
+        work_name=work_name
+    )
+
+    text = f"{_.get_text("wa_patent.wa_patent_medical_policy.employer_address.title", lang)}\n{_.get_text("wa_patent.wa_patent_medical_policy.employer_address.example", lang)}"
+
+    await state.set_state(PatentedWorkActivity.medical_policy_emp_adress)
+
+    await message.answer(
+        text=text
+    )
+
+
+@work_activity_router.message(PatentedWorkActivity.medical_policy_emp_adress)
+async def get_INN(message: Message, state: FSMContext):
+    """Сохраняем Адрес работодателя, запрашиваем ИНН"""
+
+    emp_adress = message.text.strip()
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    await state.update_data(
+        emp_adress=emp_adress
+    )
+
+    text = f"{_.get_text("wa_patent.wa_patent_medical_policy.INN.title", lang)}\n\n{_.get_text("wa_patent.wa_patent_medical_policy.INN.format", lang)}\n\n{_.get_text("wa_patent.wa_patent_medical_policy.INN.example", lang)}"
+
+    await state.set_state(PatentedWorkActivity.medical_policy_inn)
+
+    await message.answer(
+        text=text
+    )
+
+
+@work_activity_router.message(PatentedWorkActivity.medical_policy_inn)
+async def get_number_phone(message: Message, state: FSMContext):
+    """Сохраняем ИНН, запрашиваем номер телефона"""
+    inn = message.text.strip()
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    await state.update_data(
+        inn=inn
+    )
+
+    await state.update_data(
+        from_action=PatentedWorkActivity.medical_policy_number
+    )
+
+    await state.set_state(PhoneNumberStates.phone_number_input)
+    await handle_phone_number_input(message, state)
+
+
+@work_activity_router.message(PatentedWorkActivity.medical_policy_number)
+async def get_medical_policy_number(message: Message, state: FSMContext):
+    """Сохраняем phone number и запрашиваем номер ДМС"""
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+    session_id = state_data.get("session_id")
+
+    phone_number = message.text.strip()
+
+    user_data = {
+        "phone_number": phone_number
+    }
+
+    data_manager.save_user_data(message.from_user.id, session_id, user_data)
+
+    text = f"{_.get_text("wa_patent.wa_patent_medical_policy_number.title",lang)}\n\n{_.get_text("wa_patent.wa_patent_medical_policy_number.description", lang)}\n{_.get_text("wa_patent.wa_patent_medical_policy_number.example", lang)}"
+
+    await state.update_data(
+        phone_number=phone_number
+    )
+
+    await state.set_state(PatentedWorkActivity.medical_policy_company)
+    await message.answer(
+        text=text
+    )
+
+@work_activity_router.message(PatentedWorkActivity.medical_policy_company)
+async def get_insurance_company(message: Message, state: FSMContext):
+    """Сохраняем ДМС номер и запрашиваем название страховой компании"""
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    policy_number = message.text.strip()
+
+    await state.update_data(
+        policy_number=policy_number
+    )
+    text = f"{_.get_text("wa_patent.wa_patent_insurance_company.title", lang)}\n{_.get_text("wa_patent.wa_patent_insurance_company.example")}"
+
+    await state.set_state(PatentedWorkActivity.medical_policy_validity_period)
+    await message.answer(
+        text=text
+    )
+
+
+@work_activity_router.message(PatentedWorkActivity.medical_policy_validity_period)
+async def get_medical_policy_validity_period(message: Message, state: FSMContext):
+    """Сохраняем имя страховой компании, запрашиваем срок действия полиса ДМС"""
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    medical_policy_company = message.text.strip()
+
+    await state.update_data(
+        medical_policy_company=medical_policy_company
+    )
+    text = f"{_.get_text("wa_patent.wa_polis_date.title", lang)}\n\n{_.get_text("wa_patent.wa_polis_date.description")}"
+
+    await state.set_state(PatentedWorkActivity.medical_policy_polis_date)
+
+    await message.answer(
+        text=text
+    )
+
+@work_activity_router.message(PatentedWorkActivity.medical_policy_polis_date)
+async def get_medical_policy_polis_date(message: Message, state: FSMContext):
+    """Сохраняем срок действия полиса и подтверждаем валидность данных"""
+
+    medical_policy_polis_date = message.text.strip()
+    await state.update_data(
+        medical_policy_polis_date=medical_policy_polis_date
+    )
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    passport = state_data.get("passport_data", {})
+
+    text = (
+        f"{_.get_text("wa_patent.edit_wa_data.title", lang)}\n\n"
+        f"{_.get_text("wa_patent.edit_wa_data.full_name", lang)} {passport.get('full_name')}\n"
+        f"{_.get_text("wa_patent.edit_wa_data.passport", lang)} {passport.get('passport_serial_number')}, {passport.get('passport_issue_date')}, {passport.get('passport_issued')}, {passport.get('passport_expiry_date')}\n"
+        f"{_.get_text("wa_patent.edit_wa_data.patent", lang)} {state_data.get('patient_number')}, {state_data.get('patient_date')}, {state_data.get('patient_issue_place')}\n"
+        f"{_.get_text("wa_patent.edit_wa_data.work_adress", lang)} {state_data.get('emp_adress')}\n"
+        f"{_.get_text("wa_patent.edit_wa_data.profession", lang)} {state_data.get('work_name')}\n"
+        f"{_.get_text("wa_patent.edit_wa_data.inn", lang)} {state_data.get('inn')}\n"
+        f"{_.get_text("wa_patent.edit_wa_data.policy", lang)} {state_data.get('policy_number')}, {state_data.get('medical_policy_company')}, {state_data.get('medical_policy_polis_date')}\n"
+        f"{_.get_text("wa_patent.edit_wa_data.phone_number", lang)} {state_data.get('phone_number')}"
+    )
+
+    await message.answer(
+        text=text,
+        reply_markup=kbs_policy_data_confirmation(lang)
     )

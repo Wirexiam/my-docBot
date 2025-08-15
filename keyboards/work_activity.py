@@ -51,8 +51,27 @@ def kbs_wa_passport_entry(lang: str = "ru"):
 
     builder.button(
         text=_.get_text("work_activity_passport_req.buttons.photo_manual", lang),
-        callback_data="manual_passport_entry_start"
+        callback_data="passport_manual_start"
     )
 
     builder.adjust(1)
     return builder.as_markup()
+
+
+def kbs_policy_data_confirmation(lang: str = "ru"):
+    """Клавиатура подтверждения данных полиса"""
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text=_.get_text("wa_patent.edit_wa_data.buttons.accept", lang),
+        callback_data="accept_wa_patent_data"
+    )
+
+    builder.button(
+        text=_.get_text("wa_patent.edit_wa_data.buttons.edit", lang),
+        callback_data="edit_wa_patent_data"
+    )
+
+    builder.adjust(1)
+    return builder.as_markup()
+
