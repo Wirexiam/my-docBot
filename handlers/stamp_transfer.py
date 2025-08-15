@@ -140,3 +140,17 @@ async def handle_new_passport_data(message: Message, state: FSMContext):
         text=text,
         reply_markup=get_stamp_transfer_check_data_before_gen(lang),
     )
+
+
+# @stamp_transfer_router.callback_query(F.data == "change_data_stamp_transfer")
+# async def handle_change_data_stamp_transfer(callback: CallbackQuery, state: FSMContext):
+#     """Обработка нажатия кнопки изменения данных перед генерацией штампа"""
+#     state_data = await state.get_data()
+#     lang = state_data.get("language")
+#     # Установка состояния для изменения данных
+#     await state.set_state(Stamp_transfer.after_new_passport)
+#     # Отправка сообщения с инструкциями по изменению данных
+#     await callback.message.edit_text(
+#         text=_.get_text("stamp_check_datas_info.change_data_instruction", lang),
+#         reply_markup=stamp_transfer_passport_start_keyboard(lang),
+#     )
