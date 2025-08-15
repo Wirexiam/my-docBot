@@ -24,10 +24,14 @@ async def handle_live_adress_input(call: CallbackQuery, state: FSMContext):
     # }
     # await state.update_data({waiting_data: message.text.strip()})
     # data_manager.save_user_data(message.from_user.id, session_id, user_data)
-    photo = FSInputFile("static/live_adress_example.png")
-    # Отправка подтверждения пользователю
+    if state_data.get('live_adress_conf') is None:
+        photo = FSInputFile("static/live_adress_example.png")
+        # Отправка подтверждения пользователю
 
-    text = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
+        text = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
+    else:
+        photo = FSInputFile("static/live_adress.png")
+        text = f"{_.get_text('adress_residence_permit', lang)}"
     await call.message.answer_photo(caption=text, photo=photo)
     await state.update_data(waiting_data="live_adress")
     next_states = state_data.get("next_states", [])
@@ -57,10 +61,15 @@ async def handle_live_adress_input(message: Message, state: FSMContext):
     }
     await state.update_data({waiting_data: message.text.strip()})
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
-    photo = FSInputFile("static/live_adress_example.png")
-    # Отправка подтверждения пользователю
+    
+    if state_data.get('live_adress_conf') is None:
+        photo = FSInputFile("static/live_adress_example.png")
+        # Отправка подтверждения пользователю
 
-    text = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
+        text = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
+    else:
+        photo = FSInputFile("static/live_adress.png")
+        text = f"{_.get_text('adress_residence_permit', lang)}"
 
     await message.answer_photo(caption=text, photo=photo)
     await state.update_data(waiting_data="live_adress")
