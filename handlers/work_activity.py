@@ -228,12 +228,12 @@ async def get_number_phone(message: Message, state: FSMContext):
         await get_medical_policy_polis_date(message, state)
         return
 
-    await state.update_data(
-        from_action=PatentedWorkActivity.medical_policy_number
+    await state.set_state(PatentedWorkActivity.medical_policy_number)
+
+    await message.answer(
+        text = f"{_.get_text('phone_number.title', lang)}\n{_.get_text('phone_number.example_text', lang)}"
     )
 
-    await state.set_state(PhoneNumberStates.phone_number_input)
-    await handle_phone_number_input(message, state)
 
 
 @work_activity_router.message(PatentedWorkActivity.medical_policy_number)
