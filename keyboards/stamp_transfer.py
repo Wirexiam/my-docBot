@@ -43,7 +43,7 @@ def get_stamp_transfer_check_data_before_gen(lang: str = "ru"):
     )
     builder.button(
         text=_.get_text("stamp_check_datas_info.change_data_stamp_button", lang),
-        callback_data="change_data_stamp",
+        callback_data="change_data_stamp_transfer",
     )
     builder.adjust(1)
     return builder.as_markup()

@@ -5,8 +5,10 @@ from pprint import pprint
 
 from states.arrival import Arrival_transfer
 from states.components.passport_manual import PassportManualStates
+from keyboards.components.orgranization import true_or_change_final_doc
 
 from states.components.home_migr_data import HomeMigrData
+from states.components.organization import OrganizationStates
 
 from keyboards.nortification_arrival import *
 from keyboards.migration_card import *
@@ -92,7 +94,8 @@ async def arrival_migr_card(message: Message, state: FSMContext):
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
     next_states = [HomeMigrData.adress, Arrival_transfer.after_about_home]
     await state.update_data(
-        next_states=next_states
+        next_states=next_states,
+        from_action=Arrival_transfer.after_about_home
     )
     await state.update_data(passport_title="name_migr_card_arrival.title")
     text = f"{_.get_text('migr_card_arrival.title', lang)}\n{_.get_text('migr_card_arrival.description', lang)}"
@@ -102,47 +105,57 @@ async def arrival_migr_card(message: Message, state: FSMContext):
         reply_markup=kbs_migr_arrival(lang),
     )
 
-# @nortification_arrival.message(Arrival_transfer.after_about_home)
-# async def arrival_migr_card(message: Message, state: FSMContext):
-#     """Обработка cценария по миграционной карте"""
+@nortification_arrival.message(Arrival_transfer.after_about_home)
+async def arrival_migr_card(message: Message, state: FSMContext):
+    """Обработка cценария по миграционной карте"""
 
-#     # Установка состояния
-#     # await state.set_state(Arrival_transfer.waiting_confirm_start)
-#     migration_data = await state.get_data()
-#     migration_data = migration_data.get("migration_data")
-#     document_about_home = message.text.strip()
-#     migration_data["document_about_home"] = document_about_home
+    # Установка состояния
+    # await state.set_state(Arrival_transfer.waiting_confirm_start)
+    migration_data = await state.get_data()
+    migration_data = migration_data.get("migration_data")
+    document_about_home = message.text.strip()
+    migration_data["document_about_home"] = document_about_home
 
-#     # Get the user's language preference from state data
-#     state_data = await state.get_data()
-#     lang = state_data.get("language")
+    # Get the user's language preference from state data
+    state_data = await state.get_data()
+    lang = state_data.get("language")
 
-#     # Update the state with the passport expiry date
-#     await state.update_data(migration_data=migration_data)
-#     user_data = {
-#         "migration_data": migration_data,
-#     }
-#     session_id = state_data.get("session_id")
-#     data_manager.save_user_data(message.from_user.id, session_id, user_data)
-#     text = f"{_.get_text('place_by_migr_card_arrival.title', lang)}"
-#     # Отправка сообщения с клавиатурой ожидания подтверждения
-#     await message.answer(
-#         text=text,
-#         reply_markup=kbs_who_accept(lang),
-#     )
+    # Update the state with the passport expiry date
+    await state.update_data(migration_data=migration_data)
+    user_data = {
+        "migration_data": migration_data,
+    }
+    session_id = state_data.get("session_id")
+    data_manager.save_user_data(message.from_user.id, session_id, user_data)
+    await state.set_state(None)
+    next_states = [Arrival_transfer.after_organisation]
+    await state.update_data(
+        next_states = next_states,
+        from_action = Arrival_transfer.after_organisation
+    )
+    text = f"{_.get_text('place_by_migr_card_arrival.title', lang)}"
+    # Отправка сообщения с клавиатурой ожидания подтверждения
+    await message.answer(
+        text=text,
+        reply_markup=kbs_who_accept(lang),
+    )
 
-@nortification_arrival.callback_query(Arrival_transfer.after_about_home)
+@nortification_arrival.callback_query(F.data == "nothave")
 async def arrival_migr_card_about_home(call: CallbackQuery, state: FSMContext):
     """Обработка cценария по миграционной карте"""
 
     # Get the user's language preference from state data
     print('Смотрим проверяем после данных о доме')
     state_data = await state.get_data()
+    print(state_data)
     lang = state_data.get("language")
-
+    
+    # await state.clear()
+    await state.set_state(None)
     next_states = [Arrival_transfer.after_organisation]
     await state.update_data(
-        next_states=next_states
+        next_states = next_states,
+        from_action = Arrival_transfer.after_organisation
     )
     text = f"{_.get_text('place_by_migr_card_arrival.title', lang)}"
     await call.message.edit_text(
@@ -153,27 +166,58 @@ async def arrival_migr_card_about_home(call: CallbackQuery, state: FSMContext):
     
 
 @nortification_arrival.message(Arrival_transfer.after_organisation)
-async def arrival_migr_card(message: Message, state: FSMContext):
-    """Обработка cценария по миграционной карте"""
-
-    # Get the user's language preference from state data
+async def arrival_after_org_message(message: Message, state: FSMContext):
+    
     state_data = await state.get_data()
     lang = state_data.get("language")
+    waiting_data = state_data.get("waiting_data", None)
+    job = message.text.strip()
+    # Сохранение адреса в менеджер данных
+    session_id = state_data.get("session_id")
+    user_data = {
+        waiting_data: "job",
+    }
+    await state.update_data({waiting_data: "job"})
+    state_data = await state.get_data()
+    data_manager.save_user_data(message.from_user.id, session_id, user_data)
+    migration_data = state_data.get("migration_data")
+    organization_data = state_data.get("organization_data")
+    passport_data = state_data.get("passport_data")
+    pprint(state_data)
+    data_to_view = {
+        "fio": passport_data.get("full_name", ""),
+        "date_bitrh": passport_data.get("birth_date", ""),
+        "citizenship": passport_data.get("citizenship", ""),
+        "passport": passport_data,
+        "live_adress": state_data.get("live_adress", ""),
+        "migr_card": migration_data,
+        "goal": migration_data.get("goal", ""),
+        "profession": state_data.get("profession", ""),
+        "who_accept": organization_data,
+        "doc": organization_data.get("document_about_home", "")
+    }
+    text = f"{_.get_text('organisation_info_correct.title', lang)}\n\n"
+    text += f"{_.get_text('organisation_info_correct.full_name', lang)}{data_to_view['fio']}\n"
+    text += f"{_.get_text('organisation_info_correct.data_birthday')}{data_to_view['date_bitrh']}\n"
+    text += f"{_.get_text('organisation_info_correct.citizenship')}{data_to_view['citizenship']}\n"
+    text += f"{_.get_text('organisation_info_correct.passport', lang)}{_.get_text('organisation_info_correct.issue_passport')}{data_to_view['passport']['passport_serial_number']}{_.get_text('organisation_info_correct.issue_info')}{state_data.get('mvd_adress', "")}{_.get_text('organisation_info_correct.issue_date')}{data_to_view['passport']['passport_expiry_date']}\n"
+    text += f"{_.get_text('organisation_info_correct.adress_live_in_rf', lang)}{data_to_view['live_adress']}\n"
+    text += f"{_.get_text('organisation_info_correct.migr_card', lang)}{_.get_text('organisation_info_correct.issue_migr_card', lang)}{data_to_view['migr_card']["card_serial_number"]}{_.get_text('organisation_info_correct.issue_migr_card_info', lang)}{data_to_view['migr_card']["entry_date"]}\n"
+    text += f"{_.get_text('organisation_info_correct.goal', lang)}{data_to_view["goal"]}\n"
+    text += f"{_.get_text('organisation_info_correct.profession', lang)}{data_to_view['profession']}\n"
+    text += f"{_.get_text('organisation_info_correct.whoaccept', lang)}\n{_.get_text('organisation_info_correct.name_of_org', lang)}{data_to_view['who_accept']["name_org"]}\n{_.get_text('organisation_info_correct.inn_of_org', lang)}{data_to_view['who_accept']["inn"]}\n{_.get_text('organisation_info_correct.adress_of_org', lang)}{data_to_view['who_accept']["adress"]}\n{_.get_text('organisation_info_correct.fio_contact_face_of_org', lang)}{data_to_view['who_accept']["full_name_contact_of_organization"]}\n{_.get_text('organisation_info_correct.phone_contact_face_of_org', lang)}{data_to_view['who_accept']["phone_contact_of_organization"]}\n"
+    text += f"{_.get_text('organisation_info_correct.doc', lang)}{data_to_view['doc']}"
 
-    next_states = [Arrival_transfer.after_organisation]
-    await state.update_data(
-        next_states=next_states
-    )
     # Отправка сообщения с клавиатурой ожидания подтверждения
-    text = f"{_.get_text('place_by_migr_card_arrival.title', lang)}"
-    await message.edit_text(
+    # text = f"{_.get_text('place_by_migr_card_arrival.title', lang)}"
+    await message.answer(
         text=text,
-        reply_markup=kbs_who_accept(lang),
+        reply_markup=true_or_change_final_doc(lang),
     )
 
 
 @nortification_arrival.callback_query(Arrival_transfer.after_organisation)
-async def arrival_migr_card(call: CallbackQuery, state: FSMContext):
+async def arrival_after_org_callback(call: CallbackQuery, state: FSMContext):
     """Обработка cценария по миграционной карте"""
 
     # Get the user's language preference from state data
@@ -213,12 +257,12 @@ async def arrival_migr_card(call: CallbackQuery, state: FSMContext):
     text += f"{_.get_text('organisation_info_correct.migr_card', lang)}{_.get_text('organisation_info_correct.issue_migr_card', lang)}{data_to_view['migr_card']["card_serial_number"]}{_.get_text('organisation_info_correct.issue_migr_card_info', lang)}{data_to_view['migr_card']["entry_date"]}\n"
     text += f"{_.get_text('organisation_info_correct.goal', lang)}{data_to_view["goal"]}\n"
     text += f"{_.get_text('organisation_info_correct.profession', lang)}{data_to_view['profession']}\n"
-    text += f"{_.get_text('organisation_info_correct.whoaccept', lang)}{data_to_view['phone_number']}\n{_.get_text('organisation_info_correct.name_of_org', lang)}{data_to_view['who_accept']["name_org"]}\n{_.get_text('organisation_info_correct.inn_of_org', lang)}{data_to_view['who_accept']["inn"]}\n{_.get_text('organisation_info_correct.adress_of_org', lang)}{data_to_view['who_accept']["adress"]}\n{_.get_text('organisation_info_correct.fio_contact_face_of_org', lang)}{data_to_view['who_accept']["full_name_contact_of_organization"]}\n{_.get_text('organisation_info_correct.phone_contact_face_of_org', lang)}{data_to_view['who_accept']["phone_contact_of_organization"]}\n"
+    text += f"{_.get_text('organisation_info_correct.whoaccept', lang)}\n{_.get_text('organisation_info_correct.name_of_org', lang)}{data_to_view['who_accept']["name_org"]}\n{_.get_text('organisation_info_correct.inn_of_org', lang)}{data_to_view['who_accept']["inn"]}\n{_.get_text('organisation_info_correct.adress_of_org', lang)}{data_to_view['who_accept']["adress"]}\n{_.get_text('organisation_info_correct.fio_contact_face_of_org', lang)}{data_to_view['who_accept']["full_name_contact_of_organization"]}\n{_.get_text('organisation_info_correct.phone_contact_face_of_org', lang)}{data_to_view['who_accept']["phone_contact_of_organization"]}\n"
     text += f"{_.get_text('organisation_info_correct.doc', lang)}{data_to_view['doc']}"
 
     # Отправка сообщения с клавиатурой ожидания подтверждения
-    text = f"{_.get_text('place_by_migr_card_arrival.title', lang)}"
+    # text = f"{_.get_text('place_by_migr_card_arrival.title', lang)}"
     await call.message.edit_text(
         text=text,
-        reply_markup=kbs_who_accept(lang),
+        reply_markup=true_or_change_final_doc(lang),
     )

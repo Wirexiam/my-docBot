@@ -161,6 +161,7 @@ async def handle_live_adress_data(message: Message, state: FSMContext):
         await state.update_data(
             from_action=DocResidenceNotificationStates.after_adress,
             next_states=[LiveAdress.adress],
+            live_adress_conf = True,
         )
         await func_residence_permit(
             message, state
@@ -581,7 +582,7 @@ async def check_doc_residence_notification(callback: CallbackQuery, state: FSMCo
         (
             f"{_.get_text('doc_residence_notification.passport', lang)}{passport.get('passport_serial_number', '')}"
             f"{_.get_text('doc_residence_notification.passport_issue', lang)}{passport.get('passport_issue_place', '')} "
-            f"{passport.get('passport_issue_date', '')}"
+            f"{passport.get('passport_issue_date', '')}{_.get_text('doc_residence_notification.expiry_date', lang)}{passport.get('passport_expiry_date', '')}"
         ),
         (
             f"{_.get_text('doc_residence_notification.residence_permit_number', lang)}{rp.get('serial_number', '')}"
