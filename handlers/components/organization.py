@@ -56,6 +56,28 @@ async def request_inn_organization_input(message: Message, state: FSMContext):
     # Move to the next state
     await state.set_state(OrganizationStates.adress)
     
+@organization_router.callback_query(F.data == "no_have_inn", OrganizationStates.adress)
+async def handle_inn_inp(call: CallbackQuery, state: FSMContext):
+    """Handle the input of the birth date in manual passport handling."""
+    organization_data= await state.get_data()
+    organization_data = organization_data.get("organization_data")
+    # organization_data["inn"] = inn
+    # Get the user's language preference from state data
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+    # Update the state with the full name
+    # await state.update_data(organization_data=organization_data)
+    # user_data = {
+    #     "organization_data ": organization_data,
+    # }
+    # session_id = state_data.get("session_id")
+    # data_manager.save_user_data(message.from_user.id, session_id, user_data)
+
+    text = f"{_.get_text('addres_by_migr_card_arrival.title', lang)}\n{_.get_text('addres_by_migr_card_arrival.example', lang)}"
+    await call.message.edit_text(text=text, reply_markup=None)
+
+    await state.set_state(OrganizationStates.full_name_contact_of_organization)
+    
 @organization_router.message(OrganizationStates.adress)
 async def handle_inn_inp(message: Message, state: FSMContext):
     """Handle the input of the birth date in manual passport handling."""
@@ -123,7 +145,7 @@ async def handle_full_name_contact_of_organization(message: Message, state: FSMC
     }
     session_id = state_data.get("session_id")
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
-    text_first = f"{_.get_text('success_data_by.title', lang)}\n{_.get_text('success_data_by.issue_info', lang)}{"Юридическое лицо"}"
+    text_first = f"{_.get_text('success_data_by.title', lang)}\n{_.get_text('success_data_by.issue_info', lang)}{_.get_text('place_by_migr_card_arrival.option_two', lang)}"
     text = f"{_.get_text('phone_contact_of_organization.title', lang)}\n{_.get_text('phone_contact_of_organization.example', lang)}"
     await message.answer(text=text_first, reply_markup=None)
     await message.answer(text=text, reply_markup=None)

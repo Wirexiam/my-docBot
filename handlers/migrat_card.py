@@ -222,13 +222,16 @@ async def handle_number_migr_card_pretria_period(message: Message, state: FSMCon
         await state.set_state(from_action)
     elif len(next_states) > 0:
         print(f"Next states available: {next_states}")
-        next_state = next_states[0]
+        next_state = next_states.pop(0)
+        print(next_state)
+        print(next_states)
+        await state.update_data(next_states=next_states)
         await state.set_state(next_state)
     else:
         print("No next states found, returning to from_action")
         # If no next states, return to the previous action
         await state.set_state(from_action)
-    print(f"Next state set to: {next_state if next_states else from_action}")
+    # print(f"Next state set to: {next_state if next_states else from_action}")
 
 
 @migration_manual_router.callback_query(F.data == "other")

@@ -62,7 +62,7 @@ async def handle_adress_migr_input(call: CallbackQuery, state: FSMContext):
     waiting_data = state_data.get("waiting_data", None)
     user_data = {}
     if fill_goal:
-        migration_data = migration_data.get("migration_data")
+        migration_data = state_data.get("migration_data")
         goal = call.data
         migration_data["goal"] = goal
 
@@ -81,7 +81,7 @@ async def handle_adress_migr_input(call: CallbackQuery, state: FSMContext):
 
     text = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
 
-    await message.answer_photo(caption=text, photo=photo)
+    await call.message.answer_photo(caption=text, photo=photo)
     await state.set_state(HomeMigrData.havedoc)
     # await state.update_data(waiting_data="adress")
     # next_states = state_data.get("next_states", [])
@@ -123,7 +123,7 @@ async def handle_adress_migr_input(message: Message, state: FSMContext):
     text = f"{_.get_text('doc_migr_card_arrival.title', lang)}\n{_.get_text('doc_migr_card_arrival.example', lang)}"
 
     await message.answer(text, reply_markup=kbs_have_doc(lang))
-    await state.set_state(Arrival_transfer.after_about_home)
+    # await state.set_state(Arrival_transfer.after_about_home)
      
 @home_migr_data.callback_query(F.data == "havedoc")
 async def handle_access_doc(call: CallbackQuery, state: FSMContext):
@@ -134,7 +134,7 @@ async def handle_access_doc(call: CallbackQuery, state: FSMContext):
 
     text = f"{_.get_text('doc_details_migr_card_arrival.title', lang)}\n{_.get_text('doc_details_migr_card_arrival.example', lang)}"
     
-    await call.message.answer(text=text, reply_markup=None)
+    await call.message.edit_text(text=text, reply_markup=None)
     # await state.set_state(Arrival_transfer.after_about_home)
     
     next_states = state_data.get("next_states", [])
