@@ -1,39 +1,37 @@
-# from aiogram import Router, F
-# from aiogram.types import CallbackQuery, Message
-# from aiogram.fsm.context import FSMContext
-
-# from states.components.passport_manual import PassportManualStates
-
-# from localization import _
-# from data_manager import SecureDataManager
-
-# passport_manual_router = Router()
-# data_manager = SecureDataManager()
+from aiogram import Router, F
+from aiogram.types import CallbackQuery, Message
+from aiogram.fsm.context import FSMContext
 
 
-# @passport_manual_router.callback_query(F.data == "passport_manual_start")
-# async def handle_passport_manual_start(callback: CallbackQuery, state: FSMContext):
-#     """Handle the start of manual passport input."""
+from localization import _
+from data_manager import SecureDataManager
 
-#     # Set the state for manual passport handling
-#     await state.set_state(PassportManualStates.full_name_input)
-
-#     # Get the user's language preference from state data
-#     state_data = await state.get_data()
-#     lang = state_data.get("language")
-#     passport_title = state_data.get("passport_title", "")
-#     passport_description = state_data.get("passport_description", 'passport_manual_full_name.description')
+individual_router = Router()
+data_manager = SecureDataManager()
 
 
-#     # Prepare the initial message for manual passport input
-#     text = f"{_.get_text(passport_title, lang)}\n\n{_.get_text(passport_description, lang)}"
+@individual_router.callback_query(F.data == "individual")
+async def handle_individual_start(callback: CallbackQuery, state: FSMContext):
+    """Handle the start of manual passport input."""
 
-#     # Update the state with the action context
-#     await state.set_state(PassportManualStates.birth_date_input)
-#     # Send the initial message to the user
-#     await callback.message.edit_text(
-#         text=text, reply_markup=None  # No keyboard for this step
-#     )
+    # Set the state for manual passport handling
+
+    # Get the user's language preference from state data
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+    passport_title = state_data.get("passport_title", "")
+    passport_description = state_data.get("passport_description", 'passport_manual_full_name.description')
+
+
+    # Prepare the initial message for manual passport input
+    text = f"{_.get_text(passport_title, lang)}\n\n{_.get_text(passport_description, lang)}"
+
+    # Update the state with the action context
+    # await state.set_state(PassportManualStates.birth_date_input)
+    # Send the initial message to the user
+    await callback.message.edit_text(
+        text=text, reply_markup=None  # No keyboard for this step
+    )
 
 
 # @passport_manual_router.message(PassportManualStates.birth_date_input)
