@@ -1,0 +1,124 @@
+{
+  "work_activity_start": {
+    "title": "📍 İndi patent əsasında əmək fəaliyyəti barədə bildiriş verəcəyik",
+    "description": "Bu, iş başlamasından sonra 2 iş günü ərzində Daxili İşlər Nazirliyinə təqdim etmək üçün lazımdır",
+    "documents_to_prepare": "Hazırlayın: \n• Pasport \n• patent \n• Müqavilə və ya işəgötürən məlumatları \n• Vhi siyasəti \n• iqamətgahın ünvanı",
+    "buttons": {
+      "start_button": "🟢 başlayın",
+      "cancel_button": "↩️ Geri"
+    }
+  },
+  "work_activity_department_name": {
+    "title": "Zəhmət olmasa bir ərizə təqdim etmək üçün şöbənin tam adını daxil edin (adətən bu son qeydiniz və ya miqrasiya sənədinizdə göstərilmişdir)",
+    "example_text": "Məsələn: Sankt-Peterburqun Primorsky rayonunda Rusiya Daxili İşlər Nazirliyi"
+  },
+  "work_activity_department_user_input": {
+    "title": "📋 Sənəd göstərəcək:",
+    "title_dep": "Patrona",
+    "description": "Şöbəni səhv göstərmisinizsə, \"↩️ Geri\" düyməsini basın və düzgün ad daxil edin.",
+    "buttons": {
+      "correct_btn": "✅ Hər şey doğrudur",
+      "cancel_button": "↩️ Geri"
+    }
+  },
+  "work_activity_passport_req": {
+    "title": "📄 Əlinizdə bir pasport var?",
+    "description": "Məlumatları necə doldurmaq istəyirsiniz?",
+    "buttons": {
+      "passport_photo": "📸 The Sənədin şəkillərini yükləyin (avtomatik olaraq)",
+      "photo_manual": "✏️ Əl ilə daxil et"
+    }
+  },
+  "wa_passport_title": "📝 Pasport məlumatlarını əl ilə dolduraq:",
+  "wa_patent": {
+    "wa_patent_start": {
+      "title": "Əla. İndi lazımi məlumatları toplayacağıq.",
+      "description": "Bir patent yükləyə və ya əl ilə daxil edə bilərsiniz"
+    },
+    "wa_patent_medical_policy": {
+      "name_work": {
+        "title": "👨🔧 Peşə adını göndərin",
+        "description": "📌 Əhəmiyyətli: Bir əcnəbi yalnız patentdə göstərilən peşə tərəfindən işləmək hüququ var.",
+        "example": "Məsələn: Handyman"
+      },
+      "employer_address": {
+        "title": "📍 İşəgötürənin formatında hüquqi ünvanı göstərin: indeks, şəhər, küçə, korpus, ev (kiril istifadə edin)",
+        "example": "Misal: 196211 Sankt-Peterburq, Tynova küçəsi, ev 27"
+      },
+      "INN": {
+        "title": "🔢 The qalayınızı göstərin",
+        "format": "Format: 10 və ya 12 rəqəm",
+        "example": "Misal: 7701234567"
+      }
+    },
+    "wa_patent_medical_policy_number": {
+      "title": "ℹ️ Qanuna görə, bütün iş dövrü üçün etibarlı bir VHI siyasətiniz olmalıdır. Bu məlumatlar Daxili İşlər Nazirliyinin bildirişinə daxil olacaqdır.",
+      "description": "Vhi VHI siyasət nömrənizi göstərin",
+      "example": "Misal: ДМС‑927134 или 2147/МСК‑2025"
+    },
+    "wa_patent_insurance_company": {
+      "title": "🏥 The Hansı sığorta şirkətinin bir siyasət yaratdığını göstərin",
+      "example": "Məsələn: Reso -Harhic, Ingosstrakh, razılıq"
+    },
+    "wa_polis_date": {
+      "title": "📅 Vhi, VHI siyasətinin etibarlılıq müddətini göstərin",
+      "description": "Formatdakı hərəkətin başlanğıcının və sonunun tarixlərini daxil edin: 06/15/2025 tarixlərində 06/14/2026 tarixlərində"
+    },
+    "edit_wa_data": {
+      "title": "📋 Təsdiq:",
+      "full_name": "👤 Tam adı",
+      "passport": "📄 pasport",
+      "patent": "📎 Patent",
+      "work_adress": "🏠 İş yeri ünvanı",
+      "profession": "🏢 Peşə",
+      "inn": "📄 qalay",
+      "policy": "🩺 siyasət",
+      "phone_number": "📞 Telefon nömrəsi",
+      "buttons": {
+        "accept": "✅ Hər şey doğrudur",
+        "edit": "✏️ Dəyişmək",
+        "back_button": "↩️ Geri"
+      }
+    },
+    "wa_data_editor": {
+      "title": "🖊 Hansı sahəni dəyişdirmək istəyirsən?",
+      "sub_editor_data": {
+        "policy": {
+          "title": "Sığorta polisi məlumatlarında nəyi dəyişmək lazımdır?",
+          "buttons": {
+            "policy_number": "🔢 Polisin nömrəsi",
+            "company": "🏢 Sığorta şirkəti",
+            "dateof": "📅 Etibarlılıq müddəti"
+          }
+        },
+        "passport": {
+          "title": "📝 Pasport məlumatlarında nəyi dəyişmək lazımdır?",
+          "passport_serial_number": "📇 Seriya və sənəd nömrəsini göstərin\n\nMisal: № 1225673",
+          "passport_issue_date": "🗓 Məsələnin tarixini göstərin (dd.mm.yyyy)\n\nMisal: 08/14/1996",
+          "passport_issued": "🏢 The Sənədin kimin verildiyini göstərin\n\nMisal: Özbəkistan Daxili İşlər Nazirliyi",
+          "passport_expiry_date": "🗓 Pasport pasportun etibarlılığını göstərin (dd.mm.yyyy)",
+          "buttons": {
+            "serial_number": "🔢 Seriya nömrəsi",
+            "date_issue": "📆 Verilmə tarixi",
+            "issued_by": "🏢 Kim verildi",
+            "validity_period": "📅 Etibarlılıq müddəti"
+          }
+        },
+        "patent": {
+          "title": "Patent məlumatlarında dəqiq nə dəyişmək olar?",
+          "patient_number": "📇 Patent nömrəsini daxil edin\nNümunə: 78-324112233",
+          "patient_date": "📆 Patentin verilmə tarixini daxil edin (GG.AY.İİİİ)\nNümunə: 14.06.2024",
+          "patient_issue_place": "🏢 Sənədi verən orqanı göstərin\nNümunə: ГУ МВД России по г. Санкт-Петербургу",
+          "buttons": {
+            "serial_number": "🔢 Seriya nömrəsi",
+            "date_issue": "📆 Verilmə tarixi",
+            "issued_by": "🏢 Kim verildi"
+          }
+        },
+        "phone_number": {
+          "title": "Cari telefon nömrənizi daxil edin\n\nMisal: 79809008090"
+        }
+      }
+    }
+  }
+}
