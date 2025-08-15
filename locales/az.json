@@ -42,12 +42,12 @@
         "example": "Misal: Разнорабочий"
       },
       "employer_address": {
-        "title": "📍 İşəgötürənin formatında hüquqi ünvanı göstərin: indeks, şəhər, küçə, korpus, ev (kiril istifadə edin)",
+        "title": "📍 İşəgötürənin formatında hüquqi ünvanını göstərin: индекс, город, улица, корпус, дом (используйте кириллицу)",
         "example": "Misal: 196211 г. Санкт-Петербург, улица Типанова, дом 27"
       },
       "INN": {
         "title": "🔢 The qalayınızı göstərin",
-        "format": "Format: 10 və ya 12 rəqəm",
+        "format": "Format: 10 или 12 цифр",
         "example": "Misal: 7701234567"
       }
     },
@@ -62,7 +62,7 @@
     },
     "wa_polis_date": {
       "title": "📅 Vhi, VHI siyasətinin etibarlılıq müddətini göstərin",
-      "description": "Formatdakı hərəkətin başlanğıcının və sonunun tarixlərini daxil edin: 06/15/2025 tarixlərində 06/14/2026 tarixlərində"
+      "description": "Formatda başlanğıc və son tarixləri daxil edin: с 15.06.2025 по 14.06.2026"
     },
     "edit_wa_data": {
       "title": "📋 Təsdiq:",

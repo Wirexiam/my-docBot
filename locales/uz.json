@@ -42,12 +42,12 @@
         "example": "Misol: Разнорабочий"
       },
       "employer_address": {
-        "title": "📍 The Ish beruvchining huquqiy manzilini formatda ko'rsating: indeks, shahar, ko'cha, korpus, uy (kirillikdan foydalanish)",
+        "title": "The Ish beruvchining huquqiy manzilini formatda ko'rsating: индекс, город, улица, корпус, дом (используйте кириллицу)",
         "example": "Misol: 196211 г. Санкт-Петербург, улица Типанова, дом 27"
       },
       "INN": {
         "title": "🔢 Tiningizni belgilang",
-        "format": "Format: 10 yoki 12 raqam",
+        "format": "Format: 10 или 12 цифр",
         "example": "Misol: 7701234567"
       }
     },
@@ -62,7 +62,7 @@
     },
     "wa_polis_date": {
       "title": "📅 The Vhi siyosatining amal qilish muddatini ko'rsating",
-      "description": "Amaliy harakatning boshlanish va tugashining sanasini kiriting: 06/15/2025 dan 06/14/2026 gacha"
+      "description": "Formatdagi boshlang'ich va tugash sanasini kiriting: с 15.06.2025 по 14.06.2026"
     },
     "edit_wa_data": {
       "title": "📋 Tasdiqlash:",
