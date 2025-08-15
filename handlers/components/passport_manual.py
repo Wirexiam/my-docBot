@@ -82,13 +82,6 @@ async def handle_birth_date_input(message: Message, state: FSMContext):
     text = f"{_.get_text('passport_manual_citizenship.title', lang)}\n{_.get_text('passport_manual_citizenship.example_text', lang)}"
     await message.answer(text=text, reply_markup=None)
 
-    # if state_data.get('stop_on_citizenship'):
-    #     await state.update_data(stop_on_citizenship=False)
-    #     await state.update_data(waiting_data="citizenship")
-
-    #     from_action = state_data.get("from_action")
-    #     await state.set_state(from_action)
-    #     return
 
     await state.set_state(PassportManualStates.passport_serial_number_input)
 

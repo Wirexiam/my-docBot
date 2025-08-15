@@ -1,10 +1,11 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Основные настройки
-
-BOT_TOKEN = "8478874758:AAHI0WeIR6gN3Ydf6VINDpM-Fg8rdocUNLg"
-API_TOKEN = "K86846604488957"
+load_dotenv()
+BOT_TOKEN = os.environ.get("token")
+API_TOKEN = os.environ.get("api_token")
 
 BASE_TEMP_DIR = "docbot"
 SESSION_LIFETIME_HOURS = 3
