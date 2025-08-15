@@ -10,7 +10,7 @@
   },
   "work_activity_department_name": {
     "title": "Iltimos, dasturni taqdim etish bo'limining to'liq ismini kiriting (odatda bu sizning oxirgi ro'yxatdan o'tganingiz yoki migratsiya hujjatingizda ko'rsatilgan)",
-    "example_text": "Masalan: Sankt-Peterburgning \"Peterburg\" ning Ichki ishlar vazirligi"
+    "example_text": "Masalan: ОВМ УМВД России по Приморскому району г. Санкт-Петербурга"
   },
   "work_activity_department_user_input": {
     "title": "📋 Hujjat quyidagilarni ko'rsatadi:",
@@ -39,26 +39,26 @@
       "name_work": {
         "title": "👨🔧 The Kasbingiz nomini yuboring",
         "description": "📌 Muhim: Chet ellik faqat patentda ko'rsatilgan kasb orqali ishlash huquqiga ega.",
-        "example": "Masalan: Handyman"
+        "example": "Misol: Разнорабочий"
       },
       "employer_address": {
         "title": "📍 The Ish beruvchining huquqiy manzilini formatda ko'rsating: indeks, shahar, ko'cha, korpus, uy (kirillikdan foydalanish)",
-        "example": "Masalan: 196211 yil Sankt-Peterburg, Tynova ko'chasi, 27"
+        "example": "Misol: 196211 г. Санкт-Петербург, улица Типанова, дом 27"
       },
       "INN": {
         "title": "🔢 Tiningizni belgilang",
         "format": "Format: 10 yoki 12 raqam",
-        "example": "Masalan: 7701234567"
+        "example": "Misol: 7701234567"
       }
     },
     "wa_patent_medical_policy_number": {
       "title": "ℹ️ Qonunga muvofiq, siz butun ish davri uchun nisbatan VHI siyosatiga ega bo'lishingiz kerak. Ushbu ma'lumotlar Ichki ishlar vazirligi to'g'risidagi xabarnomaga kiritiladi.",
       "description": "The Sizning Vhi siyosat raqamingizni belgilang",
-      "example": "Masalan: ДМС‑927134 или 2147/МСК‑2025"
+      "example": "Misol: ДМС‑927134 или 2147/МСК‑2025"
     },
     "wa_patent_insurance_company": {
       "title": "🏥  qaysi sug'urta kompaniyasi siyosat chiqarganligini ko'rsating",
-      "example": "Masalan: Rezo -harthic, Ingosstrax roziligi"
+      "example": "Misol: РЕСО‑Гарантия, Ингосстрах, Согласие"
     },
     "wa_polis_date": {
       "title": "📅 The Vhi siyosatining amal qilish muddatini ko'rsating",
