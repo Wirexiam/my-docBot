@@ -14,7 +14,7 @@
   },
   "work_activity_department_user_input": {
     "title": "📋 Sənəd göstərəcək:",
-    "title_dep": "Patrona",
+    "title_dep": "Начальнику",
     "description": "Şöbəni səhv göstərmisinizsə, \"↩️ Geri\" düyməsini basın və düzgün ad daxil edin.",
     "buttons": {
       "correct_btn": "✅ Hər şey doğrudur",
@@ -94,7 +94,7 @@
         "passport": {
           "title": "📝 Pasport məlumatlarında nəyi dəyişmək lazımdır?",
           "passport_serial_number": "📇 Seriya və sənəd nömrəsini göstərin\n\nMisal: № 1225673",
-          "passport_issue_date": "🗓 Məsələnin tarixini göstərin (dd.mm.yyyy)\n\nMisal: 08/14/1996",
+          "passport_issue_date": "🗓 Məsələnin tarixini göstərin (dd.mm.yyyy)\n\nMisal: 14.08.1996",
           "passport_issued": "🏢 The Sənədin kimin verildiyini göstərin\n\nMisal: Özbəkistan Daxili İşlər Nazirliyi",
           "passport_expiry_date": "🗓 Pasport pasportun etibarlılığını göstərin (dd.mm.yyyy)",
           "buttons": {

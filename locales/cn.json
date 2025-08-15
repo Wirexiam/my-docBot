@@ -10,11 +10,11 @@
   },
   "work_activity_department_name": {
     "title": "请输入该部门的全名以提交申请（通常在您的上次注册或迁移文件中指示）",
-    "example_text": "例如：OVM俄罗斯内政部在圣彼得堡Primorsky地区"
+    "example_text": "例如： ОВМ УМВД России по Приморскому району г. Санкт-Петербурга"
   },
   "work_activity_department_user_input": {
     "title": "📋该文件将指出：",
-    "title_dep": "给老板",
+    "title_dep": "Начальнику",
     "description": "如果您错误地指示了部门，请按“↩️后退”按钮，然后输入正确的名称。",
     "buttons": {
       "correct_btn": "✅ 一切正确",
@@ -39,30 +39,30 @@
       "name_work": {
         "title": "👨‍🔧发送您的职业名称",
         "description": "📌重要：外国人有权仅由专利指示的专业工作。",
-        "example": "示例：杂工"
+        "example": "例子： Разнорабочий"
       },
       "employer_address": {
-        "title": "📍指定雇主的法律地址：索引，城市，街道，军团，房屋（使用西里尔）",
-        "example": "示例：196211圣彼得堡，泰诺瓦街，房屋27"
+        "title": "📍表示雇主的法律讲话以这种格式： индекс, город, улица, корпус, дом (используйте кириллицу)",
+        "example": "例子： 196211 г. Санкт-Петербург, улица Типанова, дом 27"
       },
       "INN": {
         "title": "🔢指定您的锡",
-        "format": "格式：10或12位数字",
-        "example": "示例：7701234567"
+        "format": "格式： 10 или 12 цифр",
+        "example": "例子： 7701234567"
       }
     },
     "wa_patent_medical_policy_number": {
       "title": "ℹ️根据法律，您必须在整个工作期间都有有效的VHI政策。这些数据将包含在内政部通知中。",
       "description": "✍️指定您的VHI策略号码",
-      "example": "示例：ДМС‑927134 или 2147/МСК‑2025"
+      "example": "例子： ДМС‑927134 или 2147/МСК‑2025"
     },
     "wa_patent_insurance_company": {
       "title": "🏥表示哪个保险公司发布了保单",
-      "example": "示例：Reso -Harthic，Ingostrakh，同意"
+      "example": "例子： РЕСО‑Гарантия, Ингосстрах, Согласие"
     },
     "wa_polis_date": {
       "title": "📅表示VHI政策的有效期",
-      "description": "以格式输入操作开始的日期：从06/15/2025到06/14/2026"
+      "description": "输入以该格式的起点和结束日期： с 15.06.2025 по 14.06.2026"
     },
     "edit_wa_data": {
       "title": "📋确认：",
@@ -94,7 +94,7 @@
         "passport": {
           "title": "📝 在护照信息中需要更改什么？",
           "passport_serial_number": "📇表示系列和文档编号\n\n示例：编号1225673",
-          "passport_issue_date": "🗓表示发行日期（dd.mm.yyyy）\n\n示例：08/14/1996",
+          "passport_issue_date": "🗓表示发行日期（dd.mm.yyyy）\n\n示例：14.08.1996",
           "passport_issued": "🏢表示文件是谁\n\n示例：乌兹别克斯坦内政部",
           "passport_expiry_date": "🗓表示护照的有效性（dd.mm.yyyy）",
           "buttons": {

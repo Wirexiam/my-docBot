@@ -12,5 +12,5 @@ docbot/
 .env
 
 locales/ru_local.json
-script.py
+auto_translate.py
 localization.json

@@ -14,7 +14,7 @@
   },
   "work_activity_department_user_input": {
     "title": "📋 Hujjat quyidagilarni ko'rsatadi:",
-    "title_dep": "Xo'jayinga",
+    "title_dep": "Начальнику",
     "description": "Agar siz bo'limni noto'g'ri ko'rsatsangiz, \"↩️ Orqaga\" tugmasini bosing va to'g'ri nomni kiriting.",
     "buttons": {
       "correct_btn": "✅ Hammasi to'g'ri",
@@ -94,7 +94,7 @@
         "passport": {
           "title": "📝 Pasport ma’lumotlaridan aynan nimani o‘zgartirmoqchisiz?\n",
           "passport_serial_number": "📇 Serial va hujjat raqamini ko'rsating\n\nMasalan: № 1225673",
-          "passport_issue_date": "🗓 The Muammo bo'yicha (Dd.mm.yyyy) ko'rsating\n\nMisol: 08/14966",
+          "passport_issue_date": "🗓 The Muammo bo'yicha (Dd.mm.yyyy) ko'rsating\n\nMisol: 14.08.1996",
           "passport_issued": "🏢 Hujjatni kim taqdim etganligini ko'rsating\n\nMasalan: O'zbekiston Ichki ishlar vazirligi",
           "passport_expiry_date": "🗓 The Pasportning haqiqiyligini ko'rsating (Dd.mm.yyyy)",
           "buttons": {
