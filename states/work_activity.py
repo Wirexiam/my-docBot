@@ -21,3 +21,4 @@ class PatentedWorkActivity(StatesGroup):
 
     edit_passport_fields = State()
     edit_patent_fields = State()
+    edit_phone_number = State()

@@ -326,8 +326,8 @@ async def get_medical_policy_polis_date(message: Message, state: FSMContext):
 
     state_data = await state.get_data()
     lang = state_data.get("language")
-    passport = state_data.get("passport_data", {})
 
+    passport = state_data.get("passport_data", {})
 
     current_state = await state.get_state()
     if current_state == PatentedWorkActivity.medical_policy_polis_date.state:
@@ -420,11 +420,27 @@ async def wa_editor(query: CallbackQuery, state: FSMContext):
             reply_markup=kbs_sub_editor_policy(lang)
         )
     elif param_to_edit == "phone_number":
-        await state.update_data(from_action=PatentedWorkActivity.medical_policy_number)
-        await state.set_state(PhoneNumberStates.phone_number_input)
-        await handle_phone_number_input(query.message, state)
+        await state.set_state(PatentedWorkActivity.edit_phone_number)
+        
+        text = _.get_text("wa_patent.wa_data_editor.sub_editor_data.phone_number.title", lang)
+        await query.message.edit_text(
+            text=text
+        )
     else:
         await get_medical_policy_polis_date(query.message, state)
+
+
+
+@work_activity_router.message(PatentedWorkActivity.edit_phone_number)
+async def phone_number_editor(message: Message, state: FSMContext):
+    """Редактирование номера телефона"""
+
+    state_data = await state.get_data()
+    phone_number = message.text.strip()
+
+    await state.update_data(phone_number=phone_number)
+    await get_medical_policy_polis_date(message, state)
+
 
 
 @work_activity_router.callback_query(F.data.startswith("edit_policy_"))
@@ -467,11 +483,8 @@ async def medical_policy_editor(query: CallbackQuery, state: FSMContext):
 async def edit_passport_data_fields(query: CallbackQuery, state: FSMContext):
     """Получаем параметр паспорта который нужно отредактировать"""
 
-    import logging
-    logger = logging.getLogger(__name__)
 
     param_to_edit = query.data[len("edit_passport_"):]
-    logger.info(f"Callback received: param_to_edit={param_to_edit}")
 
 
     state_data = await state.get_data()
@@ -494,7 +507,6 @@ async def edit_passport_data_fields(query: CallbackQuery, state: FSMContext):
         await query.message.edit_text(
             text=text
         )
-        logger.info(f"Editing passport field: {param_to_edit}")
 
     await state.set_state(PatentedWorkActivity.edit_passport_fields)
 
