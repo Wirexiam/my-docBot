@@ -316,3 +316,14 @@ async def get_medical_policy_polis_date(message: Message, state: FSMContext):
         text=text,
         reply_markup=kbs_policy_data_confirmation(lang)
     )
+
+
+@work_activity_router.callback_query(F.data == "edit_wa_patent_data")
+async def edit_wa_data(query: CallbackQuery, state: FSMContext):
+    """Выводим пользователю инфу которую можно отредактировать"""
+        
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+
+    
