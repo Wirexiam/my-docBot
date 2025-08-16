@@ -72,37 +72,37 @@ def get_main_editor_keyboard(lang: str = "ru"):
     core = "child_stay_extension"
 
     builder.button(
-        text=_.get_text(f"{core}.mother_related", lang).removesuffix(": "),
+        text=_.get_text(f"{core}.mother_related", lang).removesuffix(": ").strip(),
         callback_data="cs_editor_mother_related"
     )
 
     builder.button(
-        text=_.get_text(f"{core}.basis_section", lang).removesuffix(": "),
+        text=_.get_text(f"{core}.basis_section", lang).removesuffix(": ").strip(),
         callback_data="cs_editor_basis_section"
     ),
 
     builder.button(
-        text=_.get_text(f"{core}.child_section", lang).removesuffix(": "),
+        text=_.get_text(f"{core}.child_section", lang).removesuffix(": ").strip(),
         callback_data="cs_editor_child_section"
     )
 
     builder.button(
-        text=_.get_text(f"{core}.address_section", lang).removesuffix(": "),
+        text=_.get_text(f"{core}.address_section", lang).removesuffix(": ").strip(),
         callback_data="cs_editor_address_section"
     )
 
     builder.button(
-        text=_.get_text(f"{core}.extend_section", lang).removesuffix(": "),
+        text=_.get_text(f"{core}.extend_section", lang).removesuffix(": ").strip(),
         callback_data="cs_editor_extend_section"
     )
 
     builder.button(
-        text=_.get_text(f"{core}.mvd_section", lang).removesuffix(": "),
+        text=_.get_text(f"{core}.mvd_section", lang).removesuffix(": ").strip(),
         callback_data="cs_editor_mvd_section"
     )
 
     builder.button(
-        text=_.get_text("phone_number_text", lang).removesuffix(": "),
+        text=_.get_text("phone_number_text", lang).removesuffix(": ").strip(),
         callback_data="cs_editor_phone_number_text"
     )
 

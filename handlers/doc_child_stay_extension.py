@@ -121,7 +121,8 @@ async def handle_old_passport_data(message: Message, state: FSMContext):
 
     passport_data = state_data.get("passport_data", {})
     if "parent_passport_data" not in state_data.keys():
-        passport_data["passport_issue_place"] = state_data["passport_issue_place"]
+        # passport_data["passport_issue_place"] = state_data["passport_issue_place"]
+        passport_data["passport_issue_place"] = passport_data["passport_issue_place"]
         parent_passport_data = passport_data
 
         print(parent_passport_data)
@@ -250,7 +251,7 @@ async def handle_child_data(message: Message, state: FSMContext):
             f"{_.get_text('child_stay_extension.child_passport.full_name', lang)}{data['child_data']['full_name']}",
             f"{_.get_text('child_stay_extension.child_passport.citizenship', lang)}{data['child_data']['citizenship']}",
             f"{_.get_text('child_stay_extension.child_passport.document', lang)}{data['child_data']['passport_serial_number']}",
-            f"{_.get_text('child_stay_extension.child_passport.issue_info', lang)}{data['child_data']['passport_issue_date']}, {data['child_data']['passport_issue_place']}",
+            f"{_.get_text('child_stay_extension.child_passport.issue_info', lang)}{data['child_data']['passport_issue_date']}, {data['child_data']['passport_data.passport_issue_place']}",
             f"{_.get_text('child_stay_extension.child_passport.expiry_date', lang)}{data['child_data']['passport_expiry_date']}\n",
         ]
         if "passport_expiry_date" in data["child_data"].keys()
@@ -260,7 +261,7 @@ async def handle_child_data(message: Message, state: FSMContext):
             f"{_.get_text('child_stay_extension.child_birth_cert.citizenship', lang)}{data['child_data']['citizenship']}",
             f"{_.get_text('child_stay_extension.child_birth_cert.document', lang)}",
             f"{_.get_text('child_stay_extension.child_birth_cert.document_number', lang)}{data['child_data']['passport_serial_number']}",
-            f"{_.get_text('child_stay_extension.child_birth_cert.issue_info', lang)}{data['child_data']['passport_issue_date']}, {data['child_data']['passport_issue_place']}\n",
+            f"{_.get_text('child_stay_extension.child_birth_cert.issue_info', lang)}{data['child_data']['passport_issue_date']}, {data['child_data']['passport_data.passport_issue_place']}\n",
         ]
     )
 
