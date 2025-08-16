@@ -119,7 +119,7 @@ async def handle_old_passport_data(message: Message, state: FSMContext):
     state_data = await state.get_data()
     lang = state_data["language"]
 
-    passport_data = state_data.get("passport_data")
+    passport_data = state_data.get("passport_data", {})
     if "parent_passport_data" not in state_data.keys():
         passport_data["passport_issue_place"] = state_data["passport_issue_place"]
         parent_passport_data = passport_data
@@ -232,13 +232,16 @@ async def handle_child_data(message: Message, state: FSMContext):
     state_data = await state.get_data()
     lang = state_data.get("language")
     waiting_data = "extend_child_stay_date"
-    # Сохранение адреса в менеджер данных
-    session_id = state_data.get("session_id")
-    user_data = {
-        waiting_data: message.text.strip(),
-    }
-    await state.update_data(**user_data)
-    data_manager.save_user_data(message.from_user.id, session_id, user_data)
+
+    current_state = await state.get_state()
+    if current_state == DocChildStayExtensionStates.extend_child_stay.state:
+        # Сохранение адреса в менеджер данных
+        session_id = state_data.get("session_id")
+        user_data = {
+            waiting_data: message.text.strip(),
+        }
+        await state.update_data(**user_data)
+        data_manager.save_user_data(message.from_user.id, session_id, user_data)
 
     data = await state.get_data()
     pprint(data)
@@ -321,8 +324,6 @@ async def handler_main_editor(query: CallbackQuery, state: FSMContext):
 
     if query_data in ["mother_related", "basis_section", "child_section", "address_section", "extend_section", "mvd_section", "phone_number_text"]:
         text = _.get_text("change_menu.title", lang)
-
-
         if query_data.startswith("basis_"):
             postfix = ["basis_issue_date", "basis_issue_place", "basis_patient"]
             await query.message.edit_text(
@@ -337,5 +338,63 @@ async def handler_main_editor(query: CallbackQuery, state: FSMContext):
                 reply_markup=subkeyboard(postfix, lang)
             )
 
-        if query_data.startswith(""):
+        if query_data.startswith("child_"):
             ...
+
+        if query_data in ["address_section", "extend_section", "mvd_section", "phone_number_text"]:
+            if query_data == "address_section":
+                text = f"{_.get_text("live_adress.title", lang)}\n\n{_.get_text("live_adress.example", lang)}"
+                await query.message.edit_text(
+                    text=text, 
+                    reply_markup=None
+                )
+                await state.update_data(field="live_adress")
+                await state.set_state(DocChildStayExtensionStates.edit_fields)
+
+            if query_data == "extend_section":
+                text = f"{_.get_text("extend_child_stay.title", lang)}\n\n{_.get_text("extend_child_stay.description", lang)}"
+                await query.message.edit_text(
+                    text=text, 
+                )
+                await state.update_data(field="extend_child_stay_date")
+                await state.set_state(DocChildStayExtensionStates.edit_fields)
+
+            if query_data == "mvd_section":
+                text = f"{_.get_text("region_start_msg.title", lang)}\n\n{_.get_text("region_start_msg.description")}"
+                await query.message.edit_text(
+                    text=text, 
+                )
+                await state.update_data(field="mvd_adress")
+                await state.set_state(DocChildStayExtensionStates.edit_fields)
+
+            if query_data == "phone_number_text":
+                text = f"{_.get_text("phone_number.title", lang)}\n\n{_.get_text("phone_number.example_text", lang)}"
+
+                await query.message.edit_text(
+                    text=text, 
+                )
+                await state.update_data(field="phone_number")
+                await state.set_state(DocChildStayExtensionStates.edit_fields)
+
+
+@doc_child_stay_extension_router.message(DocChildStayExtensionStates.edit_fields)
+async def edit_fields(message: Message, state: FSMContext):
+
+    state_data = await state.get_data()
+
+    field = state_data.get("field")
+    dict_name = state_data.get("dict")
+
+    msg = message.text.strip()
+
+    if dict_name is None:
+        await state.update_data({field: msg})
+    else:
+        target = state_data.get(dict_name, {})
+        target[field] = msg
+        await state.update_data({dict_name: target})
+
+    await handle_child_data(message, state)
+
+    # parent_passport_data 
+    # child_data
