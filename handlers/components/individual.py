@@ -2,6 +2,7 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
 
+from states.components.individual import IndividualStates
 
 from localization import _
 from data_manager import SecureDataManager
@@ -19,12 +20,10 @@ async def handle_individual_start(callback: CallbackQuery, state: FSMContext):
     # Get the user's language preference from state data
     state_data = await state.get_data()
     lang = state_data.get("language")
-    passport_title = state_data.get("passport_title", "")
-    passport_description = state_data.get("passport_description", 'passport_manual_full_name.description')
 
 
     # Prepare the initial message for manual passport input
-    text = f"{_.get_text(passport_title, lang)}\n\n{_.get_text(passport_description, lang)}"
+    text = f"{_.get_text("data_by_migr_card_arrival.title", lang)}\n\n\n{_.get_text("data_by_migr_card_arrival.description", lang)}"
 
     # Update the state with the action context
     # await state.set_state(PassportManualStates.birth_date_input)

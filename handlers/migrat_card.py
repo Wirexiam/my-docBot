@@ -34,6 +34,27 @@ async def handle_migr_manual_start(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(
         text=text, reply_markup=None  # No keyboard for this step
     )
+    
+# @migration_manual_router.message(MigrCardManualStates.migr_card_start_manual)
+# async def handle_migr_manual_start(message: Message, state: FSMContext):
+#     """Handle the start of manual migratuion card input."""
+
+#     # Set the state for migr card handling
+#     # await state.set_state(PassportManualStates.full_name_input)
+
+#     # Get the user's language preference from state data
+#     state_data = await state.get_data()
+#     lang = state_data.get("language")
+    
+#     # Prepare the initial message for manual passport input
+#     text = f"{_.get_text('name_migr_card_arrival.title')}\n\n{_.get_text('name_migr_card_arrival.description', lang)}"
+
+#     # Update the state with the action context
+#     await state.set_state(MigrCardManualStates.entry_date_input)
+#     # Send the initial message to the user
+#     await message.answer(
+#         text=text, reply_markup=None  # No keyboard for this step
+#     )
 
 
 @migration_manual_router.message(MigrCardManualStates.entry_date_input)

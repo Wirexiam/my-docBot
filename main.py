@@ -71,7 +71,9 @@ async def main():
         from handlers.doc_residence_notification import doc_residence_notification_router
         from handlers.components.residence_permit import residence_permit_router
         from handlers.components.sema_components import sema_components_router
+        from handlers.components.birth_certificate import birth_certificate_router
 
+        dp.include_router(birth_certificate_router)
         dp.include_router(residence_reason_child_router)
         dp.include_router(residence_reason_patient_router)
         dp.include_router(residence_reason_marriage_router)
