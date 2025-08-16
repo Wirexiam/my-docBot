@@ -77,7 +77,9 @@ async def main():
 
         dp.include_router(birth_certificate_router)
         from handlers.components.changing_data import changing_data_router
+        from handlers.components.individual import individual_router
 
+        dp.include_router(individual_router)
         dp.include_router(changing_data_router)
         dp.include_router(residence_reason_child_router)
         dp.include_router(residence_reason_patient_router)

@@ -8,5 +8,7 @@ class IndividualStates(StatesGroup):
     passport_serial_number_input = State()
     adress = State()
     phone = State()
+    profession = State()
+    passport_give_date_input = State()
     passport_expiry_date_input = State()
     passport_issue_place_input = State()
