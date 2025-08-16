@@ -63,3 +63,64 @@ def get_doc_child_stay_extension_related_child_keyboard(lang: str = "ru"):
     )
     builder.adjust(1)
     return builder.as_markup()
+
+
+
+def get_main_editor_keyboard(lang: str = "ru"):
+    
+    builder = InlineKeyboardBuilder()
+    core = "child_stay_extension"
+
+    builder.button(
+        text=_.get_text(f"{core}.mother_related", lang).removesuffix(": "),
+        callback_data="cs_editor_mother_related"
+    )
+
+    builder.button(
+        text=_.get_text(f"{core}.basis_section", lang).removesuffix(": "),
+        callback_data="cs_editor_basis_section"
+    ),
+
+    builder.button(
+        text=_.get_text(f"{core}.child_section", lang).removesuffix(": "),
+        callback_data="cs_editor_child_section"
+    )
+
+    builder.button(
+        text=_.get_text(f"{core}.address_section", lang).removesuffix(": "),
+        callback_data="cs_editor_address_section"
+    )
+
+    builder.button(
+        text=_.get_text(f"{core}.extend_section", lang).removesuffix(": "),
+        callback_data="cs_editor_extend_section"
+    )
+
+    builder.button(
+        text=_.get_text(f"{core}.mvd_section", lang).removesuffix(": "),
+        callback_data="cs_editor_mvd_section"
+    )
+
+    builder.button(
+        text=_.get_text("phone_number_text", lang).removesuffix(": "),
+        callback_data="cs_editor_phone_number_text"
+    )
+
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def subkeyboard(postfix: list[str], lang: str = "ru"):
+
+    builder = InlineKeyboardBuilder()
+    core = "child_stay_extension"
+
+    for key in postfix:
+        label = _.get_text(f"{core}.{key}", lang).removesuffix(": ").strip()
+        builder.button(
+            text=label,
+            callback_data=f"cs_sub_editor_{key}"
+        )
+
+    builder.adjust(1)
+    return builder.as_markup()

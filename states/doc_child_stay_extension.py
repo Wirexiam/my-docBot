@@ -13,6 +13,6 @@ class DocChildStayExtensionStates(StatesGroup):
     after_phone_number = State()
     extend_child_stay = State()
 
-
+    data_editor = State()
 
 

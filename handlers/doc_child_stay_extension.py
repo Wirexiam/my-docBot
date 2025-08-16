@@ -17,7 +17,7 @@ from states.components.select_region_and_mvd import SelectRegionStates
 from keyboards.doc_child_stay_extension import (
     get_doc_child_stay_extension_related_child_keyboard,
     get_doc_child_stay_extension_start_keyboard,
-    get_doc_child_stay_extension_passport_start_keyboard,
+    get_doc_child_stay_extension_passport_start_keyboard, get_main_editor_keyboard, subkeyboard
 )
 
 from localization import _
@@ -292,3 +292,50 @@ async def handle_child_data(message: Message, state: FSMContext):
             lang
         ),
     )
+
+
+@doc_child_stay_extension_router.callback_query(F.data=="registration_renewal_patient_check_data_change")
+async def child_stay_editor(query: CallbackQuery, state: FSMContext):
+    """Обработчик нажатия кнопки Изменить"""
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    await state.set_state(DocChildStayExtensionStates.data_editor)
+
+    text = _.get_text("change_menu.title", lang)
+
+    await query.message.edit_text(
+        text=text,
+        reply_markup=get_main_editor_keyboard(lang)
+    )
+
+
+@doc_child_stay_extension_router.callback_query(F.data.startswith("cs_editor_"))
+async def handler_main_editor(query: CallbackQuery, state: FSMContext):
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    query_data = query.data.removeprefix("cs_editor_")
+
+    if query_data in ["mother_related", "basis_section", "child_section", "address_section", "extend_section", "mvd_section", "phone_number_text"]:
+        text = _.get_text("change_menu.title", lang)
+
+
+        if query_data.startswith("basis_"):
+            postfix = ["basis_issue_date", "basis_issue_place", "basis_patient"]
+            await query.message.edit_text(
+                text=text,
+                reply_markup=subkeyboard(postfix, lang)
+            )
+
+        if query_data.startswith("mother_"):
+            postfix = ["mother_full_name", "mother_citizenship", "mother_document", "mother_issue_info", "mother_expiry_date"]
+            await query.message.edit_text(
+                text=text,
+                reply_markup=subkeyboard(postfix, lang)
+            )
+
+        if query_data.startswith(""):
+            ...
