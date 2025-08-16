@@ -22,8 +22,9 @@ async def handle_passport_manual_start(callback: CallbackQuery, state: FSMContex
     state_data = await state.get_data()
     lang = state_data.get("language")
     passport_title = state_data.get("passport_title", "")
-    passport_description = state_data.get("passport_description", 'passport_manual_full_name.description')
-
+    passport_description = state_data.get(
+        "passport_description", "passport_manual_full_name.description"
+    )
 
     # Prepare the initial message for manual passport input
     text = f"{_.get_text(passport_title, lang)}\n\n{_.get_text(passport_description, lang)}"
@@ -81,7 +82,6 @@ async def handle_birth_date_input(message: Message, state: FSMContext):
 
     text = f"{_.get_text('passport_manual_citizenship.title', lang)}\n{_.get_text('passport_manual_citizenship.example_text', lang)}"
     await message.answer(text=text, reply_markup=None)
-
 
     await state.set_state(PassportManualStates.passport_serial_number_input)
 
@@ -157,7 +157,7 @@ async def handle_passport_issue_date_input(message: Message, state: FSMContext):
     }
     session_id = state_data.get("session_id")
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
-    if state_data.get('skip_passport_expiry_date'):
+    if state_data.get("skip_passport_expiry_date"):
         await handle_passport_expiry_date_input(message, state)
     else:
         text = f"{_.get_text('passport_manual_expire_date.title', lang)}\n{_.get_text('passport_manual_expire_date.example_text', lang)}"
@@ -172,7 +172,7 @@ async def handle_passport_expiry_date_input(message: Message, state: FSMContext)
     state_data = await state.get_data()
     lang = state_data.get("language")
 
-    if state_data.get('skip_passport_expiry_date'):
+    if state_data.get("skip_passport_expiry_date"):
         await state.update_data(skip_passport_expiry_date=False)
     else:
         passport_data = await state.get_data()
@@ -181,7 +181,6 @@ async def handle_passport_expiry_date_input(message: Message, state: FSMContext)
         passport_data["passport_expiry_date"] = passport_expiry_date
 
         # Get the user's language preference from state data
-        
 
         # Update the state with the passport expiry date
         await state.update_data(passport_data=passport_data)
@@ -191,7 +190,7 @@ async def handle_passport_expiry_date_input(message: Message, state: FSMContext)
         session_id = state_data.get("session_id")
         data_manager.save_user_data(message.from_user.id, session_id, user_data)
 
-    await state.update_data(waiting_data="passport_issue_place")
+    await state.update_data(waiting_data="passport_data.passport_issue_place")
     text = f"{_.get_text('passport_manual_issue_place.title', lang)}\n{_.get_text('passport_manual_issue_place.example_text', lang)}"
     await message.answer(text=text, reply_markup=None)
     next_states = state_data.get("next_states", [])

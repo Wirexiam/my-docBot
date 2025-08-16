@@ -10,3 +10,7 @@ __pycache__/
 doc_gen/
 docbot/
 .env
+
+locales/ru_local.json
+auto_translate.py
+localization.json

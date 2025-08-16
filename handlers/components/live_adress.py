@@ -10,6 +10,7 @@ from data_manager import SecureDataManager
 live_adress_router = Router()
 data_manager = SecureDataManager()
 
+
 @live_adress_router.callback_query(LiveAdress.adress)
 async def handle_live_adress_input(call: CallbackQuery, state: FSMContext):
     """Обработка ввода адреса проживания в РФ"""
@@ -24,7 +25,7 @@ async def handle_live_adress_input(call: CallbackQuery, state: FSMContext):
     # }
     # await state.update_data({waiting_data: message.text.strip()})
     # data_manager.save_user_data(message.from_user.id, session_id, user_data)
-    if state_data.get('live_adress_conf') is None:
+    if state_data.get("live_adress_conf") is None:
         photo = FSInputFile("static/live_adress_example.png")
         # Отправка подтверждения пользователю
 
@@ -46,6 +47,7 @@ async def handle_live_adress_input(call: CallbackQuery, state: FSMContext):
         # If no next states, return to the previous action
         await state.set_state(from_action)
 
+
 @live_adress_router.message(LiveAdress.adress)
 async def handle_live_adress_input(message: Message, state: FSMContext):
     """Обработка ввода адреса проживания в РФ"""
@@ -56,13 +58,23 @@ async def handle_live_adress_input(message: Message, state: FSMContext):
 
     # Сохранение адреса в менеджер данных
     session_id = state_data.get("session_id")
-    user_data = {
-        waiting_data: message.text.strip(),
-    }
-    await state.update_data({waiting_data: message.text.strip()})
-    data_manager.save_user_data(message.from_user.id, session_id, user_data)
-    
-    if state_data.get('live_adress_conf') is None:
+    if "." in waiting_data:
+        primary_key = waiting_data.split(".")[0]
+        secondary_key = waiting_data.split(".")[1]
+
+        primary_key_data = state_data.get(primary_key)
+        primary_key_data[secondary_key] = message.text.strip()
+
+        await state.update_data({primary_key: primary_key_data})
+
+    else:
+        user_data = {
+            waiting_data: message.text.strip(),
+        }
+        await state.update_data({waiting_data: message.text.strip()})
+        data_manager.save_user_data(message.from_user.id, session_id, user_data)
+
+    if state_data.get("live_adress_conf") is None:
         photo = FSInputFile("static/live_adress_example.png")
         # Отправка подтверждения пользователю
 

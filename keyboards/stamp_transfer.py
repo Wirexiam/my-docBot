@@ -25,9 +25,7 @@ def stamp_transfer_passport_start_keyboard(lang: str = "ru"):
         callback_data="passport_photo_start",
     )
     builder.button(
-        text=_.get_text(
-            "stamp_transfer_passport_start.components.passport_manual", lang
-        ),
+        text=_.get_text("stamp_transfer_passport_start.passport_manual", lang),
         callback_data="passport_manual_start",
     )
     builder.adjust(1)

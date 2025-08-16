@@ -18,3 +18,7 @@ class PatentedWorkActivity(StatesGroup):
     medical_policy_polis_date = State()
 
     edit_medical_policy = State()
+
+    edit_passport_fields = State()
+    edit_patent_fields = State()
+    edit_phone_number = State()
