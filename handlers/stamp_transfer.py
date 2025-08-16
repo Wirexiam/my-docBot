@@ -110,24 +110,46 @@ async def handle_new_passport_data(message: Message, state: FSMContext):
     lang = state_data.get("language")
     # Сохранение адреса в менеджер данных
     session_id = state_data.get("session_id")
-    user_data = {
-        waiting_data: message.text.strip(),
-    }
-    await state.update_data({waiting_data: message.text.strip()})
+    if "." in waiting_data:
+        primary_key = waiting_data.split(".")[0]
+        secondary_key = waiting_data.split(".")[1]
+
+        primary_key_data = state_data.get(primary_key)
+        primary_key_data[secondary_key] = message.text.strip()
+
+        await state.update_data({primary_key: primary_key_data})
+
+    else:
+        user_data = {
+            waiting_data: message.text.strip(),
+        }
+        await state.update_data({waiting_data: message.text.strip()})
+        data_manager.save_user_data(message.from_user.id, session_id, user_data)
+
+    await state.update_data(from_action=Stamp_transfer.after_new_passport)
     state_data = await state.get_data()
-    data_manager.save_user_data(message.from_user.id, session_id, user_data)
+    pprint(state_data)
     new_passport_datas = state_data.get("passport_data")
     old_passport_datas = state_data.get("old_passport_data")
-    pprint(state_data)
+
     data_to_view = {
-        "name": new_passport_datas.get("full_name", ""),
-        "new_passport_number": new_passport_datas.get("passport_serial_number", ""),
-        "old_passport_number": old_passport_datas.get("passport_serial_number", ""),
-        "new_passport_issue_date": new_passport_datas.get("passport_issue_date", ""),
-        "old_passport_issue_date": old_passport_datas.get("passport_issue_date", ""),
-        "live_adress": state_data.get("live_adress", ""),
-        "phone_number": state_data.get("phone_number", ""),
+        "name": new_passport_datas.get("full_name", "Не найден"),
+        "new_passport_number": new_passport_datas.get(
+            "passport_serial_number", "Не найден"
+        ),
+        "old_passport_number": old_passport_datas.get(
+            "passport_serial_number", "Не найден"
+        ),
+        "new_passport_issue_date": new_passport_datas.get(
+            "passport_issue_date", "Не найден"
+        ),
+        "old_passport_issue_date": old_passport_datas.get(
+            "passport_issue_date", "Не найден"
+        ),
+        "live_adress": state_data.get("live_adress", "Не найден"),
+        "phone_number": state_data.get("phone_number", "Не найден"),
     }
+
     text = f"{_.get_text('stamp_check_datas_info.title', lang)}\n\n"
     text += f"{_.get_text('stamp_check_datas_info.full_name', lang)}{data_to_view['name']}\n"
     text += f"{_.get_text('stamp_check_datas_info.new_passport')}{data_to_view['new_passport_number']}{_.get_text('stamp_check_datas_info.issue_date')}{data_to_view['new_passport_issue_date']}\n"
@@ -135,22 +157,8 @@ async def handle_new_passport_data(message: Message, state: FSMContext):
     text += f"{_.get_text('stamp_check_datas_info.stamp_in', lang)}\n"
     text += f"{_.get_text('stamp_check_datas_info.adress', lang)}{data_to_view['live_adress']}\n"
     text += f"{_.get_text('stamp_check_datas_info.phone', lang)}{data_to_view['phone_number']}"
-    # Отправка сообщения с клавиатурой для проверки данных перед генерацией штампа
+
     await message.answer(
         text=text,
         reply_markup=get_stamp_transfer_check_data_before_gen(lang),
     )
-
-
-# @stamp_transfer_router.callback_query(F.data == "change_data_stamp_transfer")
-# async def handle_change_data_stamp_transfer(callback: CallbackQuery, state: FSMContext):
-#     """Обработка нажатия кнопки изменения данных перед генерацией штампа"""
-#     state_data = await state.get_data()
-#     lang = state_data.get("language")
-#     # Установка состояния для изменения данных
-#     await state.set_state(Stamp_transfer.after_new_passport)
-#     # Отправка сообщения с инструкциями по изменению данных
-#     await callback.message.edit_text(
-#         text=_.get_text("stamp_check_datas_info.change_data_instruction", lang),
-#         reply_markup=stamp_transfer_passport_start_keyboard(lang),
-#     )

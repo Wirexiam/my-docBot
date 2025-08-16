@@ -47,10 +47,10 @@ class Localization:
                     if isinstance(text, dict) and k in text:
                         text = text[k]
                     else:
+                        print(f"Missing translation for key: {key} in language: {lang}")
                         return f"[Missing: {key}]"
                 break
-
-        return str(text) if text else f"[Missing: {key}]"
+        return str(text) if text else f"{key}"
 
     def get_available_languages(self) -> Dict[str, str]:
         """Получает список доступных языков"""
