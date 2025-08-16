@@ -71,7 +71,7 @@ async def handle_inn_inp(call: CallbackQuery, state: FSMContext):
         "organization_data ": organization_data,
     }
     session_id = state_data.get("session_id")
-    data_manager.save_user_data(message.from_user.id, session_id, user_data)
+    data_manager.save_user_data(call.from_user.id, session_id, user_data)
 
     text = f"{_.get_text('addres_by_migr_card_arrival.title', lang)}\n{_.get_text('addres_by_migr_card_arrival.example', lang)}"
     await call.message.edit_text(text=text, reply_markup=None)

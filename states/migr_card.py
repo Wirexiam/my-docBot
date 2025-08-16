@@ -3,7 +3,8 @@ from aiogram.fsm.state import State, StatesGroup
 
 class MigrCardManualStates(StatesGroup):
     """States for manual card handling"""
-
+    
+    migr_card_start_manual = State()
     full_name_input = State()
     entry_date_input = State()
     citizenship_input = State()

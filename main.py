@@ -73,8 +73,13 @@ async def main():
         )
         from handlers.components.residence_permit import residence_permit_router
         from handlers.components.sema_components import sema_components_router
-        from handlers.components.changing_data import changing_data_router
+        from handlers.components.birth_certificate import birth_certificate_router
 
+        dp.include_router(birth_certificate_router)
+        from handlers.components.changing_data import changing_data_router
+        from handlers.components.individual import individual_router
+
+        dp.include_router(individual_router)
         dp.include_router(changing_data_router)
         dp.include_router(residence_reason_child_router)
         dp.include_router(residence_reason_patient_router)

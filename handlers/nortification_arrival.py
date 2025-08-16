@@ -3,9 +3,13 @@ from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
 from pprint import pprint
 
+from states.migr_card import MigrCardManualStates
+
 from states.arrival import Arrival_transfer
 from states.components.passport_manual import PassportManualStates
 from keyboards.components.orgranization import true_or_change_final_doc
+
+from utils.text_answer import text_answer
 
 from states.components.home_migr_data import HomeMigrData
 from states.components.organization import OrganizationStates
@@ -24,7 +28,7 @@ async def arrival_start_who_agree(callback: CallbackQuery, state: FSMContext):
     """Обработка нажатия кнопки по миграционному учету"""
 
     # Установка состояния
-    await state.set_state(Arrival_transfer.waiting_confirm_start)
+    # await state.set_state(Arrival_transfer.waiting_confirm_start)
     state_data = await state.get_data()
     lang = state_data.get("language")
     await state.update_data(from_action="")
@@ -51,6 +55,40 @@ async def arrival_start(callback: CallbackQuery, state: FSMContext):
         reply_markup=kbs_start_arrival(lang),
     )
     
+@nortification_arrival.callback_query(F.data == "to_kid")
+async def arrival_start_kid(callback: CallbackQuery, state: FSMContext):
+    """Обработка нажатия кнопки для родителя"""
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+    await state.update_data(age="to_kid")
+    texts = text_answer("to_kid", "arrival", "start", lang)
+    text = f"{texts["title"]}\n{texts["desc"]}"
+    # Отправка сообщения с клавиатурой ожидания подтверждения
+    await callback.message.edit_text(
+        text=text,
+        reply_markup=kbs_start_arrival_kids(lang),
+    )
+
+@nortification_arrival.callback_query(F.data == "to_kid_agree")
+async def arrival_to_kid_agree(callback: CallbackQuery, state: FSMContext):
+    """Обработка нажатия кнопки начать"""
+
+    state_data = await state.get_data()
+    # await state.update_data(from_action=Arrival_transfer.after_passport)
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+    
+    
+    # await state.update_data(passport_title="registration_renewal_passport_title")
+    text = f"{_.get_text('to_kid_manual_select.title', lang)}\n\n{_.get_text('to_kid_manual_select.description', lang)}"
+    # Отправка сообщения с клавиатурой ожидания подтверждения
+    await callback.message.edit_text(
+        text=text,
+        reply_markup=to_kid_kbs(lang),
+    )
+    print("выбор перед серт и пасп")
+    
 @nortification_arrival.callback_query(Arrival_transfer.waiting_confirm_start)
 async def arrival_manual_or_photo(callback: CallbackQuery, state: FSMContext):
     """Обработка нажатия кнопки начать"""
@@ -58,17 +96,74 @@ async def arrival_manual_or_photo(callback: CallbackQuery, state: FSMContext):
     # Установка состояния
     # await state.set_state(Arrival_transfer.waiting_confirm_start)
     state_data = await state.get_data()
-    lang = state_data["language"]
-
     await state.update_data(from_action=Arrival_transfer.after_passport)
     state_data = await state.get_data()
     lang = state_data.get("language")
+    
     await state.update_data(passport_title="registration_renewal_passport_title")
     text = f"{_.get_text('stamp_transfer_passport_start.title', lang)}\n{_.get_text('stamp_transfer_passport_start.description', lang)}"
     # Отправка сообщения с клавиатурой ожидания подтверждения
     await callback.message.edit_text(
         text=text,
         reply_markup=kbs_passport_arrival(lang),
+    )
+    
+@nortification_arrival.callback_query(F.data == "btn_pre_birth_certificate")
+async def arrival_manual_or_photo_cert_kid(callback: CallbackQuery, state: FSMContext):
+    """Обработка нажатия кнопки начать"""
+    print("серт")
+    # Установка состояния
+    # await state.set_state(Arrival_transfer.waiting_confirm_start)
+    state_data = await state.get_data()
+    await state.update_data(from_action=Arrival_transfer.after_passport)
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+    next_states = [Arrival_transfer.after_cert_kid, HomeMigrData.adress]
+    await state.update_data(
+        next_states=next_states,
+        from_action=Arrival_transfer.after_about_home
+    )
+    text = f"{_.get_text('stamp_transfer_passport_start.title', lang)}\n{_.get_text('stamp_transfer_passport_start.description', lang)}"
+    # Отправка сообщения с клавиатурой ожидания подтверждения
+    await callback.message.edit_text(
+        text=text,
+        reply_markup=kbs_cert_arrival(lang),
+    )
+    
+@nortification_arrival.message(Arrival_transfer.after_cert_kid)
+async def arrival_migr_card(message: Message, state: FSMContext):
+    """Обработка cценария по миграционной карте"""
+
+    print("После заполнения о свидетильсве о рождении")
+    
+    # Установка состояния
+    # await state.set_state(Arrival_transfer.waiting_confirm_start)
+    place = message.text.strip()
+
+    # Get the user's language preference from state data
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+    waiting_data = state_data.get("waiting_data", None)
+    # Сохранение адреса в менеджер данных
+    session_id = state_data.get("session_id")
+    user_data = {
+        waiting_data: place,
+    }
+    await state.update_data({waiting_data: place})
+    state_data = await state.get_data()
+    data_manager.save_user_data(message.from_user.id, session_id, user_data)
+    # Update the state with the passport issue place
+    next_states = [HomeMigrData.adress, Arrival_transfer.after_about_home]
+    await state.update_data(
+        next_states=next_states,
+        from_action=Arrival_transfer.after_about_home
+    )
+    await state.update_data(passport_title="name_migr_card_arrival.title")
+    text = f"{_.get_text('migr_card_arrival.title', lang)}\n{_.get_text('migr_card_arrival.description', lang)}"
+    # Отправка сообщения с клавиатурой ожидания подтверждения
+    await message.answer(
+        text=text,
+        reply_markup=kbs_migr_arrival(lang),
     )
     
 @nortification_arrival.message(Arrival_transfer.after_passport)

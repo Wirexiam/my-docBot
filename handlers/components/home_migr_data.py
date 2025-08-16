@@ -103,12 +103,15 @@ async def handle_adress_migr_input(message: Message, state: FSMContext):
     state_data = await state.get_data()
     lang = state_data.get("language", "ru")
     
+    adress = message.text.strip()
+    
     migration_data = await state.get_data()
     migration_data = migration_data.get("migration_data")
+    print(migration_data)
     # Get the user's language preference from state data
     state_data = await state.get_data()
     lang = state_data.get("language")
-    migration_data['live_adress'] = message.text.strip()
+    migration_data['live_adress'] = adress
     
     await state.update_data(migration_data=migration_data)
     user_data = {

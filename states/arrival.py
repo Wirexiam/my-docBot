@@ -6,6 +6,7 @@ class Arrival_transfer(StatesGroup):
     waiting_confirm_start = State()
     # after_select_mvd = State()
     # after_old_passport = State()
+    after_cert_kid = State()
     after_organisation = State()
     after_passport = State()
     after_migr_card = State()

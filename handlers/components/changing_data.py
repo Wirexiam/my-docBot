@@ -97,7 +97,7 @@ async def handle_change_value_data(callback: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
     dict_key = callback.data.split("change_value_")[1]
     lang = state_data.get("language", "ru")
-    state_data.update(waiting_data=dict_key)
+    await state.update_data(waiting_data=dict_key)
     from_action = state_data.get("from_action", None)
     if from_action is not None:
         await state.set_state(from_action)
