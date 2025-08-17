@@ -163,22 +163,14 @@ async def handle_full_name_contact_of_organization(message: Message, state: FSMC
 @organization_router.message(OrganizationStates.profession)
 async def handle_job(message: Message, state: FSMContext):
     """Handle the input of the passport serial number in manual passport handling."""
-    organization_data = await state.get_data()
-    organization_data = organization_data.get("organization_data")
-    phone_contact_of_organization = message.text.strip()
-    organization_data["phone_contact_of_organization"] = phone_contact_of_organization
+    phone_by_organisation = message.text.strip()
 
     # Get the user's language preference from state data
     state_data = await state.get_data()
     lang = state_data.get("language")
 
     # Update the state with the passport serial number
-    await state.update_data(organization_data=organization_data)
-    user_data = {
-        "organization_data": organization_data,
-    }
-    session_id = state_data.get("session_id")
-    data_manager.save_user_data(message.from_user.id, session_id, user_data)
+    await state.update_data(phone_by_organisation=phone_by_organisation)
     await state.update_data(waiting_data="profession")
 
     text = f"{_.get_text('ur_job.title', lang)}\n{_.get_text('ur_job.example', lang)}"

@@ -62,7 +62,7 @@ async def handle_birth_date_input(message: Message, state: FSMContext):
     """Handle the input of the birth date in manual passport handling."""
     child_birth_date = message.text.strip()
     child_cert_info = await state.get_data()
-    child_cert_info = child_cert_info.get("child_birth_date")
+    child_cert_info = child_cert_info.get("child_cert_info")
     child_cert_info["birth_date"] = child_birth_date
 
     # Get the user's language preference from state data
@@ -92,7 +92,7 @@ async def handle_citizenship_input(message: Message, state: FSMContext):
     """Handle the input of the citizenship in manual passport handling."""
     child_citizenship = message.text.strip()
     child_cert_info = await state.get_data()
-    child_cert_info = child_cert_info.get("child_birth_date")
+    child_cert_info = child_cert_info.get("child_cert_info")
     child_cert_info["child_citizenship"] = child_citizenship
 
     # Get the user's language preference from state data
@@ -119,7 +119,7 @@ async def handle_citizenship_input(message: Message, state: FSMContext):
     """Handle the input of the citizenship in manual passport handling."""
     child_certificate_number = message.text.strip()
     child_cert_info = await state.get_data()
-    child_cert_info = child_cert_info.get("child_birth_date")
+    child_cert_info = child_cert_info.get("child_cert_info")
     child_cert_info["child_certificate_number"] = child_certificate_number
 
     # Get the user's language preference from state data
@@ -134,7 +134,6 @@ async def handle_citizenship_input(message: Message, state: FSMContext):
     session_id = state_data.get("session_id")
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
     # Update the state with the citizenship
-    await state.update_data(child_certificate_number="child_certificate_number")
 
     text = f"{_.get_text('cert_issue_place.title', lang)}\n{_.get_text('cert_issue_place.example_text', lang)}"
 

@@ -125,7 +125,7 @@ async def handle_passport_serial_number_input(message: Message, state: FSMContex
     session_id = state_data.get("session_id")
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
 
-    text = f"{_.get_text('addres_details_by_migr_card_arrival.title', lang)}\n\n\n{_.get_text('addres_details_by_migr_card_arrival.description', lang)}"
+    text = f"{_.get_text('addres_details_by_migr_card_arrival.title', lang)}\n\n\n{_.get_text('addres_details_by_migr_card_arrival.example', lang)}"
     await message.answer(text=text, reply_markup=None)
 
     await state.set_state(IndividualStates.phone)

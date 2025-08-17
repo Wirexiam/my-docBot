@@ -26,10 +26,22 @@ async def handle_adress_migr_input(message: Message, state: FSMContext):
 
     # Сохранение адреса в менеджер данных
     session_id = state_data.get("session_id")
-    user_data = {
-        waiting_data: message.text.strip(),
-    }
-    await state.update_data({waiting_data: message.text.strip()})
+    if "." in waiting_data:
+        primary_key = waiting_data.split(".")[0]
+        secondary_key = waiting_data.split(".")[1]
+
+        primary_key_data = state_data.get(primary_key)
+        primary_key_data[secondary_key] = message.text.strip()
+
+        await state.update_data({primary_key: primary_key_data})
+
+    else:
+        user_data = {
+            waiting_data: message.text.strip(),
+        }
+        await state.update_data({waiting_data: message.text.strip()})
+        data_manager.save_user_data(message.from_user.id, session_id, user_data)
+        
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
     photo = FSInputFile("static/live_adress_example.png")
     # Отправка подтверждения пользователю
@@ -77,10 +89,20 @@ async def handle_adress_migr_input(call: CallbackQuery, state: FSMContext):
         
     # Сохранение адреса в менеджер данных
     session_id = state_data.get("session_id")
-    user_data = {
-        waiting_data: call.data,
-    }
-    data_manager.save_user_data(call.from_user.id, session_id, user_data)
+    if "." in waiting_data:
+        primary_key = waiting_data.split(".")[0]
+        secondary_key = waiting_data.split(".")[1]
+
+        primary_key_data = state_data.get(primary_key)
+        primary_key_data[secondary_key] = call.data
+
+        await state.update_data({primary_key: primary_key_data})
+    else:
+        user_data = {
+            waiting_data: call.data,
+        }
+        await state.update_data({waiting_data: call.data})
+        data_manager.save_user_data(call.from_user.id, session_id, user_data)
     photo = FSInputFile("static/live_adress_example.png")
     # Отправка подтверждения пользователю
 
@@ -123,6 +145,7 @@ async def handle_adress_migr_input(message: Message, state: FSMContext):
     lang = state_data.get("language")
     migration_data['live_adress'] = adress
     
+    await state.update_data(live_adress=adress)
     await state.update_data(migration_data=migration_data)
     user_data = {
         "migration_data": migration_data,

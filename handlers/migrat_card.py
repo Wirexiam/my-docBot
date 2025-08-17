@@ -218,6 +218,7 @@ async def handle_number_migr_card_pretria_period_callback(call: CallbackQuery, s
 
     text = f"{_.get_text('goals_migr_card_arrival.title', lang)}"
     await call.message.answer(text=text, reply_markup=kbs_for_goals(lang))
+    await state.update_data(waiting_data = "migration_data.goal")
     
     next_states = state_data.get("next_states", [])
     from_action = state_data.get("from_action")
