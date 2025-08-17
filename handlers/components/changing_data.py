@@ -24,7 +24,6 @@ data_blacklist = [
     "passport_title",
     "change_data_from",
     "change_data_from_check",
-
     "RP_issue_date",
     "RP_issue_place",
     "RP_serial_number",
@@ -40,6 +39,9 @@ data_blacklist = [
     "change_id",
     "org_name",
     "is_now_edit",
+    "form_NDFL",
+    "income",
+    "residence_reason",
 ]
 
 
@@ -124,29 +126,37 @@ async def handle_change_dict_data(callback: CallbackQuery, state: FSMContext):
     )
 
 
-
 @changing_data_router.callback_query(F.data.startswith("change_list_"))
 async def handle_change_dict_data(callback: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
     callback_data = callback.data.split("change_list_")[1].split(":")
     print(callback_data)
     dict_key = callback_data[0]
-    id = int(callback_data[1]) if len(callback_data)>1 else None
+    id = int(callback_data[1]) if len(callback_data) > 1 else None
 
     list_data = state_data.get(dict_key, [])
     lang = state_data.get("language", "ru")
     keyboard_data = []
-    
+
     old_dict_key = dict_key
     if id is None:
+        # first_key = next(iter(list_data[0]))
+        keys = list(list_data[0].keys())[:2]
         for i, list_el in enumerate(list_data):
-                btn_text = f"{i}, change_{dict_key}_choose_el"
-                keyboard_data.append(
-                    {
-                        "btn_text": btn_text,
-                        "callback_text": f"change_list_{old_dict_key}:{i}",
-                    }
-                )
+            btn_text = f"{i+1}, {list_el[keys[0]]} {list_el[keys[1]]}"
+
+            if dict_key == "income_last_year":
+                if list_el[keys[0]] == "no" and keys[0] == "form_NDFL":
+                    btn_text = f"{i+1}, {_.get_text('doc_residence_notification.no_income', lang)}"
+                elif keys[0] == "form_NDFL":
+                    btn_text = f"{i+1}, {_.get_text(f'income_last_year.message_1.{list_el[keys[0]]}', lang)}"
+
+            keyboard_data.append(
+                {
+                    "btn_text": btn_text,
+                    "callback_text": f"change_list_{old_dict_key}:{i}",
+                }
+            )
 
     else:
         el = list_data[id]
@@ -155,31 +165,27 @@ async def handle_change_dict_data(callback: CallbackQuery, state: FSMContext):
 
         state_data = await state.get_data()
         pprint(state_data)
-        await state.update_data({'change_id':id, 'is_now_edit':True})
-        # await state.update_data({'change_id':id}, {dict_key:list_data})
+        await state.update_data({"change_id": id, "is_now_edit": True})
 
-        # await state.update_data(from_action=)
-
-
-        if dict_key=='worked_last_year':
+        if dict_key == "worked_last_year":
             await get_worked_last_year_msg(callback, state)
-        elif dict_key=='income_last_year':
+        elif dict_key == "income_last_year":
             await get_income_last_year_msg(callback, state)
-        elif dict_key=='travel_outside_Ru':
+        elif dict_key == "travel_outside_Ru":
             await get_travel_outside_Ru_msg(callback, state)
         return
-
-
 
     text = _.get_text("what_change_before_gen", lang)
 
     # pprint(keyboard_data)
+    # return_to = f"change_list_{dict_key}"
     await callback.message.edit_text(
         text=text,
-        reply_markup=start_changing_data_keyboard(lang, buttons=keyboard_data),
+        reply_markup=start_changing_data_keyboard(
+            lang=lang, buttons=keyboard_data, custom_text=True
+        ),
     )
 
-    
 
 @changing_data_router.callback_query(F.data.startswith("change_value_"))
 async def handle_change_value_data(callback: CallbackQuery, state: FSMContext):
