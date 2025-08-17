@@ -7,7 +7,7 @@ def inn_organization(lang: str):
         text=_.get_text("inn_org_migr_card_arrival.no", lang), callback_data="no_have_inn"
     )
     builder.adjust(1)
-    return builder.as_markup()\
+    return builder.as_markup()
         
 def phone_organization(lang: str):
     builder = InlineKeyboardBuilder()

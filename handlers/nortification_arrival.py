@@ -123,7 +123,7 @@ async def arrival_manual_or_photo_cert_kid(callback: CallbackQuery, state: FSMCo
         next_states=next_states,
         from_action=Arrival_transfer.after_about_home
     )
-    text = f"{_.get_text('stamp_transfer_passport_start.title', lang)}\n{_.get_text('stamp_transfer_passport_start.description', lang)}"
+    text = f"{_.get_text('have_cert_about_kid.title', lang)}"
     # Отправка сообщения с клавиатурой ожидания подтверждения
     await callback.message.edit_text(
         text=text,
@@ -158,8 +158,11 @@ async def arrival_migr_card(message: Message, state: FSMContext):
         next_states=next_states,
         from_action=Arrival_transfer.after_about_home
     )
-    await state.update_data(passport_title="name_migr_card_arrival.title")
-    text = f"{_.get_text('migr_card_arrival.title', lang)}\n{_.get_text('migr_card_arrival.description', lang)}"
+    await state.update_data(migr_desc="name_migr_card_arrival_kid.description")
+    await state.update_data(home_migr_title="addres_details_kid_migr_card_arrival.title")
+    print("сохранил")
+    print(state_data)
+    text = f"{_.get_text('Kid_arrival_data.title', lang)}\n{_.get_text('migr_card_arrival.description', lang)}"
     # Отправка сообщения с клавиатурой ожидания подтверждения
     await message.answer(
         text=text,
@@ -194,6 +197,7 @@ async def arrival_migr_card(message: Message, state: FSMContext):
     )
     await state.update_data(passport_title="name_migr_card_arrival.title")
     text = f"{_.get_text('migr_card_arrival.title', lang)}\n{_.get_text('migr_card_arrival.description', lang)}"
+    
     # Отправка сообщения с клавиатурой ожидания подтверждения
     await message.answer(
         text=text,
@@ -228,7 +232,11 @@ async def arrival_migr_card(message: Message, state: FSMContext):
         next_states = next_states,
         from_action = Arrival_transfer.after_organisation
     )
+    
     text = f"{_.get_text('place_by_migr_card_arrival.title', lang)}"
+    age = state_data.get("age", False)
+    if age:
+        text = f"{_.get_text('place_by_migr_card_arrival_kid.title', lang)}"
     # Отправка сообщения с клавиатурой ожидания подтверждения
     await message.answer(
         text=text,
@@ -253,6 +261,9 @@ async def arrival_migr_card_about_home(call: CallbackQuery, state: FSMContext):
         from_action = Arrival_transfer.after_organisation
     )
     text = f"{_.get_text('place_by_migr_card_arrival.title', lang)}"
+    age = state_data.get("age", False)
+    if age:
+        text = f"{_.get_text('place_by_migr_card_arrival_kid.title', lang)}"
     await call.message.edit_text(
         text=text,
         reply_markup=kbs_who_accept(lang),
@@ -270,20 +281,21 @@ async def arrival_after_org_message(message: Message, state: FSMContext):
     # Сохранение адреса в менеджер данных
     session_id = state_data.get("session_id")
     user_data = {
-        waiting_data: "job",
+        waiting_data: job,
     }
-    await state.update_data({waiting_data: "job"})
+    await state.update_data({waiting_data: job})
     state_data = await state.get_data()
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
     migration_data = state_data.get("migration_data")
     organization_data = state_data.get("organization_data")
+    age = state_data.get("age", False)
+    
     passport_data = state_data.get("passport_data")
     pprint(state_data)
     data_to_view = {
-        "fio": passport_data.get("full_name", ""),
-        "date_bitrh": passport_data.get("birth_date", ""),
-        "citizenship": passport_data.get("citizenship", ""),
-        "passport": passport_data,
+        "fio": state_data.get("child_cert_info")["child_fio"] if state_data.get("child_cert_info", False) else passport_data.get("full_name", ""),
+        "date_bitrh": state_data.get("child_cert_info")["child_birth_date"] if state_data.get("child_cert_info", False) else passport_data.get("full_name", ""),
+        "citizenship": state_data.get("child_cert_info")["child_citizenship"] if state_data.get("child_cert_info", False) else passport_data.get("full_name", ""),
         "live_adress": state_data.get("live_adress", ""),
         "migr_card": migration_data,
         "goal": migration_data.get("goal", ""),
@@ -295,12 +307,13 @@ async def arrival_after_org_message(message: Message, state: FSMContext):
     text += f"{_.get_text('organisation_info_correct.full_name', lang)}{data_to_view['fio']}\n"
     text += f"{_.get_text('organisation_info_correct.data_birthday')}{data_to_view['date_bitrh']}\n"
     text += f"{_.get_text('organisation_info_correct.citizenship')}{data_to_view['citizenship']}\n"
-    text += f"{_.get_text('organisation_info_correct.passport', lang)}{_.get_text('organisation_info_correct.issue_passport')}{data_to_view['passport']['passport_serial_number']}{_.get_text('organisation_info_correct.issue_info')}{state_data.get('mvd_adress', "")}{_.get_text('organisation_info_correct.issue_date')}{data_to_view['passport']['passport_expiry_date']}\n"
+    text += f"{_.get_text('cert_birth_data_succes.cert_data')}{state_data.get("child_cert_info")["child_certificate_number"]}{_.get_text('child_cert_info.issue_info')}{state_data.get("child_cert_info")["child_certificate_issue_place"]}\n" if not state_data.get("passport_data", False) else f"{_.get_text('organisation_info_correct.passport', lang)}{_.get_text('organisation_info_correct.issue_passport')}{data_to_view['passport']['passport_serial_number']}{_.get_text('organisation_info_correct.issue_info')}{state_data.get('mvd_adress', "")}{_.get_text('organisation_info_correct.issue_date')}{data_to_view['passport']['passport_expiry_date']}\n"
     text += f"{_.get_text('organisation_info_correct.adress_live_in_rf', lang)}{data_to_view['live_adress']}\n"
     text += f"{_.get_text('organisation_info_correct.migr_card', lang)}{_.get_text('organisation_info_correct.issue_migr_card', lang)}{data_to_view['migr_card']["card_serial_number"]}{_.get_text('organisation_info_correct.issue_migr_card_info', lang)}{data_to_view['migr_card']["entry_date"]}\n"
     text += f"{_.get_text('organisation_info_correct.goal', lang)}{data_to_view["goal"]}\n"
     text += f"{_.get_text('organisation_info_correct.profession', lang)}{data_to_view['profession']}\n"
     text += f"{_.get_text('organisation_info_correct.whoaccept', lang)}\n{_.get_text('organisation_info_correct.name_of_org', lang)}{data_to_view['who_accept']["name_org"]}\n{_.get_text('organisation_info_correct.inn_of_org', lang)}{data_to_view['who_accept']["inn"]}\n{_.get_text('organisation_info_correct.adress_of_org', lang)}{data_to_view['who_accept']["adress"]}\n{_.get_text('organisation_info_correct.fio_contact_face_of_org', lang)}{data_to_view['who_accept']["full_name_contact_of_organization"]}\n{_.get_text('organisation_info_correct.phone_contact_face_of_org', lang)}{data_to_view['who_accept']["phone_contact_of_organization"]}\n"
+    text += f"{_.get_text('info_about_representative.info_title', lang)}\n{_.get_text('info_about_representative.fio', lang)}{state.data.get("representative_data")["full_name"]}\n{_.get_text('info_about_representative.data_birthday', lang)}{state.data.get("birth_date_cert")}" if state.data.get("representative_data", False) else ""
     text += f"{_.get_text('organisation_info_correct.doc', lang)}{data_to_view['doc']}"
 
     # Отправка сообщения с клавиатурой ожидания подтверждения
