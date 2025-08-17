@@ -403,7 +403,7 @@
         "patient_date": "🗓 Дата выдачи патента: ",
         "patient_issue_place": "🏢 Кем выдан патент: ",
         "all_true_in_registration_renewal_patient_button": "✅ Всё верно – сформировать документ",
-        "change_registration_renewal_patient_data_button": "✏️ Изменить"
+        "change_data_registration_renewal_patient_data_button": "✏️ Изменить"
     },
     "doc_child_stay_extension_start": {
         "title": "📍 Сейчас мы оформим заявление о продлении пребывания ребёнка в РФ",
