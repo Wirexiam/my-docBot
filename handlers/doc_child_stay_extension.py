@@ -26,6 +26,10 @@ from data_manager import SecureDataManager
 doc_child_stay_extension_router = Router()
 data_manager = SecureDataManager()
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 @doc_child_stay_extension_router.callback_query(F.data == "doc_child_stay_extension")
 async def handle_doc_child_stay_extension_start(
@@ -377,6 +381,58 @@ async def handler_main_editor(query: CallbackQuery, state: FSMContext):
                 await state.update_data(field="phone_number")
                 await state.set_state(DocChildStayExtensionStates.edit_fields)
 
+
+@doc_child_stay_extension_router.callback_query(F.data.startswith("cs_sub_editor_"))
+async def sub_editor(query: CallbackQuery, state: FSMContext):
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    logger.info(f"QUERY DATA: {query.data}")
+
+    query_data = query.data.removeprefix("cs_sub_editor_")
+    if query_data.startswith("mother_"):
+        data = query_data.removeprefix("mother_")
+        logger.info(f"startswith('mother_'): {data}")
+        fields_info = {
+            "full_name": {
+                "text": f"{_.get_text("stamp_transfer_start_new_passport.description", lang)}",
+                "field": "full_name"
+            },
+            "citizenship": {
+                "text": (
+                    f"{_.get_text('passport_manual_citizenship.title', lang)}\n\n"
+                    f"{_.get_text('passport_manual_citizenship.example_text', lang)}"
+                ),
+                "field": "citizenship"
+            },
+            "document": {
+                "text": f"{_.get_text("passport_manual_serial_input.title", lang)}\n\n{_.get_text("passport_manual_serial_input.example_text", lang)}",
+                "field": "passport_serial_number"
+            },
+            "expiry_date": {
+                "text": (
+                    f"{_.get_text('passport_manual_expire_date.title', lang)}\n\n"
+                    f"{_.get_text('passport_manual_expire_date.example_text', lang)}"
+                ),
+                "field": "passport_expiry_date"
+            },
+            "issue_info": {
+                "text": (
+                    f"{_.get_text('passport_manual_issue_place.title', lang)}\n\n"
+                    f"{_.get_text('passport_manual_issue_place.example_text', lang)}"
+                ),
+                "field": "passport_data.passport_issue_place"
+            }
+        }
+        if data in fields_info:
+            await state.update_data(dict="parent_passport_data")
+            await state.update_data(field=fields_info[data]["field"])
+            await query.message.edit_text(text=fields_info[data]["text"])
+            await state.set_state(DocChildStayExtensionStates.edit_fields)
+
+    if query_data.startswith("basis_"):
+        ...
 
 @doc_child_stay_extension_router.message(DocChildStayExtensionStates.edit_fields)
 async def edit_fields(message: Message, state: FSMContext):
