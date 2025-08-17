@@ -2,7 +2,9 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from localization import _
 
 
-def start_changing_data_keyboard(lang: str = "ru", buttons: list = []):
+def start_changing_data_keyboard(
+    return_from_change: str, lang: str = "ru", buttons: list = []
+):
     """Клавиатура для начала изменения данных"""
     builder = InlineKeyboardBuilder()
     for button in buttons:
@@ -13,7 +15,7 @@ def start_changing_data_keyboard(lang: str = "ru", buttons: list = []):
         )
     builder.button(
         text=_.get_text("return_from_change_data", lang),
-        callback_data="main_menu",
+        callback_data=return_from_change,
     )
     builder.adjust(1)
     return builder.as_markup()
