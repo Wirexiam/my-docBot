@@ -21,6 +21,7 @@ from states.doc_residence_notification import DocResidenceNotificationStates, In
 from states.components.passport_manual import PassportManualStates
 from states.components.select_region_and_mvd import SelectRegionStates
 from keyboards.doc_residence_notification import (
+    get_check_data_before_gen,
     get_doc_residence_notification_passport_start_keyboard,
     get_travel_outside_Ru_check_keyboard,
     get_travel_outside_Ru_keyboard,
@@ -78,6 +79,18 @@ async def get_income_last_year_msg(callback, state):
             }
     await callback.message.edit_text(text, reply_markup=get_callback_btns(btns, lang))
     await state.set_state(IncomeLastYearStates.start)
+
+async def do_lists(old_list, new_list, id):
+        if old_list:
+            if id is None:
+                old_list.extend(new_list)
+            else:
+                old_list.insert(id, *new_list)
+            new_list = old_list
+            return new_list
+        else:
+            return new_list
+             
 
 
 @doc_residence_notification_router.callback_query(F.data == "doc_residence_notification")
@@ -258,6 +271,9 @@ async def handle_travel_outside_Ru_place(message: Message, state: FSMContext):
 async def handle_travel_outside_Ru_callback(callback: CallbackQuery, state: FSMContext):
     is_travel_outside_Ru = callback.data.split('_')[-1]
     state_data = await state.get_data()
+    id = state_data.get("change_id")
+    is_now_edit = state_data.get("is_now_edit")
+
 
     lang = state_data.get("language")
 
@@ -267,8 +283,8 @@ async def handle_travel_outside_Ru_callback(callback: CallbackQuery, state: FSMC
         old_travel_outside_Ru = state_data.get('travel_outside_Ru')
         travel_outside_Ru = [{"date":state_data['date'], "place":state_data['place']}]
 
-        if old_travel_outside_Ru:
-            travel_outside_Ru.extend(old_travel_outside_Ru)
+        travel_outside_Ru = await do_lists(old_travel_outside_Ru, travel_outside_Ru, id)
+        await state.update_data(change_id=None)
 
 
         session_id = state_data.get("session_id")
@@ -278,10 +294,11 @@ async def handle_travel_outside_Ru_callback(callback: CallbackQuery, state: FSMC
         await state.update_data(**user_data)
         data_manager.save_user_data(callback.from_user.id, session_id, user_data)
         if is_travel_outside_Ru =='y':
-
-            await get_worked_last_year_msg_choose(callback, state)
-
-
+            if is_now_edit:
+                await state.update_data(is_now_edit=False)
+                await check_doc_residence_notification(callback, state)
+            else:
+                await get_worked_last_year_msg_choose(callback, state)
         else:
             await get_travel_outside_Ru_msg(callback, state)
 
@@ -327,6 +344,7 @@ async def end_worked_last_year(message: Message, state: FSMContext, edit_msg=Non
 
 
     data = await state.get_data()
+    pprint(data)
     message_lines_1 = [
         f"{_.get_text('WorkedLastYearStates.org_name', lang)}{data['org_name']}",
         f"{_.get_text('WorkedLastYearStates.job_title', lang)}{data['job_title']}",
@@ -368,6 +386,10 @@ async def handle_worked_last_year_data(callback: CallbackQuery, state: FSMContex
     state_data = await state.get_data()
 
     lang = state_data.get("language")
+    id = state_data.get("change_id")
+    is_now_edit = state_data.get("is_now_edit")
+
+
 
     if worked_last_year_callback =='edit':
         await get_worked_last_year_msg(callback, state)
@@ -380,12 +402,10 @@ async def handle_worked_last_year_data(callback: CallbackQuery, state: FSMContex
                 'hiring_date':state_data['hiring_date'],
                 'dismissal_date':state_data['dismissal_date'],
                 'work_adress':state_data['work_adress'],
-             }
+             },
         ]
-
-        if old_worked_last_year:
-            worked_last_year.extend(old_worked_last_year)
-
+        worked_last_year = await do_lists(old_worked_last_year, worked_last_year, id)
+        await state.update_data(change_id=None)
 
         session_id = state_data.get("session_id")
         user_data = {
@@ -394,7 +414,11 @@ async def handle_worked_last_year_data(callback: CallbackQuery, state: FSMContex
         await state.update_data(**user_data)
         data_manager.save_user_data(callback.from_user.id, session_id, user_data)
         if worked_last_year_callback =='y':
-            await get_income_last_year_msg(callback, state)
+            if is_now_edit:
+                await state.update_data(is_now_edit=False)
+                await check_doc_residence_notification(callback, state)
+            else:
+                await get_income_last_year_msg(callback, state)
         else:
             await get_worked_last_year_msg(callback, state)
 
@@ -500,6 +524,8 @@ async def handle_income_last_year_income(message: Message, state: FSMContext):
 async def handle_income_last_year_after_income(callback: CallbackQuery, state: FSMContext):
     income_last_year_callback = callback.data
     state_data = await state.get_data()
+    id = state_data.get("change_id")
+    is_now_edit = state_data.get("is_now_edit")
 
     lang = state_data.get("language")
 
@@ -510,8 +536,8 @@ async def handle_income_last_year_after_income(callback: CallbackQuery, state: F
         income_last_year = [{"form_NDFL":state_data['form_NDFL'], "income":state_data['income']}]
 
 
-        if old_income_last_year:
-            income_last_year.extend(old_income_last_year)
+        income_last_year = await do_lists(old_income_last_year, income_last_year, id)
+        await state.update_data(change_id=None)
 
 
 
@@ -525,7 +551,11 @@ async def handle_income_last_year_after_income(callback: CallbackQuery, state: F
         state_data = await state.get_data()
 
         if income_last_year_callback =='y':
-            await check_doc_residence_notification(callback, state)
+            if is_now_edit:
+                await state.update_data(is_now_edit=False)
+                await check_doc_residence_notification(callback, state)
+            else:
+                await check_doc_residence_notification(callback, state)
         else:
             await get_income_last_year_msg(callback, state)
 
@@ -534,14 +564,16 @@ async def handle_income_last_year_after_income(callback: CallbackQuery, state: F
 
 
 
-
-async def check_doc_residence_notification(callback: CallbackQuery, state: FSMContext):
+async def check_doc_residence_notification(event: CallbackQuery | Message, state: FSMContext):
     await state.set_state(None)
     state_data = await state.get_data()
     lang = state_data.get("language")
-    pprint(state_data)
+
+    await state.update_data(from_action=DocResidenceNotificationStates.check_data)
+
 
     data = await state.get_data()
+    pprint(data)
 
 
 
@@ -597,11 +629,39 @@ async def check_doc_residence_notification(callback: CallbackQuery, state: FSMCo
 
 
     text = "\n".join(message_lines)
-    await callback.message.edit_text(
-        text=text,
-        reply_markup=get_registration_renewal_after_residence_reason_and_location_keyboard(
-            lang
-        ),
-    )
+    msg_obj = {'text':text, 'reply_markup':get_check_data_before_gen(lang)}
+
+    if isinstance(event, CallbackQuery):
+        await event.message.edit_text(**msg_obj)
+    else:
+        await event.answer(**msg_obj)
+    
 
 
+
+
+
+@doc_residence_notification_router.message(DocResidenceNotificationStates.check_data)
+async def edit_doc_residence_notification(message: Message, state: FSMContext):
+    state_data = await state.get_data()
+    waiting_data = state_data.get("waiting_data", None)
+    lang = state_data.get("language")
+    # Сохранение адреса в менеджер данных
+    session_id = state_data.get("session_id")
+    if "." in waiting_data:
+        primary_key = waiting_data.split(".")[0]
+        secondary_key = waiting_data.split(".")[1]
+
+        primary_key_data = state_data.get(primary_key)
+        primary_key_data[secondary_key] = message.text.strip()
+
+        await state.update_data({primary_key: primary_key_data})
+
+    else:
+        user_data = {
+            waiting_data: message.text.strip(),
+        }
+        await state.update_data({waiting_data: message.text.strip()})
+        data_manager.save_user_data(message.from_user.id, session_id, user_data)
+
+    await check_doc_residence_notification(message, state)
