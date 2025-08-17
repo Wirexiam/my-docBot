@@ -126,7 +126,10 @@ async def handle_new_passport_data(message: Message, state: FSMContext):
         await state.update_data({waiting_data: message.text.strip()})
         data_manager.save_user_data(message.from_user.id, session_id, user_data)
 
-    await state.update_data(from_action=Stamp_transfer.after_new_passport)
+    await state.update_data(
+        from_action=Stamp_transfer.after_new_passport,
+        change_data_from_check="stamp_transfer_after_new_passport",
+    )
     state_data = await state.get_data()
     pprint(state_data)
     new_passport_datas = state_data.get("passport_data")
@@ -140,25 +143,101 @@ async def handle_new_passport_data(message: Message, state: FSMContext):
         "old_passport_number": old_passport_datas.get(
             "passport_serial_number", "Не найден"
         ),
+        "new_passport_issue_place": new_passport_datas.get(
+            "passport_issue_place", "Не найден"
+        ),
+        "old_passport_issue_place": old_passport_datas.get(
+            "passport_issue_place", "Не найден"
+        ),
         "new_passport_issue_date": new_passport_datas.get(
             "passport_issue_date", "Не найден"
         ),
         "old_passport_issue_date": old_passport_datas.get(
             "passport_issue_date", "Не найден"
         ),
+        "new_passport_expiry_date": new_passport_datas.get(
+            "passport_expiry_date", "Не найден"
+        ),
+        "old_passport_expiry_date": old_passport_datas.get(
+            "passport_expiry_date", "Не найден"
+        ),
         "live_adress": state_data.get("live_adress", "Не найден"),
         "phone_number": state_data.get("phone_number", "Не найден"),
+        "mvd_adress": state_data.get("mvd_adress", "Не найден"),
     }
 
     text = f"{_.get_text('stamp_check_datas_info.title', lang)}\n\n"
     text += f"{_.get_text('stamp_check_datas_info.full_name', lang)}{data_to_view['name']}\n"
-    text += f"{_.get_text('stamp_check_datas_info.new_passport')}{data_to_view['new_passport_number']}{_.get_text('stamp_check_datas_info.issue_date')}{data_to_view['new_passport_issue_date']}\n"
-    text += f"{_.get_text('stamp_check_datas_info.old_passport')}{data_to_view['old_passport_number']}{_.get_text('stamp_check_datas_info.issue_date')}{data_to_view['old_passport_issue_date']}\n"
+    text += f"{_.get_text('stamp_check_datas_info.new_passport')}{data_to_view['new_passport_number']}{_.get_text('stamp_check_datas_info.issue_date')}{data_to_view['new_passport_issue_date']} {data_to_view['new_passport_issue_place']}{_.get_text('stamp_check_datas_info.expiry_date')}{data_to_view['new_passport_expiry_date']}\n"
+    text += f"{_.get_text('stamp_check_datas_info.old_passport')}{data_to_view['old_passport_number']}{_.get_text('stamp_check_datas_info.issue_date')}{data_to_view['old_passport_issue_date']} {data_to_view['old_passport_issue_place']}{_.get_text('stamp_check_datas_info.expiry_date')}{data_to_view['old_passport_expiry_date']}\n"
     text += f"{_.get_text('stamp_check_datas_info.stamp_in', lang)}\n"
     text += f"{_.get_text('stamp_check_datas_info.adress', lang)}{data_to_view['live_adress']}\n"
-    text += f"{_.get_text('stamp_check_datas_info.phone', lang)}{data_to_view['phone_number']}"
+    text += f"{_.get_text('stamp_check_datas_info.phone', lang)}{data_to_view['phone_number']}\n"
+    text += f"{_.get_text("stamp_check_datas_info.mvd_adress",lang)}{data_to_view['mvd_adress']}"
 
     await message.answer(
+        text=text,
+        reply_markup=get_stamp_transfer_check_data_before_gen(lang),
+    )
+
+
+@stamp_transfer_router.callback_query(F.data == "stamp_transfer_after_new_passport")
+async def handle_new_passport_data(message: CallbackQuery, state: FSMContext):
+    """Обработка ввода данных нового паспорта после передачи старого паспорта"""
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+    # Сохранение адреса в менеджер данных
+
+    await state.update_data(
+        from_action=Stamp_transfer.after_new_passport,
+        change_data_from_check="stamp_transfer_after_new_passport",
+    )
+    state_data = await state.get_data()
+    pprint(state_data)
+    new_passport_datas = state_data.get("passport_data")
+    old_passport_datas = state_data.get("old_passport_data")
+
+    data_to_view = {
+        "name": new_passport_datas.get("full_name", "Не найден"),
+        "new_passport_number": new_passport_datas.get(
+            "passport_serial_number", "Не найден"
+        ),
+        "old_passport_number": old_passport_datas.get(
+            "passport_serial_number", "Не найден"
+        ),
+        "new_passport_issue_place": new_passport_datas.get(
+            "passport_issue_place", "Не найден"
+        ),
+        "old_passport_issue_place": old_passport_datas.get(
+            "passport_issue_place", "Не найден"
+        ),
+        "new_passport_issue_date": new_passport_datas.get(
+            "passport_issue_date", "Не найден"
+        ),
+        "old_passport_issue_date": old_passport_datas.get(
+            "passport_issue_date", "Не найден"
+        ),
+        "new_passport_expiry_date": new_passport_datas.get(
+            "passport_expiry_date", "Не найден"
+        ),
+        "old_passport_expiry_date": old_passport_datas.get(
+            "passport_expiry_date", "Не найден"
+        ),
+        "live_adress": state_data.get("live_adress", "Не найден"),
+        "phone_number": state_data.get("phone_number", "Не найден"),
+        "mvd_adress": state_data.get("mvd_adress", "Не найден"),
+    }
+
+    text = f"{_.get_text('stamp_check_datas_info.title', lang)}\n\n"
+    text += f"{_.get_text('stamp_check_datas_info.full_name', lang)}{data_to_view['name']}\n"
+    text += f"{_.get_text('stamp_check_datas_info.new_passport')}{data_to_view['new_passport_number']}{_.get_text('stamp_check_datas_info.issue_date')}{data_to_view['new_passport_issue_date']} {data_to_view['new_passport_issue_place']}{_.get_text('stamp_check_datas_info.expiry_date')}{data_to_view['new_passport_expiry_date']}\n"
+    text += f"{_.get_text('stamp_check_datas_info.old_passport')}{data_to_view['old_passport_number']}{_.get_text('stamp_check_datas_info.issue_date')}{data_to_view['old_passport_issue_date']} {data_to_view['old_passport_issue_place']}{_.get_text('stamp_check_datas_info.expiry_date')}{data_to_view['old_passport_expiry_date']}\n"
+    text += f"{_.get_text('stamp_check_datas_info.stamp_in', lang)}\n"
+    text += f"{_.get_text('stamp_check_datas_info.adress', lang)}{data_to_view['live_adress']}\n"
+    text += f"{_.get_text('stamp_check_datas_info.phone', lang)}{data_to_view['phone_number']}\n"
+    text += f"{_.get_text("stamp_check_datas_info.mvd_adress",lang)}{data_to_view['mvd_adress']}"
+
+    await message.message.edit_text(
         text=text,
         reply_markup=get_stamp_transfer_check_data_before_gen(lang),
     )

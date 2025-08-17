@@ -4,12 +4,43 @@ from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
 
 from keyboards.changing_data import start_changing_data_keyboard
-
+from handlers.doc_residence_notification import (
+    get_income_last_year_msg,
+    get_travel_outside_Ru_msg,
+    get_worked_last_year_msg,
+)
 from localization import _
 from data_manager import SecureDataManager
 
 changing_data_router = Router()
 data_manager = SecureDataManager()
+
+data_blacklist = [
+    "from_action",
+    "language",
+    "next_states",
+    "session_id",
+    "waiting_data",
+    "passport_title",
+    "change_data_from",
+    "change_data_from_check",
+
+    "RP_issue_date",
+    "RP_issue_place",
+    "RP_serial_number",
+    "date",
+    "dismissal_date",
+    "hiring_date",
+    "is_working",
+    "job_title",
+    "live_adress_conf",
+    "place",
+    "sema_components",
+    "work_adress",
+    "change_id",
+    "org_name",
+    "is_now_edit",
+]
 
 
 @changing_data_router.callback_query(F.data.startswith("change_data_"))
@@ -18,16 +49,10 @@ async def handle_change_data(callback: CallbackQuery, state: FSMContext):
 
     # Получение текущего состояния и языка
     state_data = await state.get_data()
+    await state.update_data(change_data_from=callback.data)
     lang = state_data.get("language", "ru")
     keyboard_data = []
-    data_blacklist = [
-        "from_action",
-        "language",
-        "next_states",
-        "session_id",
-        "waiting_data",
-        "passport_title",
-    ]
+
     for data_key in state_data:
         if data_key in data_blacklist:
             continue
@@ -40,7 +65,7 @@ async def handle_change_data(callback: CallbackQuery, state: FSMContext):
                     "callback_text": f"change_value_{data_key}",
                 }
             )
-        if type(data) == dict:
+        elif type(data) == dict:
             btn_text = f"change_{data_key}_dict_btn"
             keyboard_data.append(
                 {
@@ -48,29 +73,33 @@ async def handle_change_data(callback: CallbackQuery, state: FSMContext):
                     "callback_text": f"change_dict_{data_key}",
                 }
             )
+        elif type(data) == list:
+            btn_text = f"change_{data_key}_list_btn"
+            keyboard_data.append(
+                {
+                    "btn_text": btn_text,
+                    "callback_text": f"change_list_{data_key}",
+                }
+            )
     text = _.get_text("what_change_before_gen", lang)
     pprint(keyboard_data)
+    change_data_from_check = state_data.get("change_data_from_check", "main_menu")
     await callback.message.edit_text(
         text=text,
-        reply_markup=start_changing_data_keyboard(lang, buttons=keyboard_data),
+        reply_markup=start_changing_data_keyboard(
+            change_data_from_check, lang, buttons=keyboard_data
+        ),
     )
 
 
 @changing_data_router.callback_query(F.data.startswith("change_dict_"))
 async def handle_change_dict_data(callback: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
+    return_to = state_data.get("change_data_from")
     dict_key = callback.data.split("change_dict_")[1]
     state_data = state_data.get(dict_key, {})
     lang = state_data.get("language", "ru")
     keyboard_data = []
-    data_blacklist = [
-        "from_action",
-        "language",
-        "next_states",
-        "session_id",
-        "waiting_data",
-        "passport_title",
-    ]
     old_dict_key = dict_key
     for data_key in state_data:
         if data_key in data_blacklist:
@@ -85,19 +114,80 @@ async def handle_change_dict_data(callback: CallbackQuery, state: FSMContext):
                 }
             )
     text = _.get_text("what_change_before_gen", lang)
-    pprint(keyboard_data)
+    await callback.message.edit_text(
+        text=text,
+        reply_markup=start_changing_data_keyboard(
+            return_to,
+            lang,
+            buttons=keyboard_data,
+        ),
+    )
+
+
+
+@changing_data_router.callback_query(F.data.startswith("change_list_"))
+async def handle_change_dict_data(callback: CallbackQuery, state: FSMContext):
+    state_data = await state.get_data()
+    callback_data = callback.data.split("change_list_")[1].split(":")
+    print(callback_data)
+    dict_key = callback_data[0]
+    id = int(callback_data[1]) if len(callback_data)>1 else None
+
+    list_data = state_data.get(dict_key, [])
+    lang = state_data.get("language", "ru")
+    keyboard_data = []
+    
+    old_dict_key = dict_key
+    if id is None:
+        for i, list_el in enumerate(list_data):
+                btn_text = f"{i}, change_{dict_key}_choose_el"
+                keyboard_data.append(
+                    {
+                        "btn_text": btn_text,
+                        "callback_text": f"change_list_{old_dict_key}:{i}",
+                    }
+                )
+
+    else:
+        el = list_data[id]
+        list_data.pop(id)
+        print(el)
+
+        state_data = await state.get_data()
+        pprint(state_data)
+        await state.update_data({'change_id':id, 'is_now_edit':True})
+        # await state.update_data({'change_id':id}, {dict_key:list_data})
+
+        # await state.update_data(from_action=)
+
+
+        if dict_key=='worked_last_year':
+            await get_worked_last_year_msg(callback, state)
+        elif dict_key=='income_last_year':
+            await get_income_last_year_msg(callback, state)
+        elif dict_key=='travel_outside_Ru':
+            await get_travel_outside_Ru_msg(callback, state)
+        return
+
+
+
+    text = _.get_text("what_change_before_gen", lang)
+
+    # pprint(keyboard_data)
     await callback.message.edit_text(
         text=text,
         reply_markup=start_changing_data_keyboard(lang, buttons=keyboard_data),
     )
 
+    
 
 @changing_data_router.callback_query(F.data.startswith("change_value_"))
 async def handle_change_value_data(callback: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
     dict_key = callback.data.split("change_value_")[1]
     lang = state_data.get("language", "ru")
-    await state.update_data(waiting_data=dict_key)
+
+    await state.update_data({"waiting_data": dict_key})
     from_action = state_data.get("from_action", None)
     if from_action is not None:
         await state.set_state(from_action)
