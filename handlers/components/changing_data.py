@@ -41,6 +41,7 @@ data_blacklist = [
     "is_now_edit",
     "form_NDFL",
     "income",
+    "residence_reason",
 ]
 
 
@@ -161,7 +162,6 @@ async def handle_change_dict_data(callback: CallbackQuery, state: FSMContext):
         el = list_data[id]
         list_data.pop(id)
         print(el)
-        
 
         state_data = await state.get_data()
         pprint(state_data)
