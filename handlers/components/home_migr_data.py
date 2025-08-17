@@ -33,8 +33,13 @@ async def handle_adress_migr_input(message: Message, state: FSMContext):
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
     photo = FSInputFile("static/live_adress_example.png")
     # Отправка подтверждения пользователю
-
-    text = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
+    
+    home_migr_title = state_data.get("home_migr_title", "live_adress.title")
+    text = f"{_.get_text(home_migr_title, lang)}\n{_.get_text('live_adress.example', lang)}"
+    age = state_data.get("age", False)
+    if age:
+        await state.update_data(migr_desc="name_migr_card_arrival_kid.desc")
+        text = f"{_.get_text(home_migr_title, lang)}"
 
     await message.answer_photo(caption=text, photo=photo)
     await state.set_state(HomeMigrData.havedoc)
@@ -79,7 +84,12 @@ async def handle_adress_migr_input(call: CallbackQuery, state: FSMContext):
     photo = FSInputFile("static/live_adress_example.png")
     # Отправка подтверждения пользователю
 
-    text = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
+    home_migr_title = state_data.get("home_migr_title", "live_adress.title")
+    text = f"{_.get_text(home_migr_title, lang)}\n{_.get_text('live_adress.example', lang)}"
+    age = state_data.get("age", False)
+    if age:
+        await state.update_data(migr_desc="name_migr_card_arrival_kid.desc")
+        text = f"{_.get_text(home_migr_title, lang)}"
 
     await call.message.answer_photo(caption=text, photo=photo)
     await state.set_state(HomeMigrData.havedoc)

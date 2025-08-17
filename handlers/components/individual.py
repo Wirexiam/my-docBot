@@ -4,6 +4,8 @@ from aiogram.fsm.context import FSMContext
 
 from states.components.individual import IndividualStates
 
+from states.components.representative import RepresentativeStates
+
 from keyboards.components.orgranization import *
 
 from localization import _
@@ -136,6 +138,7 @@ async def handle_passport_issue_date_input(message: Message, state: FSMContext):
     individual_data = individual_data.get("individual_data")
     adress = message.text.strip()
     individual_data["adress"] = adress
+    
     # # Get the user's language preference from state data
     state_data = await state.get_data()
     lang = state_data.get("language")
@@ -144,14 +147,18 @@ async def handle_passport_issue_date_input(message: Message, state: FSMContext):
     user_data = {
         "individual_data": individual_data,
     }
+    age = state_data.get("age", False)
     session_id = state_data.get("session_id")
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
     text_first = f"{_.get_text('success_data_by.title', lang)}\n{_.get_text('success_data_by.issue_info', lang)}{_.get_text('place_by_migr_card_arrival.option_one', lang)}"
     text = f"{_.get_text('phone_contact_of_organization.title', lang)}\n{_.get_text('phone_contact_of_organization.example', lang)}"
     await message.answer(text=text_first, reply_markup=None)
     await message.answer(text=text, reply_markup=None)
-
-    await state.set_state(IndividualStates.profession)
+    if age:
+        await state.update_data(waiting_data="phone_by_individual")
+        await state.set_state(RepresentativeStates.who_representative)
+    else:
+        await state.set_state(IndividualStates.profession)
     
 
 # @individual_router.message(IndividualStates.phone)
@@ -185,7 +192,7 @@ async def handle_passport_issue_date_input(message: Message, state: FSMContext):
     individual_data = await state.get_data()
     individual_data = individual_data.get("individual_data")
     phone = message.text.strip()
-    individual_data["adress"] = phone
+    individual_data["phone"] = phone
     # # Get the user's language preference from state data
     state_data = await state.get_data()
     lang = state_data.get("language")

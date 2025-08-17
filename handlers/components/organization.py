@@ -5,6 +5,8 @@ from aiogram.fsm.context import FSMContext
 from states.components.organization import OrganizationStates
 from keyboards.components.orgranization import *
 
+from states.components.representative import RepresentativeStates
+
 from localization import _
 from data_manager import SecureDataManager
 
@@ -144,13 +146,18 @@ async def handle_full_name_contact_of_organization(message: Message, state: FSMC
         "organization_data": organization_data,
     }
     session_id = state_data.get("session_id")
+    age = state_data.get("age", False)
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
     text_first = f"{_.get_text('success_data_by.title', lang)}\n{_.get_text('success_data_by.issue_info', lang)}{_.get_text('place_by_migr_card_arrival.option_two', lang)}"
     text = f"{_.get_text('phone_contact_of_organization.title', lang)}\n{_.get_text('phone_contact_of_organization.example', lang)}"
     await message.answer(text=text_first, reply_markup=None)
     await message.answer(text=text, reply_markup=None)
 
-    await state.set_state(OrganizationStates.profession)
+    if age:
+        await state.update_data(waiting_data="phone_by_organisation")
+        await state.set_state(RepresentativeStates.who_representative)
+    else:
+        await state.set_state(OrganizationStates.profession)
 
 
 @organization_router.message(OrganizationStates.profession)
