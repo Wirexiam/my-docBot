@@ -72,15 +72,22 @@ async def handle_registration_renewal_after_passport(
     lang = state_data.get("language")
     # Сохранение адреса в менеджер данных
     session_id = state_data.get("session_id")
-    user_data = {
-        waiting_data: message.text.strip(),
-    }
-    passport_data = state_data.get("passport_data")
-    passport_data[waiting_data] = message.text.strip()
+    if "." in waiting_data:
+        primary_key = waiting_data.split(".")[0]
+        secondary_key = waiting_data.split(".")[1]
 
-    await state.update_data(passport_data=passport_data)
+        primary_key_data = state_data.get(primary_key)
+        primary_key_data[secondary_key] = message.text.strip()
+
+        await state.update_data({primary_key: primary_key_data})
+
+    else:
+        user_data = {
+            waiting_data: message.text.strip(),
+        }
+        await state.update_data({waiting_data: message.text.strip()})
+        data_manager.save_user_data(message.from_user.id, session_id, user_data)
     state_data = await state.get_data()
-    data_manager.save_user_data(message.from_user.id, session_id, user_data)
 
     next_states = [LiveAdress.adress]
     from_action = RegistrationRenewalStates.after_residence_reason_and_location
@@ -218,7 +225,7 @@ async def handle_registration_renewal_after_residence_reason_and_location(
         text += f"{_.get_text('registration_renewal_child_check_data.child_citizenship', lang)}\n"
         text += f"{_.get_text('registration_renewal_child_check_data.child_certificate_number', lang)}{child_data.get("child_certificate_number","Не найдено")}{_.get_text("registration_renewal_child_check_data.issue_place")}\n{child_data.get("child_certificate_issue_place","Не найдено")}\n"
 
-    text += f"{_.get_text("stamp_check_datas_info.mvd_adress",lang)}{state_data.get("mvd_adress", "Не найдено")}"
+    text += f"\n{_.get_text("stamp_check_datas_info.mvd_adress",lang)}{state_data.get("mvd_adress", "Не найдено")}"
     await message.answer(
         text=text,
         reply_markup=get_registration_renewal_after_residence_reason_and_location_keyboard(
