@@ -11,3 +11,7 @@ class Arrival_transfer(StatesGroup):
     after_passport = State()
     after_migr_card = State()
     after_about_home = State()
+    check_data = State()
+    check_child_data = State()
+
+

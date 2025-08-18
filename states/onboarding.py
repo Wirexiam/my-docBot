@@ -7,3 +7,5 @@ class OnboardingStates(StatesGroup):
     waiting_consent = State()
     waiting_language = State()
     completed = State()
+    consent_refuse = State()
+

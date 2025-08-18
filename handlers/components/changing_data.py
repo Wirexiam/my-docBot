@@ -42,6 +42,16 @@ data_blacklist = [
     "form_NDFL",
     "income",
     "residence_reason",
+    "who_accept",
+    "pre_passport_title",
+    "migr_desc",
+    "migr_title",
+    "home_migr_title",
+    "fill_goal",
+    "passport_data.passport_issue_place",
+    "residence_reason",
+    "residence_reason",
+
 ]
 
 

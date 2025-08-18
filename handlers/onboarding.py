@@ -2,7 +2,6 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
-
 from states.onboarding import OnboardingStates
 from keyboards.onboarding import (
     get_consent_keyboard,
@@ -41,17 +40,18 @@ async def consent_agreed(callback: CallbackQuery, state: FSMContext):
         language_text, reply_markup=get_language_keyboard()
     )
 
-
 @onboarding_router.callback_query(F.data == "consent_refuse")
 async def consent_refused(callback: CallbackQuery, state: FSMContext):
     """Пользователь отказался от обработки данных"""
     await state.clear()
+
 
     refusal_text = (
         f"{_.get_text('refusal.title')}\n" f"{_.get_text('refusal.description')}"
     )
 
     await callback.message.edit_text(refusal_text, reply_markup=get_refusal_keyboard())
+
 
 
 @onboarding_router.callback_query(F.data == "back_to_consent")
@@ -91,4 +91,17 @@ async def language_selected(callback: CallbackQuery, state: FSMContext):
 
     await callback.message.edit_text(
         welcome_text, reply_markup=get_documents_menu_keyboard(lang_code)
+    )
+
+
+
+@onboarding_router.message(Command("lang"))
+async def consent_agreed(message: Message, state: FSMContext):
+    """Пользователь согласился на обработку данных"""
+    await state.set_state(OnboardingStates.waiting_language)
+
+    language_text = f"{_.get_text('language.title')}\n" f"{_.get_text('language.note')}"
+
+    await message.answer(
+        language_text, reply_markup=get_language_keyboard()
     )
