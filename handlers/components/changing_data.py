@@ -51,7 +51,7 @@ data_blacklist = [
     "age",
     "passport_description",
     "birth_date_cert",
-    "residence_reason",
+    "number_migr_card_arrival",
     "residence_reason",
     "residence_reason",
     "residence_reason",
