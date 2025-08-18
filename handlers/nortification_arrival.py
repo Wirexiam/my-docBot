@@ -284,8 +284,49 @@ async def arrival_migr_card_about_home(call: CallbackQuery, state: FSMContext):
     print('Смотрим проверяем после данных о доме')
     
 
+
+
+
+@nortification_arrival.message(Arrival_transfer.check_data)
+async def edit_f(message: Message, state: FSMContext):
+    print('edit_f')
+
+    state_data = await state.get_data()
+    waiting_data = state_data.get("waiting_data", None)
+    lang = state_data.get("language")
+    # Сохранение адреса в менеджер данных
+    print(waiting_data)
+    session_id = state_data.get("session_id")
+    if "." in waiting_data:
+        primary_key = waiting_data.split(".")[0]
+        secondary_key = waiting_data.split(".")[1]
+
+        primary_key_data = state_data.get(primary_key)
+        primary_key_data[secondary_key] = message.text.strip()
+
+        await state.update_data({primary_key: primary_key_data})
+
+    else:
+        user_data = {
+            waiting_data: message.text.strip(),
+        }
+        await state.update_data({waiting_data: message.text.strip()})
+        data_manager.save_user_data(message.from_user.id, session_id, user_data)
+
+    await arrival_after_org_callback(message, state)
+
+
+
+
+
+
+
+
+
+
 @nortification_arrival.message(Arrival_transfer.after_organisation)
 async def arrival_after_org_message(message: Message, state: FSMContext):
+    print('arrival_after_org_message')
     state_data = await state.get_data()
     waiting_data = state_data.get("waiting_data", None)
     lang = state_data.get("language")
@@ -313,16 +354,16 @@ async def arrival_after_org_message(message: Message, state: FSMContext):
         change_data_from_check="check_arrival_after_org_message",
     )
     lang = state_data.get("language")
-    waiting_data = state_data.get("waiting_data", None)
-    job = message.text.strip()
-    # Сохранение адреса в менеджер данных
-    session_id = state_data.get("session_id")
-    user_data = {
-        waiting_data: job,
-    }
-    await state.update_data({waiting_data: job})
-    state_data = await state.get_data()
-    data_manager.save_user_data(message.from_user.id, session_id, user_data)
+    # waiting_data = state_data.get("waiting_data", None)
+    # job = message.text.strip()
+    # # Сохранение адреса в менеджер данных
+    # session_id = state_data.get("session_id")
+    # user_data = {
+    #     waiting_data: job,
+    # }
+    # await state.update_data({waiting_data: job})
+    # state_data = await state.get_data()
+    # data_manager.save_user_data(message.from_user.id, session_id, user_data)
     migration_data = state_data.get("migration_data", {})
     organization_data = state_data.get("organization_data", {})
     individual_data = state_data.get("individual_data", {})
@@ -369,7 +410,8 @@ async def arrival_after_org_message(message: Message, state: FSMContext):
 
 @nortification_arrival.callback_query(F.data=='check_arrival_after_org_message')
 async def arrival_after_org_message(callback: CallbackQuery, state: FSMContext):
-    
+    print('arrival_after_org_message_c')
+
     state_data = await state.get_data()
     await state.update_data(
         from_action=Arrival_transfer.after_organisation,
@@ -429,12 +471,11 @@ async def arrival_after_org_message(callback: CallbackQuery, state: FSMContext):
 
 
 
-
-
 @nortification_arrival.callback_query(Arrival_transfer.after_organisation)
 @nortification_arrival.callback_query(F.data == "check_arrival_after_org_callback")
 async def arrival_after_org_callback(event: CallbackQuery, state: FSMContext):
     """Обработка cценария по миграционной карте"""
+    print('arrival_after_org_callback')
 
     # Get the user's language preference from state data
     state_data = await state.get_data()
@@ -495,33 +536,3 @@ async def arrival_after_org_callback(event: CallbackQuery, state: FSMContext):
     else:
         await event.answer(**msg_obj)
 
-
-
-
-
-
-
-@nortification_arrival.message(Arrival_transfer.check_data)
-async def edit_f(message: Message, state: FSMContext):
-    state_data = await state.get_data()
-    waiting_data = state_data.get("waiting_data", None)
-    lang = state_data.get("language")
-    # Сохранение адреса в менеджер данных
-    session_id = state_data.get("session_id")
-    if "." in waiting_data:
-        primary_key = waiting_data.split(".")[0]
-        secondary_key = waiting_data.split(".")[1]
-
-        primary_key_data = state_data.get(primary_key)
-        primary_key_data[secondary_key] = message.text.strip()
-
-        await state.update_data({primary_key: primary_key_data})
-
-    else:
-        user_data = {
-            waiting_data: message.text.strip(),
-        }
-        await state.update_data({waiting_data: message.text.strip()})
-        data_manager.save_user_data(message.from_user.id, session_id, user_data)
-
-    await arrival_after_org_callback(message, state)
