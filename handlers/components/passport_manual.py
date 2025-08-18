@@ -53,8 +53,10 @@ async def request_birth_date_input(message: Message, state: FSMContext):
     }
     session_id = state_data.get("session_id")
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
-
     text = f"{_.get_text('passport_manual_birth_date.title', lang)}\n{_.get_text('passport_manual_birth_date.example_text', lang)}"
+    age = state_data.get("age", False)
+    if age:
+        text = f"{_.get_text('passport_manual_kid_birth_date.title', lang)}\n{_.get_text('passport_manual_birth_date.example_text', lang)}"
     await message.answer(text=text, reply_markup=None)  # No keyboard for this step
     # Move to the next state
     await state.set_state(PassportManualStates.citizenship_input)
@@ -81,6 +83,10 @@ async def handle_birth_date_input(message: Message, state: FSMContext):
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
 
     text = f"{_.get_text('passport_manual_citizenship.title', lang)}\n{_.get_text('passport_manual_citizenship.example_text', lang)}"
+    age = state_data.get("age", False)
+    if age:
+        text = f"{_.get_text('migr_manual_citizenship_kid.title', lang)}\n{_.get_text('migr_manual_citizenship_kid.example_text', lang)}"
+    
     await message.answer(text=text, reply_markup=None)
 
     await state.set_state(PassportManualStates.passport_serial_number_input)

@@ -22,6 +22,7 @@ async def handle_organization_start(callback: CallbackQuery, state: FSMContext):
     # Get the user's language preference from state data
     state_data = await state.get_data()
     lang = state_data.get("language")
+    await state.update_data(who_accept = "org")
     # passport_title = state_data.get("passport_title", "")
     # passport_description = state_data.get("passport_description", 'passport_manual_full_name.description')
 

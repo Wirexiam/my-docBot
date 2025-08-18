@@ -23,7 +23,7 @@ async def handle_live_who_input(message: Message, state: FSMContext):
     message_data = message.text.strip()
     
     waiting_data = state_data.get("waiting_data", None)
-    job = message.text.strip()
+    data = message.text.strip()
     # Сохранение адреса в менеджер данных
     session_id = state_data.get("session_id")
     user_data = {

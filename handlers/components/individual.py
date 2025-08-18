@@ -24,6 +24,7 @@ async def handle_individual_start(callback: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
     lang = state_data.get("language")
 
+    await state.update_data(who_accept = "individual")
 
     # Prepare the initial message for manual passport input
     text = f"{_.get_text("data_by_migr_card_arrival.title", lang)}\n\n\n{_.get_text("data_by_migr_card_arrival.description", lang)}"
