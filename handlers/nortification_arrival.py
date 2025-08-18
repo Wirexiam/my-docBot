@@ -224,18 +224,18 @@ async def arrival_migr_card(message: Message, state: FSMContext):
     # Установка состояния
     # await state.set_state(Arrival_transfer.waiting_confirm_start)
     migration_data = await state.get_data()
-    migration_data = migration_data.get("migration_data")
+    # migration_data = migration_data.get("migration_data")
     document_about_home = message.text.strip()
-    migration_data["document_about_home"] = document_about_home
+    # migration_data["document_about_home"] = document_about_home
 
     # Get the user's language preference from state data
     state_data = await state.get_data()
     lang = state_data.get("language")
 
     # Update the state with the passport expiry date
-    await state.update_data(migration_data=migration_data)
+    await state.update_data(document_about_home=document_about_home)
     user_data = {
-        "migration_data": migration_data,
+        "document_about_home": document_about_home,
     }
     session_id = state_data.get("session_id")
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
@@ -374,15 +374,15 @@ async def arrival_after_org_message(message: Message, state: FSMContext):
     pprint(state_data)
     data_to_view = {
         "fio": state_data.get("child_cert_info")["full_name"] if state_data.get("child_cert_info", False) else passport_data.get("full_name", ""),
-        "date_bitrh": state_data.get("child_cert_info")["birth_date"] if state_data.get("child_cert_info", False) else passport_data.get("full_name", ""),
-        "citizenship": state_data.get("child_cert_info")["child_citizenship"] if state_data.get("child_cert_info", False) else passport_data.get("full_name", ""),
+        "date_bitrh": state_data.get("child_cert_info")["birth_date"] if state_data.get("child_cert_info", False) else passport_data.get("birth_date", ""),
+        "citizenship": state_data.get("child_cert_info")["child_citizenship"] if state_data.get("child_cert_info", False) else passport_data.get("citizenship", ""),
         "live_adress": state_data.get("live_adress", ""),
         "passport": passport_data,
         "migr_card": migration_data,
         "goal": migration_data.get("goal", ""),
         "profession": state_data.get("profession", ""),
         "who_accept": organization_data if organization_data else individual_data,
-        "doc": organization_data.get("document_about_home", "Не указано")
+        "doc": state_data.get("document_about_home", "Не указано")
     }
     text = f"{_.get_text('organisation_info_correct.title', lang)}\n\n"
     text += f"{_.get_text('organisation_info_correct.full_name', lang)}{data_to_view['fio']}\n"
