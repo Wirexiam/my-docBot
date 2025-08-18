@@ -17,7 +17,7 @@ from states.components.select_region_and_mvd import SelectRegionStates
 from keyboards.doc_child_stay_extension import (
     get_doc_child_stay_extension_related_child_keyboard,
     get_doc_child_stay_extension_start_keyboard,
-    get_doc_child_stay_extension_passport_start_keyboard, get_main_editor_keyboard, subkeyboard
+    get_doc_child_stay_extension_passport_start_keyboard, get_main_editor_keyboard, subkeyboard, get_doc_child_accept_data
 )
 
 from localization import _
@@ -25,6 +25,10 @@ from data_manager import SecureDataManager
 
 doc_child_stay_extension_router = Router()
 data_manager = SecureDataManager()
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 @doc_child_stay_extension_router.callback_query(F.data == "doc_child_stay_extension")
 async def handle_doc_child_stay_extension_start(
@@ -202,6 +206,7 @@ async def handle_child_data(message: Message, state: FSMContext):
         from_action=DocChildStayExtensionStates.after_phone_number,
         next_states=[PhoneNumberStates.phone_number_input],
     )
+    logger.info(f"data in handle_child_data 1:{state_data}")
     await func_residence_reason_patent(
         message, state, "patent_mother_start_msg.description"
     )
@@ -215,6 +220,13 @@ async def handle_child_data(message: Message, state: FSMContext):
     waiting_data = state_data.get("waiting_data", None)
     # Сохранение адреса в менеджер данных
     session_id = state_data.get("session_id")
+
+    patient_data = state_data.get("patient_data", {})
+
+    if "patient_data.patient_issue_place" in state_data:
+        patient_data["patient_issue_place"] = state_data["patient_data.patient_issue_place"]
+        await state.update_data(patient_data=patient_data)
+
     user_data = {
         waiting_data: message.text.strip(),
     }
@@ -224,6 +236,7 @@ async def handle_child_data(message: Message, state: FSMContext):
     await state.set_state(DocChildStayExtensionStates.extend_child_stay)
     text = f"{_.get_text('extend_child_stay.title', lang)}\n{_.get_text('extend_child_stay.description', lang)}"
     await message.answer(text=text)
+    logger.info(f"data in handle_child_data:{state_data}")
 
 
 @doc_child_stay_extension_router.message(DocChildStayExtensionStates.extend_child_stay)
@@ -244,7 +257,9 @@ async def handle_child_data(message: Message, state: FSMContext):
         data_manager.save_user_data(message.from_user.id, session_id, user_data)
 
     data = await state.get_data()
-    pprint(data)
+    # pprint(data)
+
+    logger.info(data)
     child_data = (
         [
             f"{_.get_text('child_stay_extension.child_passport.full_name', lang)}{data['child_data']['full_name']}",
@@ -264,6 +279,7 @@ async def handle_child_data(message: Message, state: FSMContext):
         ]
     )
 
+    patient_data = data.get("patient_data", {})
     message_lines = [
         _.get_text("child_stay_extension.title", lang),
         _.get_text("child_stay_extension.mother_related", lang),
@@ -273,9 +289,9 @@ async def handle_child_data(message: Message, state: FSMContext):
         f"{_.get_text('child_stay_extension.mother_issue_info', lang)}{data['parent_passport_data']['passport_issue_date']}, {data['parent_passport_data']['passport_issue_place']}",
         f"{_.get_text('child_stay_extension.mother_expiry_date', lang)}{data['parent_passport_data']['passport_expiry_date']}\n",
         _.get_text("child_stay_extension.basis_section", lang),
-        f"{_.get_text('child_stay_extension.basis_patient', lang)}{data['patient_number']}",
-        f"{_.get_text('child_stay_extension.basis_issue_date', lang)}{data['patient_date']}",
-        f"{_.get_text('child_stay_extension.basis_issue_place', lang)}{data['patient_issue_place']}\n",
+        f"{_.get_text('child_stay_extension.basis_patient', lang)}{patient_data['patient_number']}",
+        f"{_.get_text('child_stay_extension.basis_issue_date', lang)}{patient_data['patient_date']}",
+        f"{_.get_text('child_stay_extension.basis_issue_place', lang)}{patient_data['patient_issue_place']}\n",
         _.get_text("child_stay_extension.child_section", lang),
         *child_data,
         _.get_text("child_stay_extension.address_section", lang),
@@ -291,13 +307,11 @@ async def handle_child_data(message: Message, state: FSMContext):
     text = "\n".join(message_lines)
     await message.answer(
         text=text,
-        reply_markup=get_registration_renewal_after_residence_reason_and_location_keyboard(
-            lang
-        ),
+        reply_markup=get_doc_child_accept_data(lang)
     )
 
 
-@doc_child_stay_extension_router.callback_query(F.data=="registration_renewal_patient_check_data_change")
+@doc_child_stay_extension_router.callback_query(F.data=="child_stay_data_edit")
 async def child_stay_editor(query: CallbackQuery, state: FSMContext):
     """Обработчик нажатия кнопки Изменить"""
 
@@ -482,6 +496,7 @@ async def sub_editor(query: CallbackQuery, state: FSMContext):
         }
 
         if data in fields_info:
+            await state.update_data(dict="patient_data")
             await state.update_data(field=fields_info[data]["field"])
             await query.message.edit_text(text=fields_info[data]["text"])
             await state.set_state(DocChildStayExtensionStates.edit_fields)

@@ -1,6 +1,10 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from localization import _
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def get_doc_child_stay_extension_start_keyboard(lang: str = "ru"):
     """Клавиатура ожидания подтверждения начала Продление пребывания ребёнка"""
@@ -38,6 +42,22 @@ def get_doc_child_stay_extension_passport_start_keyboard(lang: str = "ru"):
 
 
 
+def get_doc_child_accept_data(lang: str = "ru"):
+    builder = InlineKeyboardBuilder()
+
+
+    builder.button(
+        text=_.get_text("child_stay_extension.buttons.accept", lang),
+        callback_data="child_stay_accept"
+    )
+
+    builder.button(
+        text=_.get_text("child_stay_extension.buttons.edit", lang),
+        callback_data="child_stay_data_edit"
+    )
+
+    builder.adjust(1)
+    return builder.as_markup()
 
 
 def get_doc_child_stay_extension_related_child_keyboard(lang: str = "ru"):
@@ -112,7 +132,9 @@ def get_main_editor_keyboard(lang: str = "ru"):
     )
 
     builder.adjust(1)
-    return builder.as_markup()
+    markup = builder.as_markup()
+    logger.info(markup)
+    return markup
 
 
 def subkeyboard(postfix: list[str], lang: str = "ru"):
