@@ -72,38 +72,43 @@ def get_main_editor_keyboard(lang: str = "ru"):
     core = "child_stay_extension"
 
     builder.button(
-        text=_.get_text(f"{core}.mother_related", lang).removesuffix(": ").strip(),
+        text=_.get_text(f"{core}.mother_related", lang).rstrip(": ").strip(),
         callback_data="cs_editor_mother_related"
     )
 
     builder.button(
-        text=_.get_text(f"{core}.basis_section", lang).removesuffix(": ").strip(),
+        text=_.get_text(f"{core}.basis_section", lang).rstrip(": ").strip(),
         callback_data="cs_editor_basis_section"
     ),
 
     builder.button(
-        text=_.get_text(f"{core}.child_section", lang).removesuffix(": ").strip(),
+        text=_.get_text(f"{core}.child_section", lang).rstrip(": ").strip(),
         callback_data="cs_editor_child_section"
     )
 
     builder.button(
-        text=_.get_text(f"{core}.address_section", lang).removesuffix(": ").strip(),
+        text=_.get_text(f"{core}.address_section", lang).rstrip(": ").strip(),
         callback_data="cs_editor_address_section"
     )
 
     builder.button(
-        text=_.get_text(f"{core}.extend_section", lang).removesuffix(": ").strip(),
+        text=_.get_text(f"{core}.extend_section", lang).rstrip(": ").strip(),
         callback_data="cs_editor_extend_section"
     )
 
     builder.button(
-        text=_.get_text(f"{core}.mvd_section", lang).removesuffix(": ").strip(),
+        text=_.get_text(f"{core}.mvd_section", lang).rstrip(": ").strip(),
         callback_data="cs_editor_mvd_section"
     )
 
     builder.button(
-        text=_.get_text("phone_number_text", lang).removesuffix(": ").strip(),
+        text=_.get_text("phone_number_text", lang).rstrip(": ").strip(),
         callback_data="cs_editor_phone_number_text"
+    )
+
+    builder.button(
+        text=_.get_text("startarrival.cancel_button", lang),
+        callback_data="cs_editor_back_to_child_stay"
     )
 
     builder.adjust(1)
@@ -122,5 +127,11 @@ def subkeyboard(postfix: list[str], lang: str = "ru"):
             callback_data=f"cs_sub_editor_{key}"
         )
 
+    builder.button(
+        text=_.get_text("startarrival.cancel_button", lang),
+        callback_data="cs_sub_editor_back"
+    )
+
     builder.adjust(1)
-    return builder.as_markup()
+    markup = builder.as_markup()
+    return markup

@@ -26,11 +26,6 @@ from data_manager import SecureDataManager
 doc_child_stay_extension_router = Router()
 data_manager = SecureDataManager()
 
-import logging
-
-logger = logging.getLogger(__name__)
-
-
 @doc_child_stay_extension_router.callback_query(F.data == "doc_child_stay_extension")
 async def handle_doc_child_stay_extension_start(
     callback: CallbackQuery, state: FSMContext
@@ -327,6 +322,13 @@ async def handler_main_editor(query: CallbackQuery, state: FSMContext):
 
     query_data = query.data.removeprefix("cs_editor_")
 
+    if query_data == "back_to_child_stay":
+        await state.set_state(None)
+        await query.message.delete()
+        await handle_child_data(query.message, state)
+        await query.message.delete()
+        return
+
     if query_data in ["mother_related", "basis_section", "child_section", "address_section", "extend_section", "mvd_section", "phone_number_text"]:
         text = _.get_text("change_menu.title", lang)
         if query_data.startswith("basis_"):
@@ -337,14 +339,36 @@ async def handler_main_editor(query: CallbackQuery, state: FSMContext):
             )
 
         if query_data.startswith("mother_"):
-            postfix = ["mother_full_name", "mother_citizenship", "mother_document", "mother_issue_info", "mother_expiry_date"]
+            postfix = ["mother_full_name", "mother_citizenship", "mother_document", "mother_issue_info", "mother_expiry_date", "mother_issue_date"]
             await query.message.edit_text(
                 text=text,
                 reply_markup=subkeyboard(postfix, lang)
             )
 
         if query_data.startswith("child_"):
-            ...
+            child_fields = (
+                [
+                    "child_full_name",
+                    "child_citizenship",
+                    "child_document",
+                    "child_issue_info",
+                    "child_expiry_date",
+                ]
+                if "passport_expiry_date" in state_data["child_data"]
+                else [
+                    "child_full_name",
+                    "child_birth_date",
+                    "child_citizenship",
+                    "child_document",
+                    "child_document_number",
+                    "child_issue_info",
+                ]
+            )
+            await query.message.edit_text(
+                text=text,
+                reply_markup=subkeyboard(child_fields, lang)
+            )
+
 
         if query_data in ["address_section", "extend_section", "mvd_section", "phone_number_text"]:
             if query_data == "address_section":
@@ -388,12 +412,16 @@ async def sub_editor(query: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
     lang = state_data.get("language")
 
-    logger.info(f"QUERY DATA: {query.data}")
 
     query_data = query.data.removeprefix("cs_sub_editor_")
+
+    if query_data == "back":
+        await query.answer()
+        await child_stay_editor(query, state)
+        return
+
     if query_data.startswith("mother_"):
         data = query_data.removeprefix("mother_")
-        logger.info(f"startswith('mother_'): {data}")
         fields_info = {
             "full_name": {
                 "text": f"{_.get_text("stamp_transfer_start_new_passport.description", lang)}",
@@ -422,7 +450,11 @@ async def sub_editor(query: CallbackQuery, state: FSMContext):
                     f"{_.get_text('passport_manual_issue_place.title', lang)}\n\n"
                     f"{_.get_text('passport_manual_issue_place.example_text', lang)}"
                 ),
-                "field": "passport_data.passport_issue_place"
+                "field": "passport_issue_place"
+            },
+            "issue_date": {
+                "text": f"{_.get_text("passport_manual_issue_date.title", lang)}\n\n{_.get_text("passport_manual_issue_date.example_text", lang)}",
+                "field": "passport_issue_date"
             }
         }
         if data in fields_info:
@@ -433,7 +465,6 @@ async def sub_editor(query: CallbackQuery, state: FSMContext):
 
     if query_data.startswith("basis_"):
         data = query_data.removeprefix("basis_")
-        logger.info(f"startswith('basis_'): {data}")
 
         fields_info = {
             "patient": {
@@ -457,7 +488,50 @@ async def sub_editor(query: CallbackQuery, state: FSMContext):
 
 
     if query_data.startswith("child_"):
-        ...
+        data = query_data.removeprefix("child_")
+
+
+        fields_info = {
+            "full_name": {
+                "text": f"{_.get_text("stamp_transfer_start_new_passport.description", lang)}",
+                "field": "full_name"
+            },
+            "citizenship": {
+                "text": (
+                    f"{_.get_text('passport_manual_citizenship.title', lang)}\n\n"
+                    f"{_.get_text('passport_manual_citizenship.example_text', lang)}"
+                ),
+                "field": "citizenship"
+            },
+            "document": {
+                "text": f"{_.get_text("passport_manual_serial_input.title", lang)}\n\n{_.get_text("passport_manual_serial_input.example_text", lang)}",
+                "field": "passport_serial_number"
+            },
+            "expiry_date": {
+                "text": (
+                    f"{_.get_text('passport_manual_expire_date.title', lang)}\n\n"
+                    f"{_.get_text('passport_manual_expire_date.example_text', lang)}"
+                ),
+                "field": "passport_expiry_date"
+            },
+            "birth_date": {
+                "text": f"{_.get_text("residence_reason_manual_child_messages.child_birth_date.title", lang)}\n{_.get_text("residence_reason_manual_child_messages.child_birth_date.example_text", lang)}"
+
+            },
+            "issue_info": {
+                "text": (
+                    f"{_.get_text('passport_manual_issue_place.title', lang)}\n\n"
+                    f"{_.get_text('passport_manual_issue_place.example_text', lang)}"
+                ),
+                "field": "passport_data.passport_issue_place"
+            }
+        }
+
+        if data in fields_info:
+            await state.update_data(dict="child_data")
+            await state.update_data(field=fields_info[data]["field"])
+            await query.message.edit_text(text=fields_info[data]["text"])
+            await state.set_state(DocChildStayExtensionStates.edit_fields)
 
 
 @doc_child_stay_extension_router.message(DocChildStayExtensionStates.edit_fields)
@@ -476,6 +550,9 @@ async def edit_fields(message: Message, state: FSMContext):
         target = state_data.get(dict_name, {})
         target[field] = msg
         await state.update_data({dict_name: target})
+
+    await state.update_data(field=None)
+    await state.update_data(dict=None)
 
     await handle_child_data(message, state)
 
