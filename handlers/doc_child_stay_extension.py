@@ -432,7 +432,33 @@ async def sub_editor(query: CallbackQuery, state: FSMContext):
             await state.set_state(DocChildStayExtensionStates.edit_fields)
 
     if query_data.startswith("basis_"):
+        data = query_data.removeprefix("basis_")
+        logger.info(f"startswith('basis_'): {data}")
+
+        fields_info = {
+            "patient": {
+                "text": f"{_.get_text("residence_reason_manual_patient_messages.patient_number.title", lang)}\n\n{_.get_text("residence_reason_manual_patient_messages.patient_number.example_text", lang)}",
+                "field": "patient_number"
+            },
+            "issue_date": {
+                "text": f"{_.get_text("residence_reason_manual_patient_messages.patient_date.title", lang)}\n\n{_.get_text("residence_reason_manual_patient_messages.patient_date.example_text", lang)}",
+                "field": "patient_date"
+            },
+            "issue_place": {
+                "text": f"{_.get_text("residence_reason_manual_patient_messages.patient_issue_place.title", lang)}\n\n{_.get_text("residence_reason_manual_patient_messages.patient_issue_place.example_text", lang)}",
+                "field": "patient_issue_place"
+            }
+        }
+
+        if data in fields_info:
+            await state.update_data(field=fields_info[data]["field"])
+            await query.message.edit_text(text=fields_info[data]["text"])
+            await state.set_state(DocChildStayExtensionStates.edit_fields)
+
+
+    if query_data.startswith("child_"):
         ...
+
 
 @doc_child_stay_extension_router.message(DocChildStayExtensionStates.edit_fields)
 async def edit_fields(message: Message, state: FSMContext):
