@@ -26,7 +26,11 @@ async def handle_migr_manual_start(callback: CallbackQuery, state: FSMContext):
     lang = state_data.get("language")
     
     # Prepare the initial message for manual passport input
-    text = f"{_.get_text('name_migr_card_arrival.title')}\n\n{_.get_text('name_migr_card_arrival.description', lang)}"
+    migr_desc = state_data.get("migr_desc", "name_migr_card_arrival.description")
+    age = state_data.get("age", False)
+    if age:
+        pass
+    text = f"{_.get_text("name_migr_card_arrival.title", lang)}\n\n{_.get_text(migr_desc, lang)}"
 
     # Update the state with the action context
     await state.set_state(MigrCardManualStates.entry_date_input)
@@ -73,6 +77,10 @@ async def request_birth_date_input(message: Message, state: FSMContext):
     }
     session_id = state_data.get("session_id")
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
+    
+    age = state_data.get("age", False)
+    if age:
+        await state.update_data(migr_title="migr_manual_citizenship_kid.title")
 
     text = f"{_.get_text('data_migr_card_arrival.title', lang)}\n{_.get_text('data_migr_card_arrival.example_text', lang)}"
     await message.answer(text=text, reply_markup=None)  # No keyboard for this step
@@ -99,8 +107,10 @@ async def handle_entry_date_input(message: Message, state: FSMContext):
     }
     session_id = state_data.get("session_id")
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
+    
+    migr_title = state_data.get("migr_title", "passport_manual_citizenship.title")
 
-    text = f"{_.get_text('passport_manual_citizenship.title', lang)}\n{_.get_text('passport_manual_citizenship.example_text', lang)}"
+    text = f"{_.get_text(migr_title, lang)}\n{_.get_text('passport_manual_citizenship.example_text', lang)}"
     await message.answer(text=text, reply_markup=None)
 
     await state.set_state(MigrCardManualStates.place_point_input)
@@ -208,8 +218,27 @@ async def handle_number_migr_card_pretria_period_callback(call: CallbackQuery, s
 
     text = f"{_.get_text('goals_migr_card_arrival.title', lang)}"
     await call.message.answer(text=text, reply_markup=kbs_for_goals(lang))
+    await state.update_data(waiting_data = "migration_data.goal")
+    
+    next_states = state_data.get("next_states", [])
+    from_action = state_data.get("from_action")
+    print(f"Next states: {next_states}, From action: {from_action}")
+    if len(next_states) == 1:
+        print("Only one next state available, setting to from_action")
+        await state.set_state(from_action)
+    elif len(next_states) > 0:
+        print(f"Next states available: {next_states}")
+        next_state = next_states.pop(0)
+        print(next_state)
+        print(next_states)
+        await state.update_data(next_states=next_states)
+        await state.set_state(next_state)
+    else:
+        print("No next states found, returning to from_action")
+        # If no next states, return to the previous action
+        await state.set_state(from_action)
+    # print(f"Next state set to: {next_state if next_states else from_action}")
 
-    await state.set_state(MigrCardManualStates.before_select_goal)
      
 @migration_manual_router.message(MigrCardManualStates.goal)
 async def handle_number_migr_card_pretria_period(message: Message, state: FSMContext):

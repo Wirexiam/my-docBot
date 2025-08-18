@@ -42,7 +42,7 @@ def to_kid_kbs(lang: str):
 def kbs_cert_arrival(lang: str):
     builder = InlineKeyboardBuilder()
     builder.button(
-        text=_.get_text("stamp_transfer_passport_start.passport_photo", lang), callback_data="ad"
+        text=_.get_text("stamp_transfer_passport_start.passport_photo", lang), callback_data="arrival_agree"
     )
     builder.button(
         text=_.get_text("stamp_transfer_passport_start.passport_manual", lang),

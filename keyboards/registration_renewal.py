@@ -73,10 +73,10 @@ def get_registration_renewal_after_residence_reason_and_location_keyboard(
     )
     builder.button(
         text=_.get_text(
-            "registration_renewal_patient_check_data.change_registration_renewal_patient_data_button",
+            "registration_renewal_child_check_data.change_registration_renewal_child_data_button",
             lang,
         ),
-        callback_data="registration_renewal_patient_check_data_change",
+        callback_data="change_data_registration_renewal_check_data",
     )
     builder.adjust(1)
     return builder.as_markup()

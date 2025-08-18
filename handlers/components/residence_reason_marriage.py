@@ -53,7 +53,8 @@ async def get_spouse_fio(message: Message, state: FSMContext):
     spouse_fio = message.text.strip()
     # Set the state for spouse full name input
     await state.set_state(ResidenceReasonMarriageStates.issue_date)
-    await state.update_data(spouse_fio=spouse_fio)
+    marriage_data = {"spouse_fio": spouse_fio}
+    await state.update_data(marriage_data=marriage_data)
     state_data = await state.get_data()
     lang = state_data.get("language")
 
@@ -65,12 +66,13 @@ async def get_spouse_fio(message: Message, state: FSMContext):
 @residence_reason_marriage_router.message(ResidenceReasonMarriageStates.issue_date)
 async def get_issue_date(message: Message, state: FSMContext):
     """Handle the input of issue date for residence reason marriage."""
-    issue_date = message.text.strip()
     # Set the state for issue date input
     await state.set_state(ResidenceReasonMarriageStates.marriage_number)
-    await state.update_data(issue_date=issue_date)
     state_data = await state.get_data()
     lang = state_data.get("language")
+    marriage_data = state_data.get("marriage_data", {})
+    marriage_data["issue_date"] = message.text.strip()
+    await state.update_data(marriage_data=marriage_data)
 
     # Prompt the user to enter their marriage number
     text = f"{_.get_text('residence_reason_manual_marriage_messages.marriage_certificate.title', lang)}\n{_.get_text('residence_reason_manual_marriage_messages.marriage_certificate.example_text', lang)}"
@@ -83,14 +85,16 @@ async def get_marriage_number(message: Message, state: FSMContext):
     marriage_number = message.text.strip()
     # Set the state for marriage number input
     await state.set_state(ResidenceReasonMarriageStates.issue_place)
-    await state.update_data(marriage_number=marriage_number)
     state_data = await state.get_data()
     lang = state_data.get("language")
 
+    marriage_data = state_data.get("marriage_data", {})
+    marriage_data["marriage_number"] = message.text.strip()
+    await state.update_data(marriage_data=marriage_data)
     # Prompt the user to enter the place of issue
     text = f"{_.get_text('residence_reason_manual_marriage_messages.marriage_issue_place.title', lang)}\n{_.get_text('residence_reason_manual_marriage_messages.marriage_issue_place.example_text', lang)}"
     await message.answer(text=text)
-    await state.update_data(waiting_data="marriage_issue_place")
+    await state.update_data(waiting_data="marriage_data.marriage_issue_place")
     next_states = state_data.get("next_states", [])
     from_action = state_data.get("from_action")
     if len(next_states) > 0:

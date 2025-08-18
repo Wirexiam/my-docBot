@@ -26,15 +26,32 @@ async def handle_adress_migr_input(message: Message, state: FSMContext):
 
     # Сохранение адреса в менеджер данных
     session_id = state_data.get("session_id")
-    user_data = {
-        waiting_data: message.text.strip(),
-    }
-    await state.update_data({waiting_data: message.text.strip()})
+    if "." in waiting_data:
+        primary_key = waiting_data.split(".")[0]
+        secondary_key = waiting_data.split(".")[1]
+
+        primary_key_data = state_data.get(primary_key)
+        primary_key_data[secondary_key] = message.text.strip()
+
+        await state.update_data({primary_key: primary_key_data})
+
+    else:
+        user_data = {
+            waiting_data: message.text.strip(),
+        }
+        await state.update_data({waiting_data: message.text.strip()})
+        data_manager.save_user_data(message.from_user.id, session_id, user_data)
+        
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
     photo = FSInputFile("static/live_adress_example.png")
     # Отправка подтверждения пользователю
-
-    text = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
+    
+    home_migr_title = state_data.get("home_migr_title", "live_adress.title")
+    text = f"{_.get_text(home_migr_title, lang)}\n{_.get_text('live_adress.example', lang)}"
+    age = state_data.get("age", False)
+    if age:
+        await state.update_data(migr_desc="name_migr_card_arrival_kid.desc")
+        text = f"{_.get_text(home_migr_title, lang)}"
 
     await message.answer_photo(caption=text, photo=photo)
     await state.set_state(HomeMigrData.havedoc)
@@ -72,14 +89,29 @@ async def handle_adress_migr_input(call: CallbackQuery, state: FSMContext):
         
     # Сохранение адреса в менеджер данных
     session_id = state_data.get("session_id")
-    user_data = {
-        waiting_data: call.data,
-    }
-    data_manager.save_user_data(call.from_user.id, session_id, user_data)
+    if "." in waiting_data:
+        primary_key = waiting_data.split(".")[0]
+        secondary_key = waiting_data.split(".")[1]
+
+        primary_key_data = state_data.get(primary_key)
+        primary_key_data[secondary_key] = call.data
+
+        await state.update_data({primary_key: primary_key_data})
+    else:
+        user_data = {
+            waiting_data: call.data,
+        }
+        await state.update_data({waiting_data: call.data})
+        data_manager.save_user_data(call.from_user.id, session_id, user_data)
     photo = FSInputFile("static/live_adress_example.png")
     # Отправка подтверждения пользователю
 
-    text = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
+    home_migr_title = state_data.get("home_migr_title", "live_adress.title")
+    text = f"{_.get_text(home_migr_title, lang)}\n{_.get_text('live_adress.example', lang)}"
+    age = state_data.get("age", False)
+    if age:
+        await state.update_data(migr_desc="name_migr_card_arrival_kid.desc")
+        text = f"{_.get_text(home_migr_title, lang)}"
 
     await call.message.answer_photo(caption=text, photo=photo)
     await state.set_state(HomeMigrData.havedoc)
@@ -113,6 +145,7 @@ async def handle_adress_migr_input(message: Message, state: FSMContext):
     lang = state_data.get("language")
     migration_data['live_adress'] = adress
     
+    await state.update_data(live_adress=adress)
     await state.update_data(migration_data=migration_data)
     user_data = {
         "migration_data": migration_data,

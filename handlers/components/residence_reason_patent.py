@@ -70,10 +70,12 @@ async def get_patient_number(message: Message, state: FSMContext):
     patient_number = message.text.strip()
     # Set the state for patient number input
     await state.set_state(ResidenceReasonPatentStates.issue_date)
-    await state.update_data(patient_number=patient_number)
+
     state_data = await state.get_data()
     lang = state_data.get("language")
 
+    patient_data = {"patient_number": patient_number}
+    await state.update_data(patient_data=patient_data)
     # Prompt the user to enter their patient number
     text = f"{_.get_text("residence_reason_manual_patient_messages.patient_date.title", lang)}\n{_.get_text("residence_reason_manual_patient_messages.patient_date.example_text", lang)}"
     await message.answer(text=text)
@@ -84,17 +86,17 @@ async def get_issue_date(message: Message, state: FSMContext):
     """Handle the input of issue date for residence reason patent."""
 
     # Get the patient number from the message
-    patient_date = message.text.strip()
-    await state.update_data(patient_date=patient_date)
-
     # Set the state for issue date input
     state_data = await state.get_data()
     lang = state_data.get("language")
+    patient_data = state_data.get("patient_data", {})
+    patient_data["patient_date"] = message.text.strip()
+    await state.update_data(patient_data=patient_data)
 
     # Prompt the user to enter the issue date
     text = f"{_.get_text("residence_reason_manual_patient_messages.patient_issue_place.title", lang)}\n{_.get_text("residence_reason_manual_patient_messages.patient_issue_place.example_text", lang)}"
     await message.answer(text=text)
-    await state.update_data(waiting_data="patient_issue_place")
+    await state.update_data(waiting_data="patient_data.patient_issue_place")
     next_states = state_data.get("next_states", [])
     from_action = state_data.get("from_action")
     if len(next_states) > 0:

@@ -37,11 +37,20 @@ async def handle_passport_manual_start(callback: CallbackQuery, state: FSMContex
 async def request_birth_date_input(message: Message, state: FSMContext):
     """Handle the input of the birth date in manual passport handling."""
     child_fio = message.text.strip()
+    child_cert_info = {}
+    child_cert_info["full_name"] = child_fio
     # Get the user's language preference from state data
     state_data = await state.get_data()
     lang = state_data.get("language")
     # Update the state with the full name
-    await state.update_data(child_fio=child_fio)
+    await state.update_data(child_cert_info=child_cert_info)
+    user_data = {
+        "child_cert_info": child_cert_info,
+    }
+    session_id = state_data.get("session_id")
+    data_manager.save_user_data(message.from_user.id, session_id, user_data)
+    # Get the user's language preference from state data
+    # Update the state with the full name
     text = f"{_.get_text('passport_manual_birth_date.title', lang)}\n{_.get_text('passport_manual_birth_date.example_text', lang)}"
     await message.answer(text=text, reply_markup=None)  # No keyboard for this step
     # Move to the next state
@@ -52,13 +61,24 @@ async def request_birth_date_input(message: Message, state: FSMContext):
 async def handle_birth_date_input(message: Message, state: FSMContext):
     """Handle the input of the birth date in manual passport handling."""
     child_birth_date = message.text.strip()
+    child_cert_info = await state.get_data()
+    child_cert_info = child_cert_info.get("child_cert_info")
+    child_cert_info["birth_date"] = child_birth_date
 
     # Get the user's language preference from state data
     state_data = await state.get_data()
     lang = state_data.get("language")
 
     # Update the state with the birth date
-    await state.update_data(child_birth_date=child_birth_date)
+    await state.update_data(child_cert_info=child_cert_info)
+    user_data = {
+        "child_cert_info": child_cert_info,
+    }
+    session_id = state_data.get("session_id")
+    data_manager.save_user_data(message.from_user.id, session_id, user_data)
+    # Get the user's language preference from state data
+
+    # Update the state with the birth date
 
     text = f"{_.get_text('passport_manual_citizenship.title', lang)}\n{_.get_text('passport_manual_citizenship.example_text', lang)}"
     await message.answer(text=text, reply_markup=None)
@@ -71,13 +91,23 @@ async def handle_birth_date_input(message: Message, state: FSMContext):
 async def handle_citizenship_input(message: Message, state: FSMContext):
     """Handle the input of the citizenship in manual passport handling."""
     child_citizenship = message.text.strip()
+    child_cert_info = await state.get_data()
+    child_cert_info = child_cert_info.get("child_cert_info")
+    child_cert_info["child_citizenship"] = child_citizenship
 
     # Get the user's language preference from state data
     state_data = await state.get_data()
     lang = state_data.get("language")
 
-    # Update the state with the citizenship
-    await state.update_data(child_citizenship=child_citizenship)
+    # Update the state with the birth date
+    await state.update_data(child_cert_info=child_cert_info)
+    user_data = {
+        "child_cert_info": child_cert_info,
+    }
+    session_id = state_data.get("session_id")
+    data_manager.save_user_data(message.from_user.id, session_id, user_data)
+
+    # Get the user's language preference from state data
 
     text = f"{_.get_text('birth_cert_numb.title', lang)}\n{_.get_text('birth_cert_numb.example_text', lang)}"
     await message.answer(text=text, reply_markup=None)
@@ -88,13 +118,22 @@ async def handle_citizenship_input(message: Message, state: FSMContext):
 async def handle_citizenship_input(message: Message, state: FSMContext):
     """Handle the input of the citizenship in manual passport handling."""
     child_certificate_number = message.text.strip()
+    child_cert_info = await state.get_data()
+    child_cert_info = child_cert_info.get("child_cert_info")
+    child_cert_info["child_certificate_number"] = child_certificate_number
 
     # Get the user's language preference from state data
     state_data = await state.get_data()
     lang = state_data.get("language")
 
+    # Update the state with the birth date
+    await state.update_data(child_cert_info=child_cert_info)
+    user_data = {
+        "child_cert_info": child_cert_info,
+    }
+    session_id = state_data.get("session_id")
+    data_manager.save_user_data(message.from_user.id, session_id, user_data)
     # Update the state with the citizenship
-    await state.update_data(child_certificate_number="child_certificate_number")
 
     text = f"{_.get_text('cert_issue_place.title', lang)}\n{_.get_text('cert_issue_place.example_text', lang)}"
 

@@ -76,3 +76,18 @@ def get_travel_outside_Ru_check_keyboard(lang: str = "ru"):
     builder.adjust(1)
     return builder.as_markup()
 
+
+
+
+def get_check_data_before_gen(lang: str = "ru"):
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text=_.get_text("stamp_check_datas_info.all_true_in_stamp_button", lang),
+        callback_data="all_true_in_stamp",
+    )
+    builder.button(
+        text=_.get_text("stamp_check_datas_info.change_data_stamp_button", lang),
+        callback_data="change_data_",
+    )
+    builder.adjust(1)
+    return builder.as_markup()
