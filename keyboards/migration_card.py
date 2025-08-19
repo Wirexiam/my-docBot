@@ -25,16 +25,16 @@ def kbs_for_no_specified(lang: str):
 def kbs_for_goals(lang: str):
     builder = InlineKeyboardBuilder()
     builder.button(
-        text=_.get_text("goals_migr_card_arrival.goals.goal_one", lang), callback_data="labor"
+        text=_.get_text("goals_migr_card_arrival.goals.goal_one", lang), callback_data="Трудовая"
     )
     builder.button(
-        text=_.get_text("goals_migr_card_arrival.goals.goal_two", lang), callback_data="study"
+        text=_.get_text("goals_migr_card_arrival.goals.goal_two", lang), callback_data="Учёба"
     )
     builder.button(
-        text=_.get_text("goals_migr_card_arrival.goals.goal_three", lang), callback_data="family"
+        text=_.get_text("goals_migr_card_arrival.goals.goal_three", lang), callback_data="Семейная"
     )
     builder.button(
-        text=_.get_text("goals_migr_card_arrival.goals.goal_four", lang), callback_data="turism"
+        text=_.get_text("goals_migr_card_arrival.goals.goal_four", lang), callback_data="Туризм"
     )
     builder.button(
         text=_.get_text("goals_migr_card_arrival.goals.other", lang), callback_data="other"
