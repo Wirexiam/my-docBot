@@ -77,6 +77,7 @@ async def handle_adress_migr_input(call: CallbackQuery, state: FSMContext):
     lang = state_data.get("language", "ru")
     fill_goal = state_data.get("fill_goal", False)
     waiting_data = state_data.get("waiting_data", None)
+    session_id = state_data.get("session_id")
     user_data = {}
     if fill_goal:
         migration_data = state_data.get("migration_data")
@@ -86,23 +87,21 @@ async def handle_adress_migr_input(call: CallbackQuery, state: FSMContext):
         # Update the state with the passport expiry date
         await state.update_data(migration_data=migration_data)
         user_data["migration_data"] = migration_data,
-        
-    # Сохранение адреса в менеджер данных
-    session_id = state_data.get("session_id")
-    if "." in waiting_data:
-        primary_key = waiting_data.split(".")[0]
-        secondary_key = waiting_data.split(".")[1]
-
-        primary_key_data = state_data.get(primary_key)
-        primary_key_data[secondary_key] = call.data
-
-        await state.update_data({primary_key: primary_key_data})
     else:
-        user_data = {
-            waiting_data: call.data,
-        }
-        await state.update_data({waiting_data: call.data})
-        data_manager.save_user_data(call.from_user.id, session_id, user_data)
+        if "." in waiting_data:
+            primary_key = waiting_data.split(".")[0]
+            secondary_key = waiting_data.split(".")[1]
+
+            primary_key_data = state_data.get(primary_key)
+            primary_key_data[secondary_key] = call.data
+
+            await state.update_data({primary_key: primary_key_data})
+        else:
+            user_data = {
+                waiting_data: call.data,
+            }
+            await state.update_data({waiting_data: call.data})
+            data_manager.save_user_data(call.from_user.id, session_id, user_data)
     photo = FSInputFile("static/live_adress_example.png")
     # Отправка подтверждения пользователю
 
