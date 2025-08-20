@@ -1060,33 +1060,9 @@
         "child_certificate_issue_place": "🏢 Sənədi kim verib göstər\\nNümunə: ЗАГС Центрального района г. Санкт-Петербурга",
         "who_for_child": "🧑 Nəqədər yaxın olduğunuzu göstərin (uşaqla əlaqəniz)"
     },
-    "change_profession_btn": " 🧰 Peşə",
-"change_phone_by_organisation_btn": "📌 Qəbul edən təşkilatın telefonu",
 "change_phone_by_individual_btn": "📌 Qəbul edən tərəfin telefonu",
 "change_value_phone_by_individual": "☎️ Əlaqə şəxsin telefon nömrəsini daxil edin (əgər mövcuddursa)",
 "change_value_phone_by_organisation": "☎️ Əlaqə şəxsin telefon nömrəsini daxil edin (əgər mövcuddursa)",
 
-"change_individual_data_dict_btn": "📄 Qəbul edən tərəfin pasportu",
-"change_representative_data_dict_btn": "👥 Qanuni nümayəndə",
-"change_who_btn": "Qohumluq dərəcəsi",
-"change_child_cert_info_dict_btn": "🧑 Doğum haqqında şəhadətnamə",
-
-"change_value_individual_data": {
-    "full_name": "Qəbul edən tərəfin tam adını mətndə göndərin",
-    "passport_give_date_input": "Pasportun verilmə tarixini mətndə göndərin",
-    "passport_issue_place_input": "Pasportu kim verdiyini mətndə göndərin\nNümunə: Отделом УФМС России в Санкт-Петербурге",
-    "passport_serial_number_input": "Pasportun seriya və nömrəsini mətndə göndərin",
-    "phone": "☎️ Qəbul edən tərəfin telefon nömrəsini daxil edin (əgər mövcuddursa)",
-    "adress": "🏠 Qəbul edən tərəfin qeydiyyat ünvanını daxil edin (şəhər, küçə, ev)"
-},
-"change_value_representative_data": {
-    "full_name": "👶 Uşağın qanuni nümayəndəsinin tam adını daxil edin",
-    "who": "Uşağı kimin müşayiət etdiyini və ya ərizəni kimin təqdim etdiyini göstərin"
-},
-"change_value_child_cert_info": {
-    "birth_date": "📆 Doğum tarixini GG.AA.İİİİ formatında daxil edin\nNümunə: 14.08.1996",
-    "child_certificate_number": "📇 Doğum haqqında şəhadətnamənin nömrəsini daxil edin\nNümunə: №123456",
-    "full_name": "👶 Uşağın tam adını daxil edin\nNümunə: Расулова Махлиё Азизовна",
-    "child_citizenship": "🌍 Vətəndaşlığı daxil edin (kiril əlifbası ilə)\nNümunə: Узбекистан"
-}
+"change_who_btn": "Qohumluq dərəcəsi"
 }
