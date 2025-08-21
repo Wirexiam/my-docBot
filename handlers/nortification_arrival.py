@@ -223,11 +223,8 @@ async def arrival_migr_card(message: Message, state: FSMContext):
     """Обработка cценария по миграционной карте"""
 
     # Установка состояния
-    # await state.set_state(Arrival_transfer.waiting_confirm_start)
-    migration_data = await state.get_data()
-    # migration_data = migration_data.get("migration_data")
+    print("хендер сработал - после заполнения инфо о доме")
     document_about_home = message.text.strip()
-    # migration_data["document_about_home"] = document_about_home
 
     # Get the user's language preference from state data
     state_data = await state.get_data()
