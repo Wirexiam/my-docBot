@@ -510,7 +510,7 @@ async def arrival_after_org_callback(event: CallbackQuery, state: FSMContext):
         "goal": migration_data.get("goal", ""),
         "profession": state_data.get("profession", ""),
         "who_accept": organization_data if organization_data else individual_data,
-        "doc": organization_data.get("document_about_home", "Не указано")
+        "doc": state_data.get("document_about_home", "Не указано")
     }
     text = f"{_.get_text('organisation_info_correct.title', lang)}\n\n"
     text += f"{_.get_text('organisation_info_correct.full_name', lang)}{data_to_view['fio']}\n"

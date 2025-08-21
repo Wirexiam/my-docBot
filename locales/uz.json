@@ -71,11 +71,11 @@
     },
     "passport_manual_kid_birth_date": {
         "title": "📆 Bolaning tug‘ilgan sanasini DD.MM.YYYY formatida kiriting",
-        "example_text": "Nümunä: 14.08.1996"
+        "example_text": "Misol: 14.08.1996"
     },
     "representative_birth_date": {
         "title": "📆 Qonuniy vakilning tug‘ilgan sanasini DD.MM.YYYY formatida kiriting",
-        "example_text": "Nümunä: 14.08.1996"
+        "example_text": "Misol: 14.08.1996"
     },
     "passport_manual_citizenship": {
         "title": "🌍 Fuqaroligingizni kirill yozuvida kiriting",
@@ -83,7 +83,7 @@
     },
     "migr_manual_citizenship_kid": {
         "title": "🌍 Bolaning fuqaroligini kiriting (kirill yozuvida)",
-        "example_text": "Nümunä: Узбекистан"
+        "example_text": "Misol: Узбекистан"
     },
     "passport_manual_serial_input": {
         "title": "📇 Hujjatning seriyasi va raqamini kiriting",
@@ -168,11 +168,11 @@
     },
     "name_migr_card_arrival_kid": {
         "title": "✍️ Ma’lumotlarni qo‘lda kiritamiz \nIltimos, imkon qadar kirill yozuvidan foydalaning",
-        "description": "👤 Bolaning F.I.Sh.ni kiriting (kartada ko‘rsatilganidek) \nNümunä: Расулова Азиза Абдуллаевна"
+        "description": "👤 Bolaning F.I.Sh.ni kiriting (kartada ko‘rsatilganidek) \nMisol: Расулова Азиза Абдуллаевна"
     },
     "name_passport_kid": {
         "title": " Pasport ma’lumotlarini qo‘lda to‘ldiramiz:",
-        "description": "👤 Bolaning F.I.Sh.ni kiriting (faqat kirill yozuvida) \nNümunä: Расулова Азиза Абдуллаевна"
+        "description": "👤 Bolaning F.I.Sh.ni kiriting (faqat kirill yozuvida) \nMisol: Расулова Азиза Абдуллаевна"
     },
     "Kid_arrival_data": {
         "title": "📄 Iltimos, bolaning migratsiya kartasidagi ma’lumotlarni ko‘rsating",
@@ -182,7 +182,7 @@
         "title": "📝 Ma’lumotlarni qo‘lda kiritamiz.",
         "description": "Iltimos, faqat kirill yozuvidan foydalaning.",
         "fio_kid": "👶 Bolaning F.I.Sh.",
-        "example": "Nümunä: Расулова Махлиё Азизовна"
+        "example": "Misol: Расулова Махлиё Азизовна"
     },
     "data_migr_card_arrival": {
         "title": "📆 Rossiyaga kirgan sanangizni DD.MM.YYYY formatida kiriting",
@@ -335,7 +335,7 @@
     },
     "fio_repr": {
         "title": "👶 Bolaning qonuniy vakilining F.I.Sh.ni kiriting",
-        "example": "Nümunä: Расулова Махлиё Азизовна"
+        "example": "Misol: Расулова Махлиё Азизовна"
     },
     "stamp_check_datas_info": {
         "title": "Tekshiring, hammasi toʻgʻrimi:",
@@ -383,7 +383,7 @@
         "goal": "🎯 Kirish maqsadi: ",
         "profession": "🧰 Kasb-hunar: ",
         "whoaccept": " 👥 Qabul qiluvchi tomon: ",
-        "doc": "📄 Binodan foydalanish huquqini tasdiqlovchi hujjat",
+        "doc": "📄 Binodan foydalanish huquqini tasdiqlovchi hujjat: ",
         "true_in_organization_doc": "✅ Hammasi to‘g‘ri – hujjatni shakllantirish",
         "change_in_organization_doc": "✏️ O‘zgartirish"
     },
