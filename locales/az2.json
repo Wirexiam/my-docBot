@@ -1,4 +1,791 @@
 {
+<<<<<<< HEAD
+    "consent": {
+        "title": "⚠️ Перед началом оформления документа, пожалуйста, подтвердите согласие на обработку персональных данных.",
+        "description": "Мы обрабатываем ваши данные только с одной целью — для подготовки миграционных и регистрационных документов.\nДанные не передаются третьим лицам и хранятся не более 24 часов.",
+        "agree_button": "✅ Я согласен(а) на обработку персональных данных",
+        "refuse_button": "❌ Отказаться"
+    },
+    "refusal": {
+        "title": "Без согласия на обработку персональных данных оформление невозможно.",
+        "description": "Вы можете вернуться и дать согласие в любое время.",
+        "back_button": "🔄 Вернуться к согласию"
+    },
+    "language": {
+        "title": "Пожалуйста, выберите удобный язык обслуживания:",
+        "note": "ℹ️ Язык можно будет сменить позже в меню",
+        "languages": {
+            "ru": "🇷🇺 Русский",
+            "uz": "🇺🇿 O'zbek (Узбекский)",
+            "tj": "🇹🇯 Тоҷикӣ (Таджикский)",
+            "kg": "🇰🇬 Кыргызча (Киргизский)",
+            "az": "🇦🇿 Azərbaycan dili (Азербайджанский)",
+            "cn": "🇨🇳 中文 (Китайский)",
+            "ar": "🇮🇷 فارسی (Фарси)",
+            "hi": "🇮🇳 हिन्दी (Хинди)"
+        }
+    },
+    "main_menu": {
+        "welcome": "👋 Salam! Mən — docBot\nMən sizə pasportun şəklindən sənədləri tez və düzgün doldurmağa kömək edəcəyəm.\nSadəcə aşağıdan lazım olan sənədi seçin — və bir neçə dəqiqəyə çap üçün hazır olacaq",
+        "documents_title": "📋 Mən hansı sənədlərlə işləyirəm:",
+       "documents": {
+            "migration_notice": "🏠 Уведомление о прибытии (миграционный учёт)",
+            "residence_notification": "📍 Уведомление о проживании по ВНЖ",
+            "work_activity": "👔 Уведомление о трудовой деятельности по патенту",
+            "patent_extension": "📄 Продление регистрации по патенту",
+            "family_stay_extension": "👨‍👩‍👧‍👦 Продление пребывания по браку / детям / патенту",
+            "child_stay_extension": "😊 Продление пребывания ребёнка (по патенту матери)",
+            "stamp_restoration": "📝 Заявление о перестановке штампа ВНЖ"
+        }
+    },
+    "stamp_transfer": {
+        "title": "📍İndi yaşayış icazəsi (VNZ) üzrə bildiriş hazırlayacağıq",
+        "description": " İndi yaşayış icazəsi (VNZ) üzrə bildiriş hazırlayacağıq Əgər siz Rusiyada VNZ \nolunur Zəhmət olmasa, hazırlayın:",
+        "documents_to_prepare": "\n • Yaşayış icazəsi olan köhnə pasport\n • Yeni pasport\n • Rusiya Federasiyasında qeydiyyat ünvanı\n • Əlaqə telefonu nömrəsi",
+        "confirm_start_button": "🟢 Başla",
+        "cancel_button": "↩️ Geri"
+    },
+    "region_start_msg": {
+        "title": "Zəhmət olmasa, ərizə təqdim etmək üçün şöbənin tam adını daxil edin (adətən bu, əvvəlki qeydiyyatınızda və ya miqrasiya sənədinizdə göstərilir)",
+        "description": "Nümunə: ОВМ УМВД России по Приморскому району г. Санкт-Петербурга"
+    },
+    "region_start_msg_confirm": {
+        "title": "📋 Sənəddə göstəriləcək:",
+        "example_text": "Начальнику ",
+        "description": "Əgər şöbə səhv daxil edilibsə, «↩️ Geri» düyməsini basın və düzgün ad daxil edin.",
+        "confirm_button": "✅ Hər şey doğrudur",
+        "cancel_button": "↩️ Geri"
+    },
+    "stamp_transfer_passport_start": {
+        "title": "📄 Əlinizdə pasport var?",
+        "description": " Məlumatları necə doldurmaq istəyirsiniz?",
+        "passport_photo": "📸 Sənədin şəklini yükləyin (avtomatik)",
+        "passport_manual": "✏️ Əl ilə daxil et"
+    },
+    "stamp_transfer_passport_old_title": "📝 Yaşayış icazəsi olan köhnə pasportun məlumatlarını əl ilə dolduraq:",
+    "passport_manual_full_name": {
+        "description": "👤 FİO-nu daxil edin (yalnız kiril əlifbası ilə)\nNümunə: Абдуллаев Жахонгир Нодирович"
+    },
+    "passport_manual_birth_date": {
+        "title": "📆 Doğum tarixini GG.AA.İİİ formatında daxil edin",
+        "example_text": "\nNümunə: 14.08.1996\n"
+    },
+    "passport_manual_kid_birth_date": {
+        "title": "📆 Uşağın doğum tarixini GG.AA.YYYY formatında daxil edin",
+        "example_text": "\nNümunə: 14.08.1996\n"
+    },
+    "representative_birth_date": {
+        "title": "📆 Lütfən, qanuni nümayəndənin doğum tarixini GG.AA.YYYY formatında daxil edin",
+        "example_text": "\nNümunə: 14.08.1996"
+    },
+    "passport_manual_citizenship": {
+        "title": "🌍 Vətəndaşlığı Kiril əlifbasında göstərin",
+        "example_text": "\nNümunə: Узбекистан"
+    },
+    "migr_manual_citizenship_kid": {
+        "title": "🌍 Zəhmət olmasa uşağın vətəndaşlığını göstərin (yalnız kiril əlifbası ilə)",
+        "example_text": "\nNümunə: Узбекистан"
+    },
+    "passport_manual_serial_input": {
+        "title": "📇 Sənədin seriya və nömrəsini daxil edin",
+        "example_text": "\nNümunə: №1225673"
+    },
+    "passport_manual_issue_date": {
+        "title": "🗓 Verilmə tarixini göstərin (GG.AA.İİİİ)",
+        "example_text": "\nNümunə: 14.08.1996"
+    },
+    "passport_manual_expire_date": {
+        "title": "🗓 Pasportun etibarlılıq müddətini göstərin (GG.AA.İİİİ)",
+        "example_text": "\nNümunə: 14.08.1996"
+    },
+    "passport_manual_issue_place": {
+        "title": "🏢 Sənədi kim verib göstər",
+        "example_text": "\nNümunə: МВД Узбекистан"
+    },
+    "representative_who": {
+        "title": "Zəhmət olmasa uşağı kimin müşayiət etdiyini və ya ərizəni kimin təqdim etdiyini göstərin.",
+        "btn_mom": "ana",
+        "btn_dad": "Ata",
+        "btn_guardian": "Qəyyum"
+    },
+    "stamp_transfer_start_new_passport": {
+        "title": "📝 İndi yeni pasport məlumatlarınızı daxil edin.:",
+        "description": "👤 Tam adı tam daxil edin (yalnız Kiril əlifbası ilə)\nNümunə: Абдуллаев Жахонгир Нодирович"
+    },
+    "live_adress": {
+        "title": "🏠 Rusiyada yaşadığınız ünvanı daxil edin",
+        "example": "nFormat: şəhər, küçə, ev, korpus, mənzil"
+    },
+    "who_going_to": {
+        "title": "Sənədin kimə verildiyini seçin",
+        "btn_adult": "🧍 Özünüzə (böyüklər)",
+        "btn_kid": "🧒 Uşaq üçün",
+        "back": "↩️ Geri"
+    },
+    "phone_number": {
+        "title": "☎️ Aktual telefon nömrənizi daxil edin",
+        "example_text": "Nümunə: 79809008090"
+    },
+    "change_menu": {
+        "title": "🖊 Hansı sahəni dəyişmək istəyirsiniz?",
+        "buttons": {
+            "info-names": "👤 Tam adı",
+            "citizenship": "🌍 Vətəndaşlıq",
+            "issued_by": "🏢 Kim tərəfindən verilib",
+            "number": "📇 Sənədin nömrəsi",
+            "data_birthday": "📆 Doğum tarixi",
+            "cancel_button": "↩️ Geri"
+        }
+    },
+    "startarrival": {
+        "title": "📍 İndi gəliş bildirişi verəcəyik (miqrasiya qeydiyyatı)",
+        "description": "Bu, Rusiya Federasiyasında yeni yaşayış ünvanında qeydiyyatdan keçmək üçün lazımdır\nPasportunuzu, miqrasiya kartınızı və yaşayış ünvanınızı hazırlayın",
+        "start_btn": "🟢 Başla",
+        "cancel_button": "↩️ Geri"
+    },
+    "have_cert_about_kid": {
+        "title": "📄 Uşağın doğum haqqında şəhadətnaməsi varmı?"
+    },
+    "to_kid_arrival_start": {
+        "title": "📍 İndi uşaq üçün gəliş bildirişi verəcəyik",
+        "desc": "Uşağın pasportunu, uşağın miqrasiya kartını və Rusiya Federasiyasında yaşayış ünvanını hazırlayın."
+    },
+    "to_kid_passport_start": {
+        "title": "📄 Uşağınızın pasportunu hazırlayın",
+        "desc": "Məlumatı necə doldurmaq istərdiniz?"
+    },
+    "photo_proccess": {
+        "description": "📷 Çata pasportun ilk səhifəsinin şəklini göndərin (yuxarıdakı nümunəyə bənzər)"
+    },
+    "migr_card_arrival": {
+        "title": "📄 Miqrasiya kartınızdan təfərrüatları təqdim edin",
+        "description": "Siz sənədin şəklini yükləyə və ya bütün məlumatları əl ilə daxil edə bilərsiniz.",
+        "photo_upload": "📸 Sənədin şəklini yüklə (avtomatik)",
+        "photo_manual": "✏️ Əl ilə daxil et"
+    },
+    "name_migr_card_arrival": {
+        "title": "✍️ Gəlin, məlumatları əl ilə daxil edək \nZəhmət olmasa, mümkün olduqda kiril əlifbasından istifadə edin",
+        "description": "👤 Tam adınızı daxil edin (kartda göstərildiyi kimi)\nNümunə: Расулова Азиза Абдуллаевна"
+    },
+    "name_migr_card_arrival_kid": {
+        "title": "✍️ Gəlin, məlumatları əl ilə daxil edək \nZəhmət olmasa, mümkün olduqda kiril əlifbasından istifadə edin",
+        "description": "👤 Uşağın tam adını daxil edin (yalnız Kiril əlifbası ilə)\nNümunə: Расулова Азиза Абдуллаевна"
+    },
+    "name_passport_kid": {
+        "title": " Gəlin pasport məlumatlarını əl ilə dolduraq:",
+        "description": "👤 Uşağın tam adını daxil edin (yalnız kiril əlifbası ilə) \nNümunə: Расулова Азиза Абдуллаевна"
+    },
+    "Kid_arrival_data": {
+        "title": "📄 Zəhmət olmasa uşağın miqrasiya kartından ətraflı məlumat verin",
+        "description": "Siz şəkil yükləyə və ya məlumatları əl ilə daxil edə bilərsiniz."
+    },
+    "name_migr_card_cert": {
+        "title": "📝 Gəlin, məlumatları əl ilə daxil edək.",
+        "description": "Zəhmət olmasa, mümkün olduqda kiril əlifbasından istifadə edin.",
+        "fio_kid": "👶 Uşağın tam adı",
+        "example": "\nNümunə: Расулова Махлиё Азизовна"
+    },
+    "data_migr_card_arrival": {
+        "title": "📆 Rusiyaya giriş tarixini GG.AA.İİİİ formatında daxil edin",
+        "example_text": "\nNümunə: 12.05.2025"
+    },
+    "citizenship_migr_card_arrival": {
+        "title": "🌍 Vətəndaşlığı Kiril əlifbasında göstərin",
+        "example_text": "Nümunə: Узбекистан"
+    },
+    "country_point_migr_card_arrival": {
+        "title": "📍 Sərhəd keçid məntəqəsi",
+        "example_text": "\nNümunə: Аэропорт Пулково"
+    },
+    "number_migr_card_arrival": {
+        "title": "📇 Miqrasiya kartının seriyası",
+        "example_text": "\nNümunə: 78 0254812"
+    },
+    "time_migr_card_arrival": {
+        "title": "📅 Müvəqqəti qalma müddətini daxil edin",
+        "example": "\nNümunə: 10.08.2025",
+        "no_specified": "Göstərilməyib"
+    },
+    "goals_migr_card_arrival": {
+        "title": "🎯 Rusiyaya giriş məqsədini göstərin",
+        "goals": {
+            "goal_one": "Əmək",
+            "goal_two": "Təhsil",
+            "goal_three": "Ailəvi",
+            "goal_four": "Turizm",
+            "other": "Başqa"
+        }
+    },
+    "goal_migr_card_arrival": {
+        "title": "✍️ Zəhmət olmasa, giriş məqsədini sözlərlə göstərin — miqrasiya kartında göstərildiyi kimi\n",
+        "example": "\nNümunə: \"ПОСЕЩЕНИЕ РОДСТВЕННИКОВ\", \"ЛЕЧЕНИЕ\", \"ПРЕБЫВАНИЕ БЕЗ ОПРЕДЕЛЁННОЙ ЦЕЛИ\"" 
+    },
+    "place_migr_card_arrival": {
+        "title": "📍 Harada yaşayırsınız?",
+        "description": "Obyektin növünü seçin:",
+        "places": {
+            "place_one": "✅ Yaşayış məkanı",
+            "place_two": "🏢 Digər məkan",
+            "place_three": "🏨 Təşkilat"
+        }
+    },
+    "doc_migr_card_arrival": {
+        "title": "📋 Sizdə bu məkanı istifadə etmək hüququnuzu təsdiqləyən sənəd varmı?",
+        "example": "nMəsələn: выписка из ЕГРН, договор аренды, свидетельство на жильё и т.д.",
+        "agree_button": "✅ Bəli, var",
+        "refuse_button": "❌ Xeyr, belə bir sənəd yoxdur"
+    },
+    "doc_details_migr_card_arrival": {
+        "title": "📝 Sənədin adını və rekvizitlərini daxil edin.",
+        "example": "\nNümunə: Выписка из ЕГРН от 08.2023"
+    },
+    "place_by_migr_card_arrival": {
+        "title": "Sizi yaşayış yerinizdə kim qəbul edir?",
+        "option_one": "Fiziki şəxs",
+        "option_two": "Təşkilat"
+    },
+    "place_by_migr_card_arrival_kid": {
+        "title": "Uşağı yaşayış yerində kim qəbul edir?",
+        "option_one": "Fiziki şəxs",
+        "option_two": "Təşkilat"
+    },
+    "data_by_migr_card_arrival": {
+        "title": "Seçildi: Fiziki şəxs. Qəbul edən tərəf haqqında məlumat verin:",
+        "description": "nMətn şəklində qəbul edən tərəfin Soyad, Ad, Ata adını göndərin"
+    },
+    "details_by_migr_card_arrival": {
+        "title": "Seçildi: Fiziki şəxs. Qəbul edən tərəf haqqında məlumat verin:",
+        "description": "nPasportun verilmə tarixini mətn şəklində göndərin\nNümunə: 15.04.2023"
+    },
+    "more_details_by_migr_card_arrival": {
+        "title": "Seçildi: Fiziki şəxs. Qəbul edən tərəf haqqında məlumat verin:",
+        "description": "nPasportun seriyasını və nömrəsini mətn şəklində göndərin\nNümunə: FA 1234567"
+    },
+    "another_details_by_migr_card_arrival": {
+        "title": "Seçildi: Fiziki şəxs. Qəbul edən tərəf haqqında məlumat verin:",
+        "description": "nPasportun kim tərəfindən verildiyini mətn şəklində göndərin\nNümunə: Отделом УФМС России в Санкт-Петербурге"
+    },
+    "addres_details_by_migr_card_arrival": {
+        "title": "🏠 Qəbul edən tərəfin qeydiyyat ünvanını daxil edin (şəhər, küçə, ev)",
+        "example": " \nNümunə: Санкт-Петербург, улица Салова, дом 45, лит. А"
+    },
+    "addres_details_kid_migr_card_arrival": {
+        "title": "🏠 Uşağın Rusiya Federasiyasında qeydiyyata alınacağı ünvanı göstərin"
+    },
+    "phone_contact_of_individual": {
+        "title": "☎️ Əlaqədar şəxsin telefon nömrəsini daxil edin",
+        "if_have": "(əgər varsa)",
+        "example": "\nNümunə: 79809008090",
+        "not_have_phone": "Nömrə yoxdur"
+    },
+    "success_data_by": {
+        "title": "✅ Qəbul edən tərəf haqqında məlumat qəbul edildi.",
+        "issue_info": "Seçildi: "
+    },
+    "ur_job": {
+        "title": "👨‍🔧 Peşənizin adını göndərin",
+        "example": "\nNümunə: разнорабочий",
+        "no_work": "İşləmirəm"
+    },
+    "status_expectation": {
+        "title": "🔄 Bütün məlumatlar qəbul edildi, sənəd çap üçün hazırlanır... (gözləmə 1 dəqiqədən az)"
+    },
+    "ready_arrival_doc": {
+        "title": "✅ Hazırdır, sənədi aşağıdan yükləyə bilərsiniz",
+        "description": "🧾 Gəliş barədə bildiriş (miqrasiya qeydiyyatı) üçün aşağıdakı sənədləri özünüzlə götürün:\n📘 Xarici pasport\n📄 Miqrasiya kartı\n📆 Rusiya Federasiyasına giriş tarixini təsdiq edən sənəd (əgər miqrasiya kartında göstərilməyibsə)\n🏠 Yaşayış yerindən istifadə hüququnu təsdiq edən sənəd\n📝 Gəliş barədə bildiriş — çap olunmuş halda\n📑 + Yuxarıda göstərilən bütün sənədlərin surətləri — əvvəlcədən hazırlamaq məsləhətdir!\n💡 Məsləhət: bütün sənədləri bir qovluğa yerləşdirin, pasportun və miqrasiya kartının orijinallarını özünüzlə götürün. Uğurlar! 👌"
+    },
+    "ready_to_download_arrival_doc": {
+        "title": "✅ Hazırdır, sənədi aşağıdan yükləyə bilərsiniz"
+    },
+    "send_to_email": {
+        "title": "✉️ Email-ə surət göndərmək istəyirsiniz?",
+        "agree_button": "Bəli, email ünvanına göndərmək",
+        "refuse_button": "Xeyr, yalnız Telegram-da saxlamaq"
+    },
+    "type_org_migr_card_arrival": {
+        "title": "🏛 Təşkilat formasını göstərin:",
+        "types": {
+            "type_one": "ООО",
+            "type_two": "ИП",
+            "type_three": "АО",
+            "type_four": "ФГБУ / ГУП",
+            "other": "Başqa"
+        }
+    },
+    "name_org_migr_card_arrival": {
+        "title": " 🏢 Təşkilatın adını daxil edin (tam, kiril əlifbası ilə)",
+        "example": "\n\nNümunə: ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ «ФОРМАТ» (или сокращённо: ООО «ФОРМАТ»)"
+    },
+    "inn_org_migr_card_arrival": {
+        "title": "🧾 Təşkilatın INN nömrəsini daxil edin (əgər varsa)",
+        "example": "\nNümunə: 7811298765",
+        "no": "ИНN yoxdur"
+    },
+    "addres_by_migr_card_arrival": {
+        "title": "🏠 Təşkilatın hüquqi ünvanını göstərin (şəhər, küçə, ev)",
+        "example": "\nNümunə: Санкт-Петербург, улица Салова, дом 45, лит. А"
+    },
+    "ogrn_org_migr_card_arrival": {
+        "title": "📇 OGRN göstərin (əgər varsa)",
+        "example": "\nNümunə: 1127847264381",
+        "no": "OGRN yoxdur"
+    },
+    "fio_migr_card_arrival": {
+        "title": "👔 Təşkilatdakı əlaqə şəxsin tam adını göstərin",
+        "example": "\nNümunə: Антропов Олег Юрьевич"
+    },
+    "fio_repr": {
+        "title": "👶 Uşağın qanuni nümayəndəsinin A.S.A.-nı daxil edin",
+        "example": "\nNümunə: Расулова Махлиё Азизовна"
+    },
+    "stamp_check_datas_info": {
+        "title": "Hər şeyin düzgün olub-olmadığını yoxlayın:",
+        "full_name": "👤 Soyad, ad, ata adı: ",
+        "old_passport": "📄 Köhnə pasport: ",
+        "new_passport": "📄 Yeni pasport: ",
+        "issue_date": ", buraxılmışdır ",
+        "expiry_date": " qədər müddətə ",
+        "stamp_in": "📌 Yaşayış icazəsi möhürü köhnə pasportdadır",
+        "adress": "📍 Rusiya Federasiyasında yaşayış ünvanı:",
+        "phone": "📞 Telefon: ",
+        "mvd_adress": "🏢 Ərizə təqdim etmək: ",
+        "all_true_in_stamp_button": "✅ Hər şey doğrudur – sənədi hazırla",
+        "change_data_stamp_button": "✏️ Dəyiş"
+    },
+    "arrival_migr_info": {
+        "title": "Yoxlayın, hər şey düzgündürmü:",
+        "full_name": "👤 Yoxlayın, hər şey düzgündürmü: ",
+        "old_passport": "🌍Vətəndaşlığı: ",
+        "new_passport": "📆 Giriş tarixi: ",
+        "issue_date": " 📍 Giriş məntəqəsi: ",
+        "stamp_in": " 🎯 Giriş məqsədi: ",
+        "adress": " 🆔 Kartın seriyası / №",
+        "phone": "📅 Qalmaq müddəti: ",
+        "all_true_in_stamp_button": "✅ Hər şey doğrudur",
+        "change_data_stamp_button": "✏️ Sahələrdən birini dəyişmək"
+    },
+    "organisation_info_correct": {
+        "title": "Hər şeyin düzgün olub-olmadığını yoxlayın:",
+        "full_name": "👤 Yoxlayın, hər şey düzgündürmü: ",
+        "data_birthday": "🗓 Doğum tarixi: ",
+        "citizenship": "🌍 Vətəndaşlığı: ",
+        "passport": " 📄 Pasport: ",
+        "issue_info": ", Kim tərəfindən verilib ",
+        "issue_date": ", Pasportun etibarlılıq müddətini göstərin",
+        "issue_passport": " FA ",
+        "issue_migr_card_info": "giriş",
+        "issue_migr_card": " seriyası ",
+        "name_of_org": "• ad: ",
+        "inn_of_org": "• ИНН: ",
+        "adress_of_org": "• Ünvan: ",
+        "fio_contact_face_of_org": "• Əlaqədar şəxsin tam adı: ",
+        "phone_contact_face_of_org": "• Telefon: ",
+        "adress_live_in_rf": "📌 RF-də yaşayış ünvanı: ",
+        "migr_card": "📎 Miqrasiya kartı: ",
+        "goal": "🎯 Giriş məqsədi ",
+        "profession": "🧰 Peşə: ",
+        "whoaccept": " 👥 Qəbul edən tərəf: ",
+        "doc": "📄Mənzildən istifadə hüququnu təsdiq edən sənəd: ",
+        "true_in_organization_doc": "✅ Hər şey doğrudur – sənədi hazırla",
+        "change_in_organization_doc": "✏️ Dəyiş"
+    },
+    "individual_info_correct": {
+        "title": "Hər şeyin düzgün olub-olmadığını yoxlayın:",
+        "full_name": "👤 Yoxlayın, hər şey düzgündürmü: ",
+        "data_birthday": "🗓 Doğum tarixi: ",
+        "citizenship": "🌍 Vətəndaşlığı: ",
+        "passport": " 📄 Pasport: ",
+        "issue_info": ", Kim tərəfindən verilib ",
+        "issue_date": ", Pasportun etibarlılıq müddətini göstərin ",
+        "issue_passport": " FA ",
+        "issue_migr_card_info": " giriş ",
+        "issue_migr_card": " seriyası ",
+        "name_of_ind": "• Tam adı: ",
+        "passport_of_ind": "• Pasport: ",
+        "adress_of_ind": "• Ünvan: ",
+        "birth_of_ind": "• Doğum tarixi: ",
+        "phone_contact_face_of_ind": "• Telefon: ",
+        "adress_live_in_rf": "📌 RF-də yaşayış ünvanı: ",
+        "migr_card": "📎 Miqrasiya kartı: ",
+        "goal": "🎯 Giriş məqsədi: ",
+        "profession": "🧰 Peşə: ",
+        "whoaccept": " 👥 Qəbul edən tərəf: ",
+        "doc": "📄 Mənzildən istifadə hüququnu təsdiq edən sənəd",
+        "true_in_organization_doc": "✅ Hər şey doğrudur – sənədi hazırla",
+        "change_in_organization_doc": "✏️ Dəyiş"
+    },
+    "cert_birth_data_succes": {
+        "cert_data": "📄 Doğum şəhadətnaməsi: ",
+        "issue_info": " buraxılmışdır "
+    },
+    "info_about_representative": {
+        "info_title": "👥 Qanuni nümayəndələr haqqında məlumat:",
+        "fio": "Tam adı: ",
+        "data_birthday": "Doğum tarixi: "
+    },
+    "registration_renewal_start": {
+        "title": "📍 İndi uzadılması üçün ərizəni nəzərdən keçirəcəyik. \nRusiya Federasiyasında müvəqqəti qalma",
+        "description": " Rusiyada patent altında olsanız, bu lazımdır.,\nevlilik və ya uşaqla və qalmağınızın müddəti \nbaşa çatmaq üzrədir",
+        "documents_to_prepare": " Zəhmət olmasa hazırlayın.:\n • Pasport\n • Uzadılma səbəbi (patent, sertifikat \nnikah və ya uşağın doğulması)\n • Qeydiyyat ünvanı",
+        "confirm_start_button": "🟢 Başla",
+        "cancel_button": "↩️ Geri"
+    },
+    "registration_renewal_start_passport": {
+        "title": "📄 Əlinizdə pasport var?",
+        "description": " Məlumatları necə doldurmaq istəyirsiniz?",
+        "start_passport_photo": "📸 Sənədin şəklini yüklə (avtomatik)",
+        "start_passport_manual": "✏️ Əl ilə daxil et"
+    },
+    "to_kid_manual_select": {
+        "title": "📄 Uşaqda hansı sənədin olduğunu göstərin:",
+        "description": "Zəhmət olmasa uşağın şəxsiyyətini təsdiq edən sənədi seçin:",
+        "start_passport_manual": "Pasport",
+        "start_birth_certificate": "Doğum şəhadətnaməsi"
+    },
+    "registration_renewal_passport_title": "📝 Gəlin pasport məlumatlarını əl ilə dolduraq",
+    "registration_renewal_residence_reason": {
+        "title": "📌Fayl vermək istədiyiniz səbəbi seçin \nRusiya Federasiyasında qalma müddətinin uzadılması üçün ərizə:",
+        "patent": "📄 Patent üzrə",
+        "marriage": "💍 RF vətəndaşı ilə nikah üzrə",
+        "child": "👶 RF vətəndaşı olan uşaq üzrə",
+        "back": "↩️ Sənədlər menyusuna qayıt"
+    },
+    "start_residence_reason": {
+        "description": "Əla. İndi lazım olan məlumatları toplayacağıq. Sənədi 📸 yükləyə və ya əl ilə ✍️ daxil edə bilərsiniz.",
+        "residence_reason_byphoto": "📸 Sənədin şəklini yüklə (avtomatik)",
+        "residence_reason_manual": "✏️ Əl ilə daxil et"
+    },
+    "phone_contact_of_organization": {
+        "title": "☎️ Əlaqədar şəxsin telefon nömrəsini daxil edin (əgər varsa)",
+        "example": "Nümunə: 79809008090",
+        "not_have_phone": "Nömrə yoxdur"
+    },
+    "residence_reason_manual_patient_messages": {
+        "patient_number": {
+            "title": "📇 Patent nömrəsini daxil edin",
+            "example_text": "Nümunə: 78-324112233"
+        },
+        "patient_date": {
+            "title": "📆 Verilmə tarixini göstərin (GG.AA.İİİİ)",
+            "example_text": "Nümunə: 14.06.2024"
+        },
+        "patient_issue_place": {
+            "title": "🏢 Sənədi kim verib göstər",
+            "example_text": "Nümunə:  ГУ МВД России по г. Санкт-Петербургу"
+        }
+    },
+    "registration_renewal_patient_check_data": {
+        "title": "Yoxlayın, hər şey düzgündürmü:",
+        "full_name": "👤 Tam adı: ",
+        "birth_date": "🗓 Doğum tarixi: ",
+        "citizenship": "🌍 Vətəndaşlıq: ",
+        "passport": "📄 Pasport: ",
+        "issue_date": ", verilmişdir ",
+        "expiry_date": " qədər ",
+        "adress": "📍 Yoxlayın, hər şey düzgündürmü: ",
+        "residence_reason": "📌 Uzadılma əsası: Патент",
+        "patient_number": " 📄 Patentin seriyası və nömrəsi: ",
+        "patient_date": "🗓 Patent verilmə tarixi: ",
+        "patient_issue_place": "🏢 Patenti kim verib: ",
+        "all_true_in_registration_renewal_patient_button": "✅ Hər şey doğrudur – sənədi hazırla",
+        "change_data_registration_renewal_patient_data_button": "✏️ Dəyiş"
+    },
+    "doc_child_stay_extension_start": {
+        "title": "📍 İndi biz uşağın Rusiya Federasiyasında qalma müddətinin uzadılması üçün ərizəyə baxacağıq.",
+        "description": " Əgər siz Patent üzrəsinizsə və uşaq sizinlədirsə, bu lazımdır",
+        "documents_to_prepare": "Zəhmət olmasa hazırlayın:\n • Sizin pasportunuz\n • Yoxlayın, hər şey düzgündürmü\n • Uşağın məlumatları (FİO, doğum tarixi, vətəndaşlıq)\n • Uşağın RF ərazisini tərk edə bilməməsinin səbəbi",
+        "confirm_start_button": "🟢 Başla",
+        "cancel_button": "↩️ Geri"
+    },
+    "doc_residence_notification_passport_title": "📝 Gəlin, VNH olan köhnə pasportun məlumatlarını əl ilə dolduraq:",
+    "child_stay_extension": {
+        "title": "Yoxlayın, hər şey düzgündürmü:\n",
+        "mother_related": "👩‍🦰 VALİDEYNƏ VƏ YA QEYDİYYƏ TƏFƏRRÜATLARI:",
+        "mother_full_name": " Tam adı: ",
+        "mother_citizenship": " Vətəndaşlıq: ",
+        "mother_document": " Seriya, nömrə ",
+        "mother_issue_info": "tərəfindən buraxılmışdır: ",
+        "mother_issue_date": "buraxılış tarixi",
+        "mother_expiry_date": " Etibarlılıq müddəti: ",
+        "basis_section": "📎 UZATMA SƏBƏBİ:",
+        "basis_patient": " Patent № ",
+        "basis_issue_date": " buraxılış tarixi: ",
+        "basis_issue_place": " tərəfindən buraxılmışdır: ",
+        "child_section": "👶 UŞAQ TƏFƏRRÜATLARI:",
+        "child_passport": {
+            "full_name": " Tam adı: ",
+            "citizenship": " Vətəndaşlıq: ",
+            "document": " Sənəd: Pasport, ",
+            "issue_info": " Buraxılmışdır: ",
+            "expiry_date": " Etibarlılıq müddəti: "
+        },
+        "child_birth_cert": {
+            "full_name": " Tam adı: ",
+            "birth_date": " Doğum tarixi: ",
+            "citizenship": " Vətəndaşlıq: ",
+            "document": " Sənəd: doğum haqqında şəhadətnamə",
+            "document_number": " Sənəd nömrəsi:",
+            "issue_info": " tərəfindən buraxılmışdır: "
+        },
+        "child_full_name": "Tam adı",
+        "child_citizenship": "Vətəndaşlıq",
+        "child_document": "Seriya nömrəsi",
+        "child_expiry_date": "Etibarlılıq müddəti",
+        "child_document_number": "Seriya nömrəsi",
+        "child_issue_info": "tərəfindən buraxılmışdır",
+        "buttons": {
+            "accept": "✅ Hər şey doğrudur",
+            "edit": "✏️ Dəyiş"
+        },
+        "address_section": "🏠 FAKTİK YAŞAYIŞ ÜNVANI:",
+        "extend_section": "📆 MÜDDƏTİN UZATILMASI İSTƏNİLƏN SON TARİX:",
+        "mvd_section": "🏢 ƏRİZƏNİN TƏQDİM EDİLMƏSİ:"
+    },
+    "doc_child_stay_extension_child_data": {
+        "message_0": {
+            "title": "📄 Uşağın məlumatlarını necə təqdim etmək istəyirsiniz?"
+        },
+        "message_1": {
+            "title": "Uşağın pasportu varmı? (14 yaşdan yuxarı)",
+            "yes_btn": "Bəli",
+            "no_btn": "Xeyr (yalnız doğum haqqında şəhadətnamə var)"
+        },
+        "message_2": {
+            "manually": {
+                "title": "📝 Gəlin məlumatları əl ilə daxil edək.",
+                "description": "Zəhmət olmasa, yalnız kiril əlifbası ilə daxil edin.\n\n👶 Uşağın tam adı\nNümunə: Расулова Махлиё Азизовна"
+            }
+        },
+        "message_3": {
+            "title": "‍👶 Uşağın nə səbəbdən RF ərazisini tərk edə bilmədiyini göstərin:",
+            "description": "Nümunə:\n— Нет авиарейсов в страну\n— Болезнь ребёнка\n— Обстоятельства семьи"
+        }
+    },
+    "patent_mother_start_msg": {
+        "description": "📄 İndi ananın adına verilmiş patenti yükləyin\nvə ya məlumatları əl ilə daxil edin"
+    },
+    "extend_child_stay": {
+        "title": "‍📆 Zəhmət olmasa, uşağın RF-də qalma müddətini hansı tarixədək uzatmaq istədiyinizi göstərin.",
+        "description": "Nümunə: 15.04.2026"
+    },
+    "how_you_are_related_to_the_child": {
+        "title": "Zəhmət olmasa əlaqənin dərəcəsini göstərin (uşaqla necə əlaqəniz var)",
+        "mother_btn": "Ana",
+        "father_btn": "Ata",
+        "guardian_btn": "Qəyyum"
+    },
+    "phone_number_text": " 📞 TELEFON NÖMRƏSİ:",
+    "residence_reason_manual_marriage_messages": {
+        "full_name": {
+            "title": "📝 Gəlin məlumatları dolduraq :",
+            "description": "👤 Həyat yoldaşınızın tam adını daxil edin (yalnız kiril əlifbası ilə)",
+            "example_text": "Nümunə: Кислякова Ирина Ивановна"
+        },
+        "marriage_date": {
+            "title": "📆 Zəhmət olmasa evlilik tarixinizi daxil edin\nformat GG.AA.YYYY",
+            "example_text": "Nümunə: 14.08.1996"
+        },
+        "marriage_certificate": {
+            "title": "📇 Nikah şəhadətnaməsinin nömrəsini daxil edin",
+            "example_text": "Nümunə: серия VII-Б №847595"
+        },
+        "marriage_issue_place": {
+            "title": "🏢 Sənədi kim verib göstər",
+            "example_text": "Nümunə: ЗАГС Центрального района г. Санкт-Петербурга"
+        }
+    },
+    "cert_issue_place": {
+        "title": "🏢 Sənədi kim verib göstər",
+        "example_text": "Nümunə: ЗАГС Центрального района г. Санкт-Петербурга"
+    },
+    "work_activity_start": {
+        "title": "📍 İndi patent əsasında əmək fəaliyyəti barədə bildiriş hazırlayacağıq",
+        "description": "Bu işə başladıqdan sonra 2 iş günü ərzində Daxili İşlər Nazirliyinə təqdim edilməlidir.",
+        "documents_to_prepare": "Hazırlayın: \n• Pasport \n• Patent \n• Müqavilə və ya işəgötürən təfərrüatları \n• VHI siyasəti \n• Yaşayış ünvanı",
+        "buttons": {
+            "start_button": "🟢 Başla",
+            "cancel_button": "↩️ Geri"
+        }
+    },
+    "work_activity_department_name": {
+        "title": "Zəhmət olmasa, ərizə təqdim etmək üçün şöbənin tam adını daxil edin (adətən bu, əvvəlki qeydiyyatınızda və ya miqrasiya sənədinizdə göstərilir)",
+        "example_text": "\nNümunə: ОВМ УМВД России по Приморскому району г. Санкт-Петербурга"
+    },
+    "work_activity_department_user_input": {
+        "title": "📋 Sənəddə göstəriləcək:",
+        "title_dep": "Начальнику ",
+        "description": "Şöbəyə səhv daxil olmusunuzsa, “↩️ Geri” düyməsini sıxın və düzgün adı daxil edin.",
+        "buttons": {
+            "correct_btn": "✅ Hər şey doğrudur",
+            "cancel_button": "↩️ Geri"
+        }
+    },
+    "work_activity_passport_req": {
+        "title": "📄 Sizin pasportunuz var?",
+        "description": "Məlumatları necə doldurmaq istəyirsiniz?",
+        "buttons": {
+            "passport_photo": "📸 Sənədin şəklini yüklə (avtomatik)",
+            "photo_manual": "✏️ Əl ilə daxil et"
+        }
+    },
+    "residence_reason_manual_child_messages": {
+        "child_fio": {
+            "title": "📝 Gəlin uşağın təfərrüatlarını dolduraq:",
+            "description": "Zəhmət olmasa, yalnız Kiril əlifbasında daxil edin.",
+            "name_text": "👶 Uşağın tam adı",
+            "example_text": "Nümunə: Расулова Махлиё Азизовна"
+        },
+        "child_birth_date": {
+            "title": "📆 Doğum tarixini GG.AA.İİİ formatında daxil edin",
+            "example_text": "Nümunə: 14.08.1996"
+        },
+        "child_citizenship": {
+            "title": "🌍 Vətəndaşlığı Kiril əlifbasında göstərin",
+            "example_text": "Nümunə: Узбекистан"
+        },
+        "child_birth_cert_number": {
+            "title": "📇 Doğum şəhadətnaməsinin nömrəsini daxil edin",
+            "example_text": "Nümunə: №123456"
+        },
+        "child_birth_cert_issue_place": {
+            "title": "🏢 Sənədi kim verib göstər",
+            "example_text": "Nümunə: ЗАГС Центрального района г. Санкт-Петербурга"
+        },
+        "who_for_child": {
+            "description": "🧑 Nəqədər yaxın olduğunuzu göstərin (uşaqla əlaqəniz)",
+            "mother_btn": "Ana",
+            "father_btn": "Ata",
+            "guardian_btn": "Qəyyum"
+        }
+    },
+    "birth_cert_numb": {
+        "title": "📇 Doğum şəhadətnaməsinin nömrəsini daxil edin",
+        "example_text": "Nümunə: №123456"
+    },
+    "registration_renewal_marriage_check_data": {
+        "title": "Yoxlayın, hər şey düzgündürmü:",
+        "full_name": "👤 Tam adı: ",
+        "birth_date": "🗓 Doğum tarixi: ",
+        "citizenship": "🌍 Vətəndaşlıq: ",
+        "passport": "📄 Pasport: ",
+        "issue_date": ", verilmişdir ",
+        "issue_place": ", verilmişdir ",
+        "adress": "📍 Yoxlayın, hər şey düzgündürmü: ",
+        "residence_reason": "💍 Uzadılma əsası: Rusiya vətəndaşı ilə nikah",
+        "spouse_fio": "👥 Həyat yoldaşının tam adı: ",
+        "marriage_citizenship": " 🌍 Ər/arvadın vətəndaşlığı: Российская Федерация",
+        "marriage_certificate_number": "📄 Nikah şəhadətnaməsi: ",
+        "all_true_in_registration_renewal_marriage_button": "✅ Hər şey doğrudur – sənədi hazırla",
+        "change_registration_renewal_marriage_data_button": "✏️ Dəyiş"
+    },
+    "registration_renewal_child_check_data": {
+        "title": "Yoxlayın, hər şey düzgündürmü:",
+        "full_name": "👤 Tam adı: ",
+        "birth_date": "🗓 Doğum tarixi: ",
+        "citizenship": "🌍 Vətəndaşlıq: ",
+        "passport": "📄 Pasport: ",
+        "issue_date": ", verilmişdir ",
+        "issue_place": ", verilmişdir ",
+        "adress": "📍 Yoxlayın, hər şey düzgündürmü: ",
+        "residence_reason": " 👶 Uzadılma səbəbi: Uşağın olması — \nRusiya Federasiyasının vətəndaşı",
+        "child_fio": "👥 Uşağın tam adı: ",
+        "child_birth_date": "🗓 Doğum tarixi ребёнка: ",
+        "child_citizenship": " 🌍 Uşağın vətəndaşlığı: Российская Федерация",
+        "child_certificate_number": "📄 Doğum haqqında şəhadətnamə: ",
+        "all_true_in_registration_renewal_child_button": "✅ Hər şey doğrudur – sənədi hazırla",
+        "change_registration_renewal_child_data_button": "✏️ Dəyiş"
+    },
+    "wa_passport_title": "📝 Gəlin pasport məlumatlarını əl ilə dolduraq:",
+    "wa_patent": {
+        "wa_patent_start": {
+            "title": "Əla. İndi lazım olan məlumatları toplayacağıq.",
+            "description": "Siz patenti yükləyə və ya əl ilə daxil edə bilərsiniz."
+        },
+        "wa_patent_medical_policy": {
+            "name_work": {
+                "title": "👨‍🔧 Peşənizin adını göndərin",
+                "description": "📌 Vacibdir: əcnəbi yalnız patentdə göstərilən peşə üzrə işləmək hüququna malikdir.",
+                "example": "Nümunə: Разнорабочий"
+            },
+            "employer_address": {
+                "title": "📍 İşəgötürənin hüquqi ünvanını aşağıdakı formatda göstərin: indeks, şəhər, küçə, korpus, bina (kiril əlifbasından istifadə edin)",
+                "example": "Nümunə: 196211 г. Санкт-Петербург, улица Типанова, дом 27"
+            },
+            "INN": {
+                "title": "🔢 VÖEN nömrənizi daxil edin",
+                "format": "Format: 10 və ya 12 rəqəm",
+                "example": "Nümunə: 7701234567"
+            }
+        },
+        "wa_patent_medical_policy_number": {
+            "title": "ℹ️ Qanuna əsasən, sizin bütün əmək fəaliyyətiniz dövründə qüvvədə olan DMS sığorta polisiniz olmalıdır. Bu məlumatlar Rusiya Daxili İşlər Nazirliyinə göndərilən bildirişə daxil ediləcəkdir.",
+            "description": "✍️ DMS polis nömrənizi daxil edin",
+            "example": "Nümunə: DMS‑927134 или 2147/МСК‑2025"
+        },
+        "wa_patent_insurance_company": {
+            "title": "🏥 Polisi hansı sığorta şirkəti verdiyini göstərin",
+            "example": "Nümunə: РЕСО‑Гарантия, Ингосстрах, Согласие"
+        },
+        "wa_polis_date": {
+            "title": "📅 Könüllü tibbi sığorta polisinin qüvvədə olma müddətini göstərin",
+            "description": "Başlama və bitmə tarixlərini aşağıdakı formatda daxil edin:\n с 15.06.2025 по 14.06.2026"
+        },
+        "edit_wa_data": {
+            "title": "📋 Təsdiq:",
+            "full_name": "👤 Tam adı",
+            "passport": "📄 Pasport",
+            "patent": "📎 Patent",
+            "work_adress": "🏠 İş ünvanı",
+            "profession": "🏢 Peşə",
+            "inn": "📄 VÖEN",
+            "policy": "🩺 Siyasət",
+            "phone_number": "📞 Telefon nömrəsi",
+            "buttons": {
+                "accept": "✅ Hər şey doğrudur",
+                "edit": "✏️ Dəyiş",
+                "back_button": "↩️ Geri"
+            }
+        },
+        "wa_data_editor": {
+            "title": "🖊 Hansı sahəni dəyişmək istəyirsiniz?",
+            "sub_editor_data": {
+                "policy": {
+                    "title": "Sığorta siyasətinizdə dəqiq nəyi dəyişmək istəyirsiniz?",
+                    "buttons": {
+                        "policy_number": "🔢 Polisin nömrəsi",
+                        "company": "🏢 Sığorta şirkəti",
+                        "dateof": "📅 Etibarlılıq müddəti"
+                    }
+                },
+               "passport": {
+    "title": "📝 Pasport məlumatlarında nəyi dəyişmək istəyirsiniz?",
+    "passport_serial_number": "📇 Sənədin seriya və nömrəsini daxil edin\nNümunə: №1225673",
+    "passport_issue_date": "🗓 Verilmə tarixini daxil edin (GG.AA.İİİİ)\nNümunə: 14.08.1996",
+    "passport_issued": "🏢 Sənədi kim verdiyini göstərin\nNümunə: МВД Узбекистана",
+    "passport_expiry_date": "🗓 Pasportun etibarlılıq müddətini daxil edin (GG.AA.İİİİ)",
+    "buttons": {
+        "serial_number": "🔢 Seriya və nömrə",
+        "date_issue": "📆 Verilmə tarixi",
+        "issued_by": "🏢 Verən orqan",
+        "validity_period": "📅 Etibarlılıq müddəti"
+                    }
+                },
+                "patent": {
+                    "title": "Patent məlumatlarında dəqiq nəyi dəyişdirmək lazımdır?",
+                    "patient_number": "📇 Patent nömrəsini daxil edin\nNümunə: 78-324112233",
+                    "patient_date": "📆 Verilmə tarixini göstərin (GG.AA.İİİİ)\nNümunə: 14.06.2024",
+                    "patient_issue_place": "🏢 Sənədi kim verib göstər\nNümunə:  ГУ МВД России по г. Санкт-Петербургу",
+                    "buttons": {
+                        "serial_number": "🔢 Seriya nömrəsi",
+                        "date_issue": "📆 buraxılış tarixi",
+                        "issued_by": "🏢 tərəfindən buraxılmışdır"
+                    }
+                },
+                "phone_number": {
+                    "title": "☎️ Zəhmət olmasa cari telefon nömrənizi daxil edin\n\nNümunə: 79809008090"
+                }
+            }
+=======
   "consent": {
     "title": "⚠️ Перед началом оформления документа, пожалуйста, подтвердите согласие на обработку персональных данных.",
     "description": "Мы обрабатываем ваши данные только с одной целью — для подготовки миграционных и регистрационных документов.\nДанные не передаются третьим лицам и хранятся не более 24 часов.",
@@ -780,6 +1567,7 @@
         },
         "phone_number": {
           "title": "☎️ Zəhmət olmasa cari telefon nömrənizi daxil edin\n\nNümunə: 79809008090"
+>>>>>>> b87a70f4f3ccef452701f1b1f050ce7ea5cf8d60
         }
       }
     }
@@ -839,6 +1627,44 @@
       "title": "✍️ Son bir il ərzində işlədiyiniz və ya işləməkdə olduğunuz təşkilatın tam adını göstərin",
       "example_text": "Nümunə: ООО «ТехСтройСервис»"
     },
+<<<<<<< HEAD
+    "adress_residence_permit": "🏠 Rusiya Federasiyasında yaşadığınız ünvanı daxil edin \nFormat: poçt indeksi, ölkə, şəhər, küçə, ev, bina, mənzil",
+    "what_change_before_gen": "hansı sahəni dəyişmək istəyirsiniz?",
+    "change_old_passport_data_dict_btn": " 📄 Köhnə pasport",
+    "change_passport_data_dict_btn": " 📄 Pasport",
+    "change_new_passport_data_dict_btn": " 📄 Yeni pasport",
+    "change_live_adress_btn": "🏠 Yoxlayın, hər şey düzgündürmü",
+    "change_phone_number_btn": " 📞  Telefon nömrəsi",
+    "change_mvd_adress_btn": "🏢 Ərizə verilməsi",
+    "return_from_change_data": "↩️ Geri",
+    "change_full_name_btn": "👤 Tam adı",
+    "change_birth_date_btn": "📅 Ad günü",
+    "change_citizenship_btn": "🌍 Vətəndaşlıq",
+    "change_passport_serial_number_btn": "🔢 Seriya və nömrə",
+    "change_passport_issue_date_btn": "📅 buraxılış tarixi",
+    "change_passport_expiry_date_btn": "📅 Etibarlılıq müddəti",
+    "change_passport_issue_place_btn": "🏢 tərəfindən buraxılmışdır",
+    "change_value_live_adress": "🏠 Rusiya Federasiyasında yaşadığınız ünvanı daxil edin\nFormat: şəhər, küçə, ev, bina, mənzil",
+    "change_value_phone_number": "☎️ Zəhmət olmasa cari telefon nömrənizi daxil edin \nNümunə: 79809008090",
+    "change_value_mvd_adress": "Zəhmət olmasa, ərizə təqdim etmək üçün şöbənin tam adını daxil edin (adətən bu, əvvəlki qeydiyyatınızda və ya miqrasiya sənədinizdə göstərilir) \n\n\nNümunə: ОВМ УМВД России по Приморскому району г. Санкт-Петербурга",
+    "change_value_passport_data": {
+        "full_name": "👤 Tam adınızı daxil edin (yalnız kiril əlifbası)\nNümunə: Абдуллаев Жахонгир Нодирович",
+        "birth_date": "📅 Ad günü: ",
+        "citizenship": "🌍 Vətəndaşlığı Kiril əlifbasında göstərin\nNümunə: Узбекистан",
+        "passport_serial_number": "📇 Sənədin seriya və nömrəsini daxil edin\nNümunə: №1225673",
+        "passport_issue_date": "🗓 Verilmə tarixini daxil edin (ДД.ММ.ГГГГ)\nNümunə: 14.08.1996",
+        "passport_expiry_date": "🗓 Zəhmət olmasa pasportun etibarlılıq müddətini göstərin (GG.AA.YYYY)\nNümunə: 14.08.1996",
+        "passport_issue_place": "🏢 Sənədi kim verib göstər\nNümunə: МВД Узбекистана"
+    },
+    "change_value_old_passport_data": {
+        "full_name": "👤 Tam adını daxil edin (yalnız kiril əlifbası) \nNümunə: Абдуллаев Жахонгир Нодирович",
+        "birth_date": "📅 Ad günü: ",
+        "citizenship": "🌍 Vətəndaşlığı Kiril əlifbasında göstərin\nNümunə: Узбекистан",
+        "passport_serial_number": "📇 Sənədin seriya və nömrəsini daxil edin\nNümunə: №1225673",
+        "passport_issue_date": "🗓 Verilmə tarixini göstərin (GG.AA.İİİİ)\nNümunə: 14.08.1996",
+        "passport_expiry_date": "🗓 Pasportun etibarlılıq müddətini göstərin (GG.AA.İİİİ)\nNümunə: 14.08.1996",
+        "passport_issue_place": "🏢 Sənədi kim verib göstər\nNümunə: МВД Узбекистана"
+=======
     "job_title": {
       "title": "💼 Bu şirkətdəki vəzifənizi göstərin",
       "example_text": "Nümunə: слесарь-сантехник, кассир, водитель"
@@ -846,12 +1672,129 @@
     "work_adress": {
       "title": "📍 İş yerinizin ünvanını göstərin",
       "example_text": " Nümunə: г. Москва, улица Кантемировская, дом 17"
+>>>>>>> b87a70f4f3ccef452701f1b1f050ce7ea5cf8d60
     },
     "is_working": {
       "title": "📌 Siz hələ də bu təşkilatda işləyirsiniz?",
       "btn_yes": " ✅ Bəli",
       "btn_no": "❌ Xeyr"
     },
+<<<<<<< HEAD
+    "change_serial_number_btn": "🔢 Seriya və nömrə",
+    "change_issue_date_btn": "📅 buraxılış tarixi",
+    "change_issue_place_btn": "🏢 tərəfindən buraxılmışdır",
+    "change_residence_permit_dict_btn": " 📄 VNZ",
+    "change_travel_outside_Ru_list_btn": "Gediş dövrləri",
+    "change_worked_last_year_list_btn": "🏢 İş yeri",
+    "change_income_last_year_list_btn": "🏢 Gəlir haqqında məlumat",
+    "change_patient_data_dict_btn": " 📄 Patent",
+    "change_patient_number_btn": "🔢 Patent nömrəsi",
+    "change_patient_date_btn": "📅 buraxılış tarixi",
+    "change_patient_issue_place_btn": "🏢 tərəfindən buraxılmışdır",
+    "change_marriage_data_dict_btn": "📄 Nikah şəhadətnaməsi",
+    "change_spouse_fio_btn": "👥 Həyat yoldaşının tam adı",
+    "change_marriage_number_btn": "📄 Seriya və sənəd nömrəsi",
+    "change_marriage_issue_place_btn": "🏢 tərəfindən buraxılmışdır",
+    "change_child_data_dict_btn": "📄 Doğum haqqında şəhadətnamə",
+    "change_child_fio_btn": "👥 Uşağın tam adı",
+    "change_child_birth_date_btn": "📅  Doğum tarixi",
+    "change_child_citizenship_btn": "🌍 Uşağın vətəndaşlığı",
+    "change_child_certificate_number_btn": "📄 Seriya və sənəd nömrəsi",
+    "change_child_certificate_issue_place_btn": "🏢 tərəfindən buraxılmışdır",
+    "change_who_for_child_btn": "👶 Qohumluq dərəcəsi",
+    "change_value_patient_data": {
+        "patient_number": "📇 Patent nömrəsini daxil edin\nNümunə: 78-324112233",
+        "patient_date": "📆 Verilmə tarixini göstərin (GG.AA.İİİİ)\nNümunə: 14.06.2024",
+        "patient_issue_place": "🏢 Sənədi kim verib göstər\nNümunə:  ГУ МВД России по г. Санкт-Петербургу"
+    },
+    "change_value_passport_data.passport_data.passport_issue_place": "🏢 Sənədi kim verib göstər\nNümunə: МВД Узбекистана",
+    "change_entry_date_btn": "📅Giriş tarixi",
+    "change_card_serial_number_btn": "🔢 Seriya və nömrə",
+    "change_number_migr_card_arrival_btn": "kkkkkkkkkkkkkkkkk",
+    "change_pretria_period_btn": "📅 Qalma müddəti",
+    "change_goal_btn": " 🎯 Giriş məqsədi",
+    "change_document_about_home_btn": " 📄 Obyektin sənədi",
+    "change_passport_give_date_input_btn": "📅 buraxılış tarixi",
+    "change_name_org_btn": "👤 Təşkilatın adı",
+    "change_inn_btn": "🔢 INN",
+    "change_full_name_contact_of_organization_btn": "👤 Konyakçının tam adı",
+    "change_value_profession": "👨‍🔧 Peşənizin adını göndərin",
+    "change_passport_serial_number_input_btn": "🔢 Seriya və nömrə",
+    "change_passport_issue_place_input_btn": "🏢 tərəfindən buraxılmışdır",
+    "change_adress_btn": "📌 Qəbul edən tərəfin ünvanı",
+    "change_phone_btn": "📌 Host telefon nömrəsi",
+    "change_migration_data_dict_btn": "📎 Miqrasiya kartı",
+    "change_value_migration_data": {
+        "card_serial_number": "📇 Miqrasiya kartının seriyası",
+        "citizenship": "🌍 Vətəndaşlıq",
+        "document_about_home": "📝 Sənədin adını və rekvizitlərini daxil edin.",
+        "entry_date": "📆 Rusiyaya giriş tarixini GG.AA.İİİİ formatında daxil edin",
+        "full_name": "👤 Tam adı",
+        "number_migr_card_arrival": "🗓 VNZ-nin verilmə tarixini göstərin (GG.AA.İİİİ)",
+        "pretria_period": "📅 Müvəqqəti qalma müddətini daxil edin",
+        "live_adress": "🏠 Yoxlayın, hər şey düzgündürmü",
+        "goal": "✍️ Zəhmət olmasa, giriş məqsədini sözlərlə göstərin — miqrasiya kartında göstərildiyi kimi."
+    },
+    "change_organization_data_dict_btn": "📄 Ev sahibi tərəfin pasportu",
+    "change_value_organization_data": {
+        "adress": "Ünvan",
+        "full_name_contact_of_organization": "👤 Təşkilatın adı",
+        "inn": "🔢 INN",
+        "name_org": "👤 Təşkilatın adı"
+    },
+    "change_individual_data_dict_btn": "📄 Ev sahibi tərəfin pasportu",
+    "change_value_individual_data": {
+        "adress": "Ünvan",
+        "full_name_contact_of_organization": "👤 Təşkilatın adı",
+        "inn": "🔢 INN",
+        "name_org": "👤 Təşkilatın adı"
+    },
+    "change_phone_by_organisation_btn": "📌 Qəbul edən təşkilatın telefonu",
+    "change_profession_btn": " 🧰 Peşə",
+    "change_age_btn": "",
+    "change_passport_description_btn": "",
+    "change_birth_date_cert_btn": "",
+    "change_representative_data_dict_btn": "📄 Ev sahibi tərəfin pasportu",
+    "change_value_representative_data": {
+        "adress": "Ünvan",
+        "full_name_contact_of_organization": "👤 Təşkilatın adı",
+        "inn": "🔢 INN",
+        "name_org": "👤 Təşkilatın adı"
+    },
+    "change_child_cert_info_dict_btn": "📄 Ev sahibi tərəfin pasportu",
+    "change_value_child_cert_info": {
+        "adress": "Ünvan",
+        "full_name_contact_of_organization": "👤 Təşkilatın adı",
+        "inn": "🔢 INN",
+        "name_org": "👤 Təşkilatın adı"
+    },
+    "change_value_marriage_data": {
+        "spouse_fio": "👤 Tam adı həyat yoldaşını daxil edin (yalnız kiril)\nNümunə: Кислякова Ирина Ивановна",
+        "issue_date": "📆 Nikah şəhadətnaməsinin verilmə tarixini GG.AA.İİİ formatında daxil edin\nNümunə: 14.08.1996",
+        "marriage_number": "📇 Nikah şəhadətnaməsinin nömrəsini daxil edin\nNümunə: серия VII-Б №847595",
+        "marriage_issue_place": "🏢 Sənədi kim verib göstər\nNümunə: ЗАГС Центрального района г. Санкт-Петербурга"
+    },
+    "change_value_child_data": {
+        "child_fio": "👶 Uşağın tam adı\nNümunə: Расулова Махлиё Азизовна",
+        "child_birth_date": "📆 Doğum tarixini GG.AA.İİİ formatında daxil edin\nNümunə: 14.08.1996",
+        "child_citizenship": "🌍 Vətəndaşlığı Kiril əlifbasında göstərin\nNümunə: Узбекистан",
+        "child_certificate_number": "📇 Doğum şəhadətnaməsinin nömrəsini daxil edin\nNümunə: №123456",
+        "child_certificate_issue_place": "🏢 Sənədi kim verib göstər\nNümunə: ЗАГС Центрального района г. Санкт-Петербурга",
+        "who_for_child": "🧑 Nəqədər yaxın olduğunuzu göstərin (uşaqla əlaqəniz)"
+    },
+    "change_profession_btn": " 🧰 Peşə",
+"change_phone_by_organisation_btn": "📌 Qəbul edən təşkilatın telefonu",
+"change_phone_by_individual_btn": "📌 Qəbul edən tərəfin telefonu",
+"change_value_phone_by_individual": "☎️ Əlaqə şəxsin telefon nömrəsini daxil edin (əgər mövcuddursa)",
+"change_value_phone_by_organisation": "☎️ Əlaqə şəxsin telefon nömrəsini daxil edin (əgər mövcuddursa)",
+
+"change_individual_data_dict_btn": "📄 Qəbul edən tərəfin pasportu",
+"change_representative_data_dict_btn": "👥 Qanuni nümayəndə",
+"change_who_btn": "Qohumluq dərəcəsi",
+"change_child_cert_info_dict_btn": "🧑 Doğum haqqında şəhadətnamə",
+
+"change_value_individual_data": {
+=======
     "dismissal_date": {
       "title": "📅 İşdən çıxdığınız ayı və ili göstərin (AA.İİİİ)",
       "example_text": "Nümunə: 08.2025"
@@ -1042,21 +1985,35 @@
   "change_who_btn": "Qohumluq dərəcəsi",
   "change_child_cert_info_dict_btn": "🧑 Doğum haqqında şəhadətnamə",
   "change_value_individual_data": {
+>>>>>>> b87a70f4f3ccef452701f1b1f050ce7ea5cf8d60
     "full_name": "Qəbul edən tərəfin tam adını mətndə göndərin",
     "passport_give_date_input": "Pasportun verilmə tarixini mətndə göndərin",
     "passport_issue_place_input": "Pasportu kim verdiyini mətndə göndərin\nNümunə: Отделом УФМС России в Санкт-Петербурге",
     "passport_serial_number_input": "Pasportun seriya və nömrəsini mətndə göndərin",
     "phone": "☎️ Qəbul edən tərəfin telefon nömrəsini daxil edin (əgər mövcuddursa)",
     "adress": "🏠 Qəbul edən tərəfin qeydiyyat ünvanını daxil edin (şəhər, küçə, ev)"
+<<<<<<< HEAD
+},
+"change_value_representative_data": {
+    "full_name": "👶 Uşağın qanuni nümayəndəsinin tam adını daxil edin",
+    "who": "Uşağı kimin müşayiət etdiyini və ya ərizəni kimin təqdim etdiyini göstərin"
+},
+"change_value_child_cert_info": {
+=======
   },
   "change_value_representative_data": {
     "full_name": "👶 Uşağın qanuni nümayəndəsinin tam adını daxil edin",
     "who": "Uşağı kimin müşayiət etdiyini və ya ərizəni kimin təqdim etdiyini göstərin"
   },
   "change_value_child_cert_info": {
+>>>>>>> b87a70f4f3ccef452701f1b1f050ce7ea5cf8d60
     "birth_date": "📆 Doğum tarixini GG.AA.İİİİ formatında daxil edin\nNümunə: 14.08.1996",
     "child_certificate_number": "📇 Doğum haqqında şəhadətnamənin nömrəsini daxil edin\nNümunə: №123456",
     "full_name": "👶 Uşağın tam adını daxil edin\nNümunə: Расулова Махлиё Азизовна",
     "child_citizenship": "🌍 Vətəndaşlığı daxil edin (kiril əlifbası ilə)\nNümunə: Узбекистан"
+<<<<<<< HEAD
+}
+=======
   }
+>>>>>>> b87a70f4f3ccef452701f1b1f050ce7ea5cf8d60
 }
