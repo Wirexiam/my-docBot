@@ -487,13 +487,14 @@ async def arrival_after_org_callback(event: CallbackQuery, state: FSMContext):
     lang = state_data.get("language")
     waiting_data = state_data.get("waiting_data", None)
     # Сохранение адреса в менеджер данных
+    job = event.data
     session_id = state_data.get("session_id")
     user_data = {
-        waiting_data: "Нет работы",
+        waiting_data: job,
     }
     await state.update_data({waiting_data: job})
     state_data = await state.get_data()
-    data_manager.save_user_data(callback.from_user.id, session_id, user_data)
+    data_manager.save_user_data(event.from_user.id, session_id, user_data)
     migration_data = state_data.get("migration_data", {})
     organization_data = state_data.get("organization_data", {})
     individual_data = state_data.get("individual_data", {})
