@@ -484,7 +484,11 @@ async def arrival_after_org_callback(event: CallbackQuery, state: FSMContext):
     lang = state_data.get("language")
     waiting_data = state_data.get("waiting_data", None)
     # Сохранение адреса в менеджер данных
-    job = event.data
+    job = None
+    if isinstance(event, CallbackQuery):
+        job = event.data
+    else:
+        job = event.text
     session_id = state_data.get("session_id")
     user_data = {
         waiting_data: job,
@@ -521,7 +525,7 @@ async def arrival_after_org_callback(event: CallbackQuery, state: FSMContext):
     text += f"{_.get_text('organisation_info_correct.migr_card', lang)}{_.get_text('organisation_info_correct.issue_migr_card', lang)}{data_to_view['migr_card']["card_serial_number"]}, {_.get_text('organisation_info_correct.issue_migr_card_info', lang)} {data_to_view['migr_card']["entry_date"]}\n"
     text += f"{_.get_text('organisation_info_correct.goal', lang)}{data_to_view["goal"]}\n"
     text += '' if age else f"{_.get_text('organisation_info_correct.profession', lang)}{data_to_view['profession']}\n"
-    text += f"{_.get_text('individual_info_correct.whoaccept', lang)}\n{_.get_text('individual_info_correct.name_of_ind', lang)}{data_to_view['who_accept']["full_name"]}\n{_.get_text('individual_info_correct.passport_of_ind', lang)}{data_to_view['who_accept']['passport_serial_number_input']}, {_.get_text('organisation_info_correct.issue_info')}{data_to_view['who_accept']['passport_give_date_input']}\n{_.get_text('individual_info_correct.phone_contact_face_of_ind', lang)}{state_data.get("phone_by_individual", "Не указано")}\n{_.get_text('individual_info_correct.adress_of_ind', lang)}{data_to_view['who_accept']["adress"]}\n" if who_accept == "individual" else f"{_.get_text('organisation_info_correct.whoaccept', lang)}\n{_.get_text('organisation_info_correct.name_of_org', lang)}{data_to_view['who_accept']["name_org"]}\n{_.get_text('organisation_info_correct.inn_of_org', lang)}{data_to_view['who_accept']["inn"]}\n{_.get_text('organisation_info_correct.adress_of_org', lang)}{data_to_view['who_accept']["adress"]}\n{_.get_text('organisation_info_correct.fio_contact_face_of_org', lang)}{data_to_view['who_accept']["full_name_contact_of_organization"]}\n{_.get_text('organisation_info_correct.phone_contact_face_of_org', lang)}{state_data.get("phone_by_organisation", '')}\n"
+    text += f"{_.get_text('individual_info_correct.whoaccept', lang)}\n{_.get_text('individual_info_correct.name_of_ind', lang)}{data_to_view['who_accept']["full_name"]}\n{_.get_text('individual_info_correct.passport_of_ind', lang)}{data_to_view['who_accept']['passport_serial_number_input']}{_.get_text('organisation_info_correct.issue_info')}{data_to_view['who_accept']['passport_give_date_input']}\n{_.get_text('individual_info_correct.phone_contact_face_of_ind', lang)}{state_data.get("phone_by_individual", "Не указано")}\n{_.get_text('individual_info_correct.adress_of_ind', lang)}{data_to_view['who_accept']["adress"]}\n" if who_accept == "individual" else f"{_.get_text('organisation_info_correct.whoaccept', lang)}\n{_.get_text('organisation_info_correct.name_of_org', lang)}{data_to_view['who_accept']["name_org"]}\n{_.get_text('organisation_info_correct.inn_of_org', lang)}{data_to_view['who_accept']["inn"]}\n{_.get_text('organisation_info_correct.adress_of_org', lang)}{data_to_view['who_accept']["adress"]}\n{_.get_text('organisation_info_correct.fio_contact_face_of_org', lang)}{data_to_view['who_accept']["full_name_contact_of_organization"]}\n{_.get_text('organisation_info_correct.phone_contact_face_of_org', lang)}{state_data.get("phone_by_organisation", '')}\n"
     text += f"{_.get_text('info_about_representative.info_title', lang)}\n{_.get_text('info_about_representative.fio', lang)}{state_data.get("representative_data")["full_name"]}\n{_.get_text('info_about_representative.data_birthday', lang)}{state_data.get("birth_date_cert")}\n" if state_data.get("representative_data", False) else ""
     text += f"{_.get_text('organisation_info_correct.doc', lang)}{data_to_view['doc']}"
 

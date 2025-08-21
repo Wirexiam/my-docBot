@@ -21,7 +21,7 @@ def phone_organization(lang: str):
 def ur_work(lang: str):
     builder = InlineKeyboardBuilder()
     builder.button(
-        text=_.get_text("ur_job.no_work", lang), callback_data="no_work"
+        text=_.get_text("ur_job.no_work", lang), callback_data="Без работы"
     )
     builder.adjust(1)
     return builder.as_markup()
