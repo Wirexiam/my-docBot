@@ -168,8 +168,8 @@ async def handle_new_passport_data(message: Message, state: FSMContext):
 
     text = f"{_.get_text('stamp_check_datas_info.title', lang)}\n\n"
     text += f"{_.get_text('stamp_check_datas_info.full_name', lang)}{data_to_view['name']}\n"
-    text += f"{_.get_text('stamp_check_datas_info.new_passport')}{data_to_view['new_passport_number']}{_.get_text('stamp_check_datas_info.issue_date')}{data_to_view['new_passport_issue_date']} {data_to_view['new_passport_issue_place']}{_.get_text('stamp_check_datas_info.expiry_date')}{data_to_view['new_passport_expiry_date']}\n"
-    text += f"{_.get_text('stamp_check_datas_info.old_passport')}{data_to_view['old_passport_number']}{_.get_text('stamp_check_datas_info.issue_date')}{data_to_view['old_passport_issue_date']} {data_to_view['old_passport_issue_place']}{_.get_text('stamp_check_datas_info.expiry_date')}{data_to_view['old_passport_expiry_date']}\n"
+    text += f"{_.get_text('stamp_check_datas_info.new_passport', lang)}{data_to_view['new_passport_number']}{_.get_text('stamp_check_datas_info.issue_date')}{data_to_view['new_passport_issue_date']} {data_to_view['new_passport_issue_place']}{_.get_text('stamp_check_datas_info.expiry_date')}{data_to_view['new_passport_expiry_date']}\n"
+    text += f"{_.get_text('stamp_check_datas_info.old_passport', lang)}{data_to_view['old_passport_number']}{_.get_text('stamp_check_datas_info.issue_date')}{data_to_view['old_passport_issue_date']} {data_to_view['old_passport_issue_place']}{_.get_text('stamp_check_datas_info.expiry_date')}{data_to_view['old_passport_expiry_date']}\n"
     text += f"{_.get_text('stamp_check_datas_info.stamp_in', lang)}\n"
     text += f"{_.get_text('stamp_check_datas_info.adress', lang)}{data_to_view['live_adress']}\n"
     text += f"{_.get_text('stamp_check_datas_info.phone', lang)}{data_to_view['phone_number']}\n"
