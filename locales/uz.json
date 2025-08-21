@@ -25,8 +25,8 @@
         }
     },
     "main_menu": {
-        "welcome": "👋 Здравствуйте! Я — docBot\nЯ помогу вам быстро и правильно заполнить документы по фото паспорта.\nПросто выбери ниже нужный документ — и через пару минут он будет готов к печати",
-        "documents_title": "📋 С какими документами я работаю:",
+        "welcome": "👋 Salom! Men — docBot\nMen sizga pasport fotosi orqali hujjatlarni tez va toʻg‘ri toʻldirishga yordam beraman.\nQuyida kerakli hujjatni tanlang — va bir necha daqiqada chop etishga tayyor bo‘ladi",
+        "documents_title": "📋 Men qaysi hujjatlar bilan ishlayman:",
         "documents": {
             "migration_notice": "🏠 Уведомление о прибытии (миграционный учёт)",
             "residence_notification": "📍 Уведомление о проживании по ВНЖ",
@@ -69,9 +69,21 @@
         "title": "📆 Tug‘ilgan sanani DD.MM.YYYY formatida kiriting",
         "example_text": "Misol: 14.08.1996 "
     },
+    "passport_manual_kid_birth_date": {
+        "title": "📆 Bolaning tug‘ilgan sanasini DD.MM.YYYY formatida kiriting",
+        "example_text": "Nümunä: 14.08.1996"
+    },
+    "representative_birth_date": {
+        "title": "📆 Qonuniy vakilning tug‘ilgan sanasini DD.MM.YYYY formatida kiriting",
+        "example_text": "Nümunä: 14.08.1996"
+    },
     "passport_manual_citizenship": {
         "title": "🌍 Fuqaroligingizni kirill yozuvida kiriting",
         "example_text": "Misol: Узбекистан"
+    },
+    "migr_manual_citizenship_kid": {
+        "title": "🌍 Bolaning fuqaroligini kiriting (kirill yozuvida)",
+        "example_text": "Nümunä: Узбекистан"
     },
     "passport_manual_serial_input": {
         "title": "📇 Hujjatning seriyasi va raqamini kiriting",
@@ -88,6 +100,12 @@
     "passport_manual_issue_place": {
         "title": "🏢 Hujjatni kim tomonidan berilganini kiriting",
         "example_text": "Misol: МВД Узбекистана"
+    },
+    "representative_who": {
+        "title": "Bolangizni kim kuzatyapti yoki arizani kim topshiryapti, shuni ko‘rsating",
+        "btn_mom": "Ona",
+        "btn_dad": "Ota",
+        "btn_guardian": "Vasiy"
     },
     "stamp_transfer_start_new_passport": {
         "title": "📝 Endi yangi pasport ma’lumotlarini kiriting:",
@@ -124,6 +142,17 @@
         "start_btn": "🟢 Boshlanishi",
         "cancel_button": "↩️ Orqaga"
     },
+    "have_cert_about_kid": {
+        "title": "📄 Sizda bolaning tug‘ilganlik guvohnomasi bormi?"
+    },
+    "to_kid_arrival_start": {
+        "title": "📍 Hozir biz bola uchun kelish bildirishnomasini rasmiylashtiramiz",
+        "desc": "Bolaning pasportini, bolaning migratsiya kartasini va RFdagi yashash manzilini tayyorlang"
+    },
+    "to_kid_passport_start": {
+        "title": "📄 Bolaning pasportini tayyorlang",
+        "desc": "Ma’lumotlarni qanday kiritmoqchisiz?"
+    },
     "photo_proccess": {
         "description": "📷 Chatga pasportning birinchi sahifasining fotosuratini yuboring (yuqoridagi namunaga o‘xshab)"
     },
@@ -136,6 +165,24 @@
     "name_migr_card_arrival": {
         "title": "✍️ Keling, ma’lumotlarni qo‘lda kiritamiz\nIltimos, imkon bo‘lsa, kirill yozuvini ishlating",
         "description": "👤 FIO kiriting (kartada ko‘rsatilgandek)\nMisol: Расулова Азиза Абдуллаевна"
+    },
+    "name_migr_card_arrival_kid": {
+        "title": "✍️ Ma’lumotlarni qo‘lda kiritamiz \nIltimos, imkon qadar kirill yozuvidan foydalaning",
+        "description": "👤 Bolaning F.I.Sh.ni kiriting (kartada ko‘rsatilganidek) \nNümunä: Расулова Азиза Абдуллаевна"
+    },
+    "name_passport_kid": {
+        "title": " Pasport ma’lumotlarini qo‘lda to‘ldiramiz:",
+        "description": "👤 Bolaning F.I.Sh.ni kiriting (faqat kirill yozuvida) \nNümunä: Расулова Азиза Абдуллаевна"
+    },
+    "Kid_arrival_data": {
+        "title": "📄 Iltimos, bolaning migratsiya kartasidagi ma’lumotlarni ko‘rsating",
+        "description": "Siz hujjatning fotosuratini yuklashingiz yoki ma’lumotlarni qo‘lda kiritishingiz mumkin."
+    },
+    "name_migr_card_cert": {
+        "title": "📝 Ma’lumotlarni qo‘lda kiritamiz.",
+        "description": "Iltimos, faqat kirill yozuvidan foydalaning.",
+        "fio_kid": "👶 Bolaning F.I.Sh.",
+        "example": "Nümunä: Расулова Махлиё Азизовна"
     },
     "data_migr_card_arrival": {
         "title": "📆 Rossiyaga kirgan sanangizni DD.MM.YYYY formatida kiriting",
@@ -196,6 +243,11 @@
         "option_one": "Jismoniy shaxs",
         "option_two": "Tashkilot"
     },
+    "place_by_migr_card_arrival_kid": {
+        "title": "Bolangizni yashash joyida kim qabul qilmoqda?",
+        "option_one": "Jismoniy shaxs",
+        "option_two": "Tashkilot"
+    },
     "data_by_migr_card_arrival": {
         "title": "Tanlandi: Jismoniy shaxs. Qabul qiluvchi tomon haqida ma’lumot bering:",
         "description": "Matn ko‘rinishida qabul qiluvchi tomonning Familiyasi Ismi Otasining ismini yuboring"
@@ -216,8 +268,18 @@
         "title": "🏠 Qabul qiluvchi tomonning ro‘yxatdan o‘tgan manzilini ko‘rsating (shahar, ko‘cha, uy)",
         "example": " Misol: Санкт-Петербург, улица Салова, дом 45, лит. А"
     },
+    "addres_details_kid_migr_card_arrival": {
+        "title": "🏠 Bolani RFda ro‘yxatdan o‘tkaziladigan manzilni kiriting"
+    },
+    "phone_contact_of_individual": {
+        "title": "☎️ Aloqa shaxsining telefon raqamini kiriting",
+        "if_have": "(mavjud bo‘lsa)",
+        "example": "Misol: 79809008090",
+        "not_have_phone": "Raqam yo‘q"
+    },
     "success_data_by": {
-        "title": "✅ Qabul qiluvchi tomon haqidagi ma’lumotlar qabul qilindi.\nTanlandi: Jismoniy shaxs."
+        "title": "✅ Qabul qiluvchi tomon haqidagi ma’lumotlar qabul qilindi.\nTanlandi: Jismoniy shaxs.",
+        "issue_info": "Tanlandi: "
     },
     "ur_job": {
         "title": "👨‍🔧 Kasbingiz nomini yuboring",
@@ -240,13 +302,13 @@
         "refuse_button": "Yo‘q, faqat Telegram’da qoldirish"
     },
     "type_org_migr_card_arrival": {
-        "title": "🏛 Уточните форму организации:",
+        "title": "🏛 Tashkilot shaklini aniqlang:",
         "types": {
             "type_one": "ООО",
             "type_two": "ИП",
             "type_three": "АО",
             "type_four": "ФГБУ / ГУП",
-            "other": "Другое"
+            "other": "Boshqa"
         }
     },
     "name_org_migr_card_arrival": {
@@ -271,15 +333,21 @@
         "title": "👔 Tashkilotdagi kontakt shaxsning F.I.Sh.ni ko‘rsating",
         "example": "Misol: Антропов Олег Юрьевич"
     },
+    "fio_repr": {
+        "title": "👶 Bolaning qonuniy vakilining F.I.Sh.ni kiriting",
+        "example": "Nümunä: Расулова Махлиё Азизовна"
+    },
     "stamp_check_datas_info": {
         "title": "Tekshiring, hammasi toʻgʻrimi:",
         "full_name": "👤 Toʻliq ismingiz: ",
         "old_passport": "📄 Eski pasport: ",
         "new_passport": "📄 Yangi pasport: ",
         "issue_date": ", выдан ",
+        "expiry_date": " сроком до ",
         "stamp_in": "📌 Yashash uchun ruxsatnoma muhri eski pasportda",
         "adress": "📍Rossiyada yashash manzili: ",
         "phone": "📞 Telefon: ",
+        "mvd_adress": "🏢 Ariza topshiriladigan organ: ",
         "all_true_in_stamp_button": "✅ To'g'ri - hujjat yarating",
         "change_data_stamp_button": "✏️ O'zgartirish"
     },
@@ -298,12 +366,11 @@
     "organisation_info_correct": {
         "title": "Tekshiring, hammasi toʻgʻrimi:",
         "full_name": "👤 Toʻliq ismingiz: ",
-        "citizenship": "🗓 Дата рождения: ",
-        "old_passport": "🌍 Fuqarolik: ",
+        "data_birthday": "🗓 Tug‘ilgan sana: ",
+        "citizenship": "🗓 Tug‘ilgan sana: ",
         "passport": " 📄 Pasport: ",
         "issue_info": " выдан: ",
         "issue_date": " срок действия ",
-        "issue_passport": " FA ",
         "issue_migr_card_info": "въезд",
         "issue_migr_card": " Серия ",
         "name_of_org": "• Tashkilot nomi:",
@@ -316,7 +383,42 @@
         "goal": "🎯 Kirish maqsadi: ",
         "profession": "🧰 Kasb-hunar: ",
         "whoaccept": " 👥 Qabul qiluvchi tomon: ",
-        "doc": "📄 Binodan foydalanish huquqini tasdiqlovchi hujjat"
+        "doc": "📄 Binodan foydalanish huquqini tasdiqlovchi hujjat",
+        "true_in_organization_doc": "✅ Hammasi to‘g‘ri – hujjatni shakllantirish",
+        "change_in_organization_doc": "✏️ O‘zgartirish"
+    },
+    "individual_info_correct": {
+        "title": "Hammasi to‘g‘rimi, tekshiring:",
+        "full_name": "👤 F.I.Sh.: ",
+        "data_birthday": "🗓 Tug‘ilgan sana: ",
+        "citizenship": "🌍 Fuqarolik: ",
+        "passport": " 📄 Pasport: ",
+        "issue_info": ", выдан ",
+        "issue_date": ", срок действия ",
+        "issue_migr_card_info": " kirish ",
+        "issue_migr_card": " Серия ",
+        "name_of_ind": "• F.I.Sh.: ",
+        "passport_of_ind": "• Pasport: ",
+        "adress_of_ind": "• Manzil: ",
+        "birth_of_ind": "• Tug‘ilgan sana: ",
+        "phone_contact_face_of_ind": "• Telefon: ",
+        "adress_live_in_rf": "📌 RFdagi yashash manzili: ",
+        "migr_card": "📎 Migratsiya kartasi: ",
+        "goal": "🎯 Kirish maqsadi: ",
+        "profession": "🧰 Kasb: ",
+        "whoaccept": " 👥 Qabul qiluvchi tomon: ",
+        "doc": "📄 Uy-joydan foydalanish huquqini tasdiqlovchi hujjat",
+        "true_in_organization_doc": "✅ Hammasi to‘g‘ri – hujjatni shakllantirish",
+        "change_in_organization_doc": "✏️ O‘zgartirish"
+    },
+    "cert_birth_data_succes": {
+        "cert_data": "📄 Tug‘ilganlik guvohnomasi: ",
+        "issue_info": " выдано "
+    },
+    "info_about_representative": {
+        "info_title": "👥 Qonuniy vakillar haqida ma’lumot:",
+        "fio": "F.I.Sh.: ",
+        "data_birthday": "Tug‘ilgan sana: "
     },
     "registration_renewal_start": {
         "title": "📍 Hozir Rossiya Federatsiyasida vaqtincha bo‘lish muddatini uzaytirish to‘g‘risidagi arizani rasmiylashtiramiz",
@@ -330,6 +432,12 @@
         "description": " Ma’lumotlarni qanday to‘ldirmoqchisiz?",
         "start_passport_photo": "📸 Hujjat fotosuratini yuklash (avtomatik tarzda)",
         "start_passport_manual": "✏️ Qoʻlda kiritish"
+    },
+    "to_kid_manual_select": {
+        "title": "📄 Bolada qaysi hujjat borligini ko‘rsating:",
+        "description": "Iltimos, bolaning shaxsini tasdiqlovchi hujjatni tanlang:",
+        "start_passport_manual": "Pasport",
+        "start_birth_certificate": "Tug‘ilganlik guvohnomasi"
     },
     "registration_renewal_passport_title": "📝 Keling, pasport ma'lumotlarini qo'lda to'ldiramiz",
     "registration_renewal_residence_reason": {
@@ -370,13 +478,14 @@
         "citizenship": "🌍 Fuqarolik: ",
         "passport": "📄 Pasport: ",
         "issue_date": ", выдан ",
+        "expiry_date": " сроком до ",
         "adress": "📍Rossiya Federatsiyasida yashash manzili: ",
         "residence_reason": "📌 Uzaytirish asosi: Патент",
         "patient_number": " 📄 Patent seriyasi va raqami: ",
         "patient_date": "🗓  Patent berilgan sana: ",
         "patient_issue_place": "🏢 Patentni kim tomonidan berilgan: ",
         "all_true_in_registration_renewal_patient_button": "✅ Hammasi to‘g‘ri – hujjatni shakllantirish",
-        "change_registration_renewal_patient_data_button": "✏️ Tahrirlash"
+        "change_data_registration_renewal_patient_data_button": "✏️ O‘zgartirish"
     },
     "doc_child_stay_extension_start": {
         "title": "📍 Hozir Rossiya Federatsiyasida bolaning qolish muddatini uzaytirish to‘g‘risidagi arizani rasmiylashtiramiz",
@@ -385,7 +494,7 @@
         "confirm_start_button": "🟢 Boshlanishi",
         "cancel_button": "↩️ Orqaga"
     },
-    "doc_child_stay_extension_passport_title": "📝 Keling, VNZH qo‘yilgan eski pasport ma’lumotlarini qo‘lda to‘ldiramiz:",
+    "doc_residence_notification_passport_title": "📝 Keling, VNZh qo‘yilgan eski pasport ma’lumotlarini qo‘lda to‘ldiramiz:",
     "child_stay_extension": {
         "title": "Hammasi to'g'ri yoki yo'qligini tekshiring:\n",
         "mother_related": "👩‍🦰 Ota-ona yoki vasiy ma’lumotlari:",
@@ -393,6 +502,7 @@
         "mother_citizenship": " Fuqarolik: ",
         "mother_document": " Hujjat: Pasport, ",
         "mother_issue_info": " Berilgan sana: ",
+        "mother_issue_date": "Berilgan sana",
         "mother_expiry_date": " Yaroqlilik muddati: ",
         "basis_section": "📎 UZAYTIRISH SABABI:",
         "basis_patient": " Patent № ",
@@ -414,6 +524,16 @@
             "document_number": " Hujjat raqami:",
             "issue_info": " Beruvchi organ: "
         },
+        "child_full_name": "F.I.Sh.",
+        "child_citizenship": "Fuqaroligi",
+        "child_document": "Seriya raqami",
+        "child_expiry_date": "Amal qilish muddati",
+        "child_document_number": "Seriya raqami",
+        "child_issue_info": "Kim tomonidan berilgan",
+        "buttons": {
+            "accept": "✅ Hammasi to‘g‘ri",
+            "edit": "✏️ O‘zgartirish"
+        },
         "address_section": "🏠 HAQIQIY YASHASH MANZILI:",
         "extend_section": "📆 Uzaytirish so‘ralayotgan muddat tugash sanasi:",
         "mvd_section": "🏢 Ariza topshirish:"
@@ -430,7 +550,7 @@
         "message_2": {
             "manually": {
                 "title": "📝 Keling, ma'lumotlarni qo'lda kiritamiz.",
-                "description": "Iltimos, faqat kirill alifbosida kiriting.\n\n👶 Bolaning F.I.O.si\nMisol: РАСУЛОВА МАХЛИЁ АЗИЗОВНА"
+                "description": "Iltimos, faqat kirill alifbosida kiriting.\n\n👶 Bolaning F.I.O.si\nMisol: Расулова Махлиё Азизовна"
             }
         },
         "message_3": {
@@ -471,6 +591,10 @@
             "example_text": "Misol: ЗАГС Центрального района г. Санкт-Петербурга"
         }
     },
+    "cert_issue_place": {
+        "title": "🏢 Hujjatni kim berganini kiriting",
+        "example_text": "Misol: ЗАГС Центрального района г. Санкт-Петербурга"
+    },
     "work_activity_start": {
         "title": "📍 Hozir biz patent asosida mehnat faoliyatini amalga oshirish to‘g‘risidagi xabarnomani rasmiylashtiramiz",
         "description": "Bu, ish boshlaganingizdan keyin 2 ish kuni ichida IIVga topshirish uchun zarur.",
@@ -506,7 +630,7 @@
             "title": "📝 Keling, bolaning ma’lumotlarini to‘ldiramiz:",
             "description": "Iltimos, faqat kirill alifbosida kiriting.",
             "name_text": "👶 Bolaning F.I.O.si",
-            "example_text": "Misol: РАСУЛОВА МАХЛИЁ АЗИЗОВНА"
+            "example_text": "Misol: Расулова Махлиё Азизовна"
         },
         "child_birth_date": {
             "title": "📆 Tug‘ilgan sanani DD.MM.YYYY formatida kiriting",
@@ -530,6 +654,10 @@
             "father_btn": "Ota",
             "guardian_btn": "Vasiy"
         }
+    },
+    "birth_cert_numb": {
+        "title": "📇 Tug‘ilganlik guvohnomasi raqamini kiriting",
+        "example_text": "Misol: №123456"
     },
     "registration_renewal_marriage_check_data": {
         "title": "Hammasi to'g'ri yoki yo'qligini tekshiring:",
@@ -563,5 +691,372 @@
         "child_certificate_number": "📄 Tug'ilganlik haqidagi guvohnoma",
         "all_true_in_registration_renewal_child_button": "✅ To'g'ri - hujjat yarating",
         "change_registration_renewal_child_data_button": "✏️ O'zgartirish"
+    },
+    "wa_passport_title": "📝 Keling, pasport ma’lumotlarini qo‘lda to‘ldiramiz:",
+    "wa_patent": {
+        "wa_patent_start": {
+            "title": "A’lo. Hozir kerakli ma’lumotlarni to‘playmiz.",
+            "description": "Siz patentni 📸 yuklashingiz yoki ✍️ qo‘lda kiritishingiz mumkin"
+        },
+        "wa_patent_medical_policy": {
+            "name_work": {
+                "title": "👨‍🔧 Kasbingiz nomini yuboring",
+                "description": "📌 Muhim: chet ellik faqat patentda ko‘rsatilgan kasb bo‘yicha ishlash huquqiga ega.",
+                "example": "Misol: Разнорабочий"
+            },
+            "employer_address": {
+                "title": "📍 Ish beruvchining yuridik manzilini kiriting quyidagi formatda (faqat kirill alifbosida):",
+                "example": "Misol: 196211 г. Санкт-Петербург, улица Типанова, дом 27"
+            },
+            "INN": {
+                "title": "🔢 Soliq to'lovchi identifikatsiya raqamingizni (INN) kiriting",
+                "format": "Format: 10 yoki 12 ta raqamdan iborat bo‘lishi kerak",
+                "example": "Misol: 7701234567"
+            }
+        },
+        "wa_patent_medical_policy_number": {
+            "title": "ℹ️ Qonunga binoan, sizda butun mehnat faoliyatingiz davomida amal qiladigan DMS sugʻurta polisi boʻlishi kerak. Ushbu ma’lumotlar Rossiya Ichki ishlar vazirligiga yuboriladigan xabarnomaga kiritiladi.",
+            "description": "✍️ DMS polis raqamingizni kiriting",
+            "example": "Misol: ДМС‑927134 или 2147/МСК‑2025"
+        },
+        "wa_patent_insurance_company": {
+            "title": "🏥 Polisni qaysi sugʻurta kompaniyasi berganini ko‘rsating",
+            "example": "Misol: РЕСО‑Гарантия, Ингосстрах, Согласие"
+        },
+        "wa_polis_date": {
+            "title": "📅 DMS polisining amal qilish muddatini ko‘rsating",
+            "description": "Boshlanish va tugash sanalarini quyidagi formatda kiriting:\nс 15.06.2025 по 14.06.2026"
+        },
+        "edit_wa_data": {
+            "title": "📋 Tasdiqlash:",
+            "full_name": "👤 F.I.Sh",
+            "passport": "📄 Pasport",
+            "patent": "📎 Patent",
+            "work_adress": "🏠 Ish joyi manzili",
+            "profession": "🏢 Kasb",
+            "inn": "📄 INN",
+            "policy": "🩺 Polis",
+            "phone_number": "📞 Telefon raqami",
+            "buttons": {
+                "accept": "✅ Hammasi to'g'ri",
+                "edit": "✏️ O‘zgartirish",
+                "back_button": "↩️ Orqaga"
+            }
+        },
+        "wa_data_editor": {
+            "title": "🖊 Qaysi maydonni o‘zgartirmoqchisiz?",
+            "sub_editor_data": {
+                "policy": {
+                    "title": "Iltimos, aniq belgilang, sug‘urta polisidagi qaysi ma’lumotni o‘zgartirmoqchisiz?",
+                    "buttons": {
+                        "policy_number": "🔢 Polis raqami",
+                        "company": "🏢 Sug‘urta kompaniyasi",
+                        "dateof": "📅 Amal qilish muddati"
+                    }
+                },
+                "passport": {
+                    "title": "📝 Pasport ma’lumotlaridan aynan qaysi maydonni o‘zgartirmoqchisiz?",
+                    "passport_serial_number": "📇 Hujjat seriyasi va raqamini kiriting\n\nMisol: №1225673",
+                    "passport_issue_date": "🗓 Berilgan sanani kiriting (DD.MM.YYYY)\n\nMisol: 14.08.1996",
+                    "passport_issued": "🏢 Hujjatni kim tomonidan berilganini ko‘rsating\n\nMisol: МВД Узбекистана",
+                    "passport_expiry_date": "🗓 Pasportning amal qilish muddatini kiriting (DD.MM.YYYY)",
+                    "buttons": {
+                        "serial_number": "🔢 Seriya va raqam",
+                        "date_issue": "📆 Berilgan sana",
+                        "issued_by": "🏢 Kim tomonidan berilgan",
+                        "validity_period": "📅 Amal qilish muddati"
+                    }
+                },
+                "patent": {
+                    "title": "Patent ma’lumotlaridan aynan nimani o‘zgartirmoqchisiz?",
+                    "patient_number": "📇 Patent raqamini kiriting\nMisol: 78-324112233",
+                    "patient_date": "📆 Patent berilgan sanasini kiriting (DD.MM.YYYY)\nMisol: 14.06.2024",
+                    "patient_issue_place": "🏢 Hujjatni kim tomonidan berilganini ko‘rsating\nMisol: ГУ МВД России по г. Санкт-Петербургу",
+                    "buttons": {
+                        "serial_number": "🔢 Patent seriyasi va raqami",
+                        "date_issue": "📆 Patent berilgan sana",
+                        "issued_by": "🏢 Kim tomonidan berilgan"
+                    }
+                },
+                "phone_number": {
+                    "title": "☎️ Amaldagi telefon raqamingizni kiriting\nMisol: 79809008090"
+                }
+            }
+        }
+    },
+    "doc_residence_notification_start": {
+        "title": "📍 Hozir biz yashash guvohnomasi (VNZH) asosida yashash joyi bo‘yicha xabarnoma tayyorlaymiz",
+        "description": "Agar siz Rossiyada VNZH bilan 1 yildan ortiq muddat davomida yashayotgan bo‘lsangiz, ushbu hujjat har yili IIVga topshiriladi",
+        "documents_to_prepare": "Iltimos, quyidagilarni tayyorlang:\n• Pasport\n• VNZH (yashash guvohnomasi)\n• Ro‘yxatga olingan manzil\n• RF hududidan tashqarisiga amalga oshirilgan safarlar haqidagi ma’lumotlar\n• O‘tgan yildagi daromadlar va ish joyi haqidagi ma’lumotlar"
+    },
+    "residence_permit_manual_messages": {
+        "serial_number": {
+            "title": "📇 Hujjat seriyasi va raqamini kiriting",
+            "example_text": "Misol: 78 21 999999"
+        },
+        "date": {
+            "title": "🗓 VNZH berilgan sanasini kiriting (DD.MM.YYYY)",
+            "example_text": "Misol: 14.08.1996"
+        },
+        "issue_place": {
+            "title": "🏢 Hujjatni kim tomonidan berilganini ko‘rsating",
+            "example_text": "Misol: МВД Узбекистана"
+        }
+    },
+    "start_residence_permit": "📄 Iltimos, VNZH (yashash guvohnomasi) bo‘yicha ma’lumotlarni kiriting.\nSiz hujjat fotosuratini yuklashingiz yoki barcha ma’lumotlarni qo‘lda kiritishingiz mumkin.",
+    "travel_outside_Ru": {
+        "message_0": {
+            "title": "Siz o‘tgan yil davomida Rossiya Federatsiyasi hududidan tashqariga chiqdingizmi?",
+            "btn_no": "❌ Yo‘q",
+            "btn_yes": "✅ Ha, bor"
+        },
+        "message_1": {
+            "title": "Iltimos, chet elga chiqib ketgan davrlaringizni ko‘rsating (har bir davrni alohida yozing):",
+            "example_text": "Misol:  С 12.01.2024 по 18.02.2024"
+        },
+        "message_2": {
+            "title": "🌍 Chiqib ketilgan davlatni ko‘rsating:",
+            "example_text": "Misol:\nУзбекистан"
+        },
+        "message_3": {
+            "title": "Siz ko‘rsatdingiz:",
+            "btn_add": "➕ Yana bir safarni qo‘shish",
+            "btn_yes": "✅ Hammasi to'g'ri",
+            "btn_edit": "✏️ O‘zgartirish"
+        }
+    },
+    "worked_last_year": {
+        "start": {
+            "title": "📌 Oxirgi bir yil ichida ishlaganmisiz?",
+            "btn_yes": " ✅ Ha",
+            "btn_no": "❌ Yo‘q"
+        },
+        "hiring_date": {
+            "title": "📅 Ishga kirgan oyingiz va yilingizni ko‘rsating (OY.YYYY)",
+            "example_text": "Misol: 08.2024"
+        },
+        "org_name": {
+            "title": "✍️ Iltimos, bu yil ishlagan yoki ishlagan tashkilotingizning toʻliq nomini kiriting",
+            "example_text": "Misol: ООО «ТехСтройСервис»"
+        },
+        "job_title": {
+            "title": "💼 Ushbu kompaniyadagi lavozimingizni ko‘rsating",
+            "example_text": "Misol: слесарь-сантехник, кассир, водитель"
+        },
+        "work_adress": {
+            "title": "📍 Ish joyingizning manzilini kiriting",
+            "example_text": "Misol: г. Москва, улица Кантемировская, дом 17"
+        },
+        "is_working": {
+            "title": "📌 Siz hali ham ushbu tashkilotda ishlayapsizmi?",
+            "btn_yes": " ✅ Ha",
+            "btn_no": "❌ Yo‘q"
+        },
+        "dismissal_date": {
+            "title": "📅 Ishdan bo‘shagan oyingiz va yilingizni kiriting (OY.YYYY)",
+            "example_text": "Misol: 08.2025"
+        }
+    },
+    "doc_residence_notification": {
+        "title": "Iltimos, barcha ma’lumotlar to‘g‘riligini tekshiring:\n",
+        "full_name": "👤 FIO: ",
+        "birth_date": "🗓 Tug‘ilgan sana: ",
+        "citizenship": "🌍 Fuqarolik: ",
+        "passport": "📄 Pasport: ",
+        "passport_issue": ", выдан ",
+        "expiry_date": " cрок действия: ",
+        "residence_permit_number": "📄 VNZH: №",
+        "residence_permit_issue": ", выдан ",
+        "comma_separator": ", ",
+        "address": "📌 RFdagi yashash manzili: ",
+        "travel_periods": "🧳 Safar davrlari: ",
+        "no_travel": "не было",
+        "work_place": "💼 Ish joyi: ",
+        "work_place_separator": ", ",
+        "work_start_date": "\n📅 Ish boshlanish sanasi: ",
+        "work_end_date": "\n📅 Ishdan ketgan sanasi: ",
+        "income": "💰 Daromad: ",
+        "no_income": "daromad yo'q",
+        "mvd_adress": "🏢 Ariza topshirish:"
+    },
+    "WorkedLastYearStates": {
+        "title": "📋 Tasdiqlash",
+        "org_name": " • Tashkilot: ",
+        "job_title": " • Lavozim: ",
+        "hiring_date": " • Ish boshlagan sana: ",
+        "dismissal_date": " • Ishdan bo‘shagan sana: ",
+        "work_adress": " • Manzil: ",
+        "btn_add": "➕ Yana bir ish joyini qo‘shish",
+        "btn_yes": "✅ Hammasi to'g'ri",
+        "btn_edit": "✏️ O‘zgartirish"
+    },
+    "income_last_year": {
+        "message_1": {
+            "title": "📍Oxirgi bir yil uchun tasdiqlangan daromadingizni kiriting",
+            "form_3_NDFL_em": "📄 Soliq deklaratsiyasi (форма 3‑НДФЛ)",
+            "form_2_NDFL_em": "📃 Ish beruvchidan ma’lumotnoma (2‑НДФЛ)",
+            "form_3_NDFL": "Soliq deklaratsiyasi (форма 3‑НДФЛ)",
+            "form_2_NDFL": "Ish beruvchidan ma’lumotnoma (2‑НДФЛ)",
+            "btn_0": "🚫 Menda daromad bo‘lmagan",
+            "btn_back": "↩️ Orqaga"
+        },
+        "message_2": {
+            "title": "Siz tanladingiz:",
+            "description": "Iltimos, o‘tgan yil uchun deklaratsiyada ko‘rsatilgan daromad summasini kiriting.",
+            "example_text": "Misol: 91 943.00"
+        },
+        "message_3": {
+            "title": "✅ Ma’lumotlar qabul qilindi:",
+            "source_amount": "• Daromad manbai: ",
+            "income_amount": "• Daromad summasi: ",
+            "btn_add": "➕ Yana bir daromad qo‘shish",
+            "btn_yes": "✅ Hammasi to'g'ri",
+            "btn_edit": "✏️ O‘zgartirish"
+        }
+    },
+    "adress_residence_permit": "🏠 Rossiya Federatsiyasida yashayotgan manzilingizni kiriting\nFormat: shahar, ko‘cha, uy, korpus, xonadon",
+    "what_change_before_gen": "🖊 Qaysi maydonni o‘zgartirmoqchisiz?",
+    "change_old_passport_data_dict_btn": " 📄 Eski pasport",
+    "change_passport_data_dict_btn": " 📄 Pasport",
+    "change_new_passport_data_dict_btn": " 📄 Yangi pasport",
+    "change_live_adress_btn": "🏠 Rossiyadagi yashash manzili",
+    "change_phone_number_btn": " 📞 Telefon raqami",
+    "change_mvd_adress_btn": "🏢Ariza topshirish",
+    "return_from_change_data": "↩️ Orqaga",
+    "change_full_name_btn": "👤 F.I.O.",
+    "change_birth_date_btn": "📅 Tug'ilgan kun",
+    "change_citizenship_btn": "🌍 Fuqarolik",
+    "change_passport_serial_number_btn": "🔢 Seriya va raqam",
+    "change_passport_issue_date_btn": "📅 Berilgan sana",
+    "change_passport_expiry_date_btn": "📅 Amal qilish muddati",
+    "change_passport_issue_place_btn": "🏢 Kim tomonidan berilgan",
+    "change_value_live_adress": "🏠 Rossiya Federatsiyasida yashayotgan manzilingizni kiriting\nFormat: shahar, ko‘cha, uy, korpus, xonadon",
+    "change_value_phone_number": "☎️ Amaldagi telefon raqamingizni kiriting\nMisol: 79809008090",
+    "change_value_mvd_adress": "Iltimos, ariza topshiradigan bo'limning to'liq nomini kiriting (odatda bu avvalgi ro'yxatdan o'tish yoki migratsiya hujjatida ko'rsatilgan) \nMasalan:  ОВМ УМВД России по Приморскому району г. Санкт-Петербурга",
+    "change_value_passport_data": {
+        "full_name": "👤 F.I.O ni kiriting (faqat kirill yozuvida)\nMisol: Абдуллаев Жахонгир Нодирович",
+        "birth_date": "📆 Tug‘ilgan sanani DD.MM.YYYY formatida kiriting\nMisol: 14.08.1996",
+        "citizenship": "🌍 Fuqaroligingizni kirill alifbosida kiriting\nMisol: Узбекистан",
+        "passport_serial_number": "Hujjat seriyasi va raqamini kiriting\nMisol: №1225673",
+        "passport_issue_date": "🗓 Berilgan sanani kiriting (DD.MM.YYYY)\nMisol: 14.08.2010",
+        "passport_expiry_date": "🗓 Pasportning amal qilish muddatini kiriting (DD.MM.YYYY)\nMisol: 14.08.1996",
+        "passport_issue_place": "🏢 Hujjatni kim tomonidan berilganini kiriting\nMisol:  МВД Узбекистана"
+    },
+    "change_value_old_passport_data": {
+        "full_name": "👤 F.I.O ni kiriting (faqat kirill yozuvida)\nMisol: Абдуллаев Жахонгир Нодирович",
+        "birth_date": "📆 Tug‘ilgan sanani DD.MM.YYYY formatida kiriting\nMisol: 14.08.1996 ",
+        "citizenship": "🌍 Fuqaroligingizni kirill alifbosida kiriting\nMisol: Узбекистан",
+        "passport_serial_number": "📇 Hujjat seriyasi va raqamini kiriting\nMisol: №1225673",
+        "passport_issue_date": "🗓 Berilgan sanani kiriting (DD.MM.YYYY)\nMisol: 14.08.1996",
+        "passport_expiry_date": "🗓 Pasportning amal qilish muddatini kiriting (DD.MM.YYYY)\nMisol: 14.08.1996",
+        "passport_issue_place": "🏢 Hujjatni kim tomonidan berilganini kiriting\nMisol:  МВД Узбекистана"
+    },
+    "change_value_residence_permit": {
+        "serial_number": "📇 Hujjat seriyasi va raqamini kiriting",
+        "issue_date": "🗓 VNZH berilgan sanasini kiriting (DD.MM.YYYY)",
+        "issue_place": "🏢 Hujjatni kim tomonidan berilganini ko‘rsating"
+    },
+    "change_serial_number_btn": "🔢 Seriya va raqam",
+    "change_issue_date_btn": "📅 Berilgan sana",
+    "change_issue_place_btn": "🏢 Kim tomonidan berilgan",
+    "change_residence_permit_dict_btn": " 📄 Yashash uchun ruxsatnoma",
+    "change_travel_outside_Ru_list_btn": "Safar davrlari",
+    "change_worked_last_year_list_btn": "🏢 Ish joyi",
+    "change_income_last_year_list_btn": "🏢 Daromad tafsilotlari",
+    "change_patient_data_dict_btn": " 📄 Patent",
+    "change_patient_number_btn": "🔢 Patent raqami",
+    "change_patient_date_btn": "📅 Chiqarilgan sana",
+    "change_patient_issue_place_btn": "🏢 Kim tomonidan berilgan",
+    "change_marriage_data_dict_btn": "📄 Nikoh guvohnomasi",
+    "change_spouse_fio_btn": "👥 Turmush o'rtog'ining to'liq ismi",
+    "change_marriage_number_btn": "📄 Seriya va raqam",
+    "change_marriage_issue_place_btn": "🏢 Kim tomonidan berilgan",
+    "change_child_data_dict_btn": "📄 Tug'ilganlik haqidagi guvohnoma",
+    "change_child_fio_btn": "👥 Bolaning to'liq ismi",
+    "change_child_birth_date_btn": "📅  Tug'ilgan kuni",
+    "change_child_citizenship_btn": "🌍 Bolaning fuqaroligi",
+    "change_child_certificate_number_btn": "📄 Seriya va raqam",
+    "change_child_certificate_issue_place_btn": "🏢 Kim tomonidan berilgan",
+    "change_who_for_child_btn": "👶 Qarindoshlik darajasi",
+    "change_value_patient_data": {
+        "patient_number": "📇 Patent raqamini kiriting\nMisol: 78-324112233",
+        "patient_date": "📆 Patent berilgan sanasini kiriting (DD.MM.YYYY)\nMisol: 14.06.2024",
+        "patient_issue_place": "🏢 Hujjatni kim tomonidan berilganini ko‘rsating\nMisol: ГУ МВД России по г. Санкт-Петербургу"
+    },
+    "change_value_passport_data.passport_data.passport_issue_place": "🏢 Hujjatni kim berganini ko‘rsating\nMisol: МВД Узбекистан",
+    "change_entry_date_btn": "📅 Kirish sanasi",
+    "change_card_serial_number_btn": "🔢 Seriya va raqam",
+    "change_number_migr_card_arrival_btn": "kkkkkkkkkkkkkkkkk",
+    "change_pretria_period_btn": "📅 Qolish muddati",
+    "change_goal_btn": " 🎯 Kirish maqsadi",
+    "change_document_about_home_btn": " 📄 Bino uchun hujjat",
+    "change_passport_give_date_input_btn": "📅 Chiqarilgan sana",
+    "change_name_org_btn": "👤 Tashkilot nomi",
+    "change_inn_btn": "🔢 INN",
+    "change_full_name_contact_of_organization_btn": "👤 Aloqa qiluvchi shaxsning to'liq ismi",
+    "change_value_profession": "👨‍🔧 Kasbingiz nomini yuboring",
+    "change_passport_serial_number_input_btn": "🔢 Seriya va raqam",
+    "change_passport_issue_place_input_btn": "🏢 Kim tomonidan berilgan",
+    "change_adress_btn": "📌 Qabul qiluvchi tomonning manzili",
+    "change_phone_btn": "📌 Qabul qiluvchi tomonning telefon raqami",
+    "change_migration_data_dict_btn": "📎 Migratsiya kartasi",
+    "change_value_document_about_home": "📝 Hujjat nomi va rekvizitlarini kiriting.\n\nMisol: Выписка из ЕГРН от 08.2023",
+    "change_value_migration_data": {
+        "card_serial_number": "📇 Migratsiya kartasi  raqami",
+        "citizenship": "🌍 Fuqarolik",
+        "entry_date": "📆 Rossiya Federatsiyasiga kirish sanasini DD.MM.YYYY formatida kiriting",
+        "full_name": "👤 To'liq ism",
+        "number_migr_card_arrival": "🗓 VNZH berilgan sanasini kiriting (DD.MM.YYYY)",
+        "pretria_period": "📅 Vaqtinchalik bo‘lish muddati tugash sanasini kiriting",
+        "live_adress": "🏠 Rossiyadagi yashash manzili",
+        "goal": "✍️ Iltimos, kirish maqsadini yozib ko‘rsating — xuddi migratsiya kartangizda qanday yozilgan bo‘lsa, aynan shu so‘zlar bilan."
+    },
+    "change_organization_data_dict_btn": "📄 Qabul qiluvchi tomonning ma’lumotlari",
+    "change_value_organization_data": {
+        "adress": "Manzil",
+        "full_name_contact_of_organization": "👤 Tashkilot nomi",
+        "inn": "🔢 INN",
+        "name_org": "👤 Tashkilot nomi"
+    },
+    "change_value_marriage_data": {
+        "spouse_fio": "👤 Turmush o‘rtog‘ingizning F.I.O.sini kiriting (faqat kirill alifbosida)\nMisol: Кислякова Ирина Ивановна",
+        "issue_date": "📆 Nikoh guvohnomasi berilgan sanasini DD.MM.YYYY formatida kiriting\nMisol: 14.08.1996",
+        "marriage_number": "📇 Nikoh guvohnomasi raqamini kiriting\nMisol: серия VII-Б №847595",
+        "marriage_issue_place": "🏢 Hujjatni kim tomonidan berilganini ko‘rsating\nMisol: ЗАГС Центрального района г. Санкт-Петербурга"
+    },
+    "change_value_child_data": {
+        "child_fio": "👶 Farzandingizning F.I.O.si\nMisol: Расулова Махлиё Азизовна",
+        "child_birth_date": "📆 Tug‘ilgan sanani DD.MM.YYYY formatida kiriting\nMisol: 14.08.1996",
+        "child_citizenship": "🌍 Fuqarolikni kirill alifbosida kiriting\nMisol: Узбекистан",
+        "child_certificate_number": "📇 Tug‘ilganlik haqidagi guvohnoma raqamini kiriting\nMisol: №123456",
+        "child_certificate_issue_place": "🏢 Hujjatni kim tomonidan berilganini ko‘rsating\nMisol: ЗАГС Центрального района г. Санкт-Петербурга",
+        "who_for_child": "🧑 Yaqinlik darajangizni ko‘rsating (bolaga qanday aloqadorsiz)"
+    },
+    "change_profession_btn": " 🧰 Kasb",
+    "change_phone_by_organisation_btn": "📌 Qabul qiluvchi tashkilot telefoni",
+    "change_phone_by_individual_btn": "📌 Qabul qiluvchi tomon telefoni",
+    "change_value_phone_by_individual": "☎️ Aloqa shaxsining telefon raqamini kiriting (agar mavjud bo‘lsa)",
+    "change_value_phone_by_organisation": "☎️ Aloqa shaxsining telefon raqamini kiriting (agar mavjud bo‘lsa)",
+    "change_individual_data_dict_btn": "📄 Qabul qiluvchi tomon pasporti",
+    "change_representative_data_dict_btn": "👥 Qonuniy vakil",
+    "change_who_btn": "Qarindoshlik darajasi",
+    "change_child_cert_info_dict_btn": "🧑 Tug‘ilganlik to‘g‘risida guvohnoma",
+    "change_value_individual_data": {
+        "full_name": "Qabul qiluvchi tomonning familiya, ism va sharifini matn ko‘rinishida yuboring",
+        "passport_give_date_input": "Pasport berilgan sanani matn ko‘rinishida yuboring",
+        "passport_issue_place_input": "Pasportni kim berganini matn ko‘rinishida yuboring\nMisol: Отделом УФМС России в Санкт-Петербурге",
+        "passport_serial_number_input": "Pasport seriyasi va raqamini matn ko‘rinishida yuboring",
+        "phone": "☎️ Qabul qiluvchi tomon telefon raqamini kiriting (agar mavjud bo‘lsa)",
+        "adress": "🏠 Qabul qiluvchi tomon ro‘yxatga olingan manzilini kiriting (shahar, ko‘cha, uy)"
+    },
+    "change_value_representative_data": {
+        "full_name": "👶 Bola qonuniy vakilining F.I.Sh.ni kiriting",
+        "who": "Bolangizni kim kuzatyapti yoki arizani kim topshiryapti, shuni kiriting"
+    },
+    "change_value_child_cert_info": {
+        "birth_date": "📆 Tug‘ilgan sanani DD.MM.YYYY formatida kiriting\nMisol: 14.08.1996",
+        "child_certificate_number": "📇 Tug‘ilganlik guvohnomasi raqamini kiriting\nMisol: №123456",
+        "full_name": "👶 Bola F.I.Sh.ni kiriting\nMisol: Расулова Махлиё Азизовна",
+        "child_citizenship": "🌍 Fuqaroligini kiriting (kirill alifbosida)\nMisol: Узбекистан"
     }
 }
