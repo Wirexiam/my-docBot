@@ -116,10 +116,11 @@ async def handle_change_data(callback: CallbackQuery, state: FSMContext):
 @changing_data_router.callback_query(F.data.startswith("change_dict_"))
 async def handle_change_dict_data(callback: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
+    lang = state_data.get("language", "ru")
+
     return_to = state_data.get("change_data_from")
     dict_key = callback.data.split("change_dict_")[1]
     state_data = state_data.get(dict_key, {})
-    lang = state_data.get("language", "ru")
     keyboard_data = []
     old_dict_key = dict_key
     for data_key in state_data:
