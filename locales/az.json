@@ -50,7 +50,7 @@
     },
     "region_start_msg_confirm": {
         "title": "📋 Sənəddə göstəriləcək:",
-        "example_text": "Başçısı",
+        "example_text": "Начальнику ",
         "description": "Əgər şöbə səhv daxil edilibsə, «↩️ Geri» düyməsini basın və düzgün ad daxil edin.",
         "confirm_button": "✅ Hər şey doğrudur",
         "cancel_button": "↩️ Geri"
@@ -63,7 +63,7 @@
     },
     "stamp_transfer_passport_old_title": "📝 Yaşayış icazəsi olan köhnə pasportun məlumatlarını əl ilə dolduraq:",
     "passport_manual_full_name": {
-        "description": "👤 FİO-nu daxil edin (yalnız kiril əlifbası ilə)\\nNümunə: Абдуллаев Жахонгир Нодирович"
+        "description": "👤 FİO-nu daxil edin (yalnız kiril əlifbası ilə)\nNümunə: Абдуллаев Жахонгир Нодирович"
     },
     "passport_manual_birth_date": {
         "title": "📆 Doğum tarixini GG.AA.İİİ formatında daxil edin",
@@ -164,15 +164,15 @@
     },
     "name_migr_card_arrival": {
         "title": "✍️ Gəlin, məlumatları əl ilə daxil edək \nZəhmət olmasa, mümkün olduqda kiril əlifbasından istifadə edin",
-        "description": "👤 Tam adınızı daxil edin (kartda göstərildiyi kimi)\\nNümunə: Расулова Азиза Абдуллаевна"
+        "description": "👤 Tam adınızı daxil edin (kartda göstərildiyi kimi)\nNümunə: Расулова Азиза Абдуллаевна"
     },
     "name_migr_card_arrival_kid": {
         "title": "✍️ Gəlin, məlumatları əl ilə daxil edək \nZəhmət olmasa, mümkün olduqda kiril əlifbasından istifadə edin",
-        "description": "👤 Uşağın tam adını daxil edin (yalnız Kiril əlifbası ilə)\\nNümunə: Расулова Азиза Абдуллаевна"
+        "description": "👤 Uşağın tam adını daxil edin (yalnız Kiril əlifbası ilə)\nNümunə: Расулова Азиза Абдуллаевна"
     },
     "name_passport_kid": {
         "title": " Gəlin pasport məlumatlarını əl ilə dolduraq:",
-        "description": "👤 Uşağın tam adını daxil edin (yalnız kiril əlifbası ilə) \\nNümunə: Расулова Азиза Абдуллаевна"
+        "description": "👤 Uşağın tam adını daxil edin (yalnız kiril əlifbası ilə) \nNümunə: Расулова Азиза Абдуллаевна"
     },
     "Kid_arrival_data": {
         "title": "📄 Zəhmət olmasa uşağın miqrasiya kartından ətraflı məlumat verin",
@@ -254,15 +254,15 @@
     },
     "details_by_migr_card_arrival": {
         "title": "Seçildi: Fiziki şəxs. Qəbul edən tərəf haqqında məlumat verin:",
-        "description": "nPasportun verilmə tarixini mətn şəklində göndərin\\nNümunə: 15.04.2023"
+        "description": "nPasportun verilmə tarixini mətn şəklində göndərin\nNümunə: 15.04.2023"
     },
     "more_details_by_migr_card_arrival": {
         "title": "Seçildi: Fiziki şəxs. Qəbul edən tərəf haqqında məlumat verin:",
-        "description": "nPasportun seriyasını və nömrəsini mətn şəklində göndərin\\nNümunə: FA 1234567"
+        "description": "nPasportun seriyasını və nömrəsini mətn şəklində göndərin\nNümunə: FA 1234567"
     },
     "another_details_by_migr_card_arrival": {
         "title": "Seçildi: Fiziki şəxs. Qəbul edən tərəf haqqında məlumat verin:",
-        "description": "nPasportun kim tərəfindən verildiyini mətn şəklində göndərin\\nNümunə: Отделом УФМС России в Санкт-Петербурге"
+        "description": "nPasportun kim tərəfindən verildiyini mətn şəklində göndərin\nNümunə: Отделом УФМС России в Санкт-Петербурге"
     },
     "addres_details_by_migr_card_arrival": {
         "title": "🏠 Qəbul edən tərəfin qeydiyyat ünvanını daxil edin (şəhər, küçə, ev)",
@@ -552,7 +552,7 @@
         "message_2": {
             "manually": {
                 "title": "📝 Gəlin məlumatları əl ilə daxil edək.",
-                "description": "Zəhmət olmasa, yalnız kiril əlifbası ilə daxil edin.\n\n👶 Uşağın tam adı\\nNümunə: Расулова Махлиё Азизовна"
+                "description": "Zəhmət olmasa, yalnız kiril əlifbası ilə daxil edin.\n\n👶 Uşağın tam adı\nNümunə: Расулова Махлиё Азизовна"
             }
         },
         "message_3": {
@@ -612,7 +612,7 @@
     },
     "work_activity_department_user_input": {
         "title": "📋 Sənəddə göstəriləcək:",
-        "title_dep": "Başçısı",
+        "title_dep": "Начальнику ",
         "description": "Şöbəyə səhv daxil olmusunuzsa, “↩️ Geri” düyməsini sıxın və düzgün adı daxil edin.",
         "buttons": {
             "correct_btn": "✅ Hər şey doğrudur",
@@ -771,9 +771,9 @@
                 },
                 "patent": {
                     "title": "Patent məlumatlarında dəqiq nəyi dəyişdirmək lazımdır?",
-                    "patient_number": "📇 Patent nömrəsini daxil edin\\nNümunə: 78-324112233",
-                    "patient_date": "📆 Verilmə tarixini göstərin (GG.AA.İİİİ)\\nNümunə: 14.06.2024",
-                    "patient_issue_place": "🏢 Sənədi kim verib göstər\\nNümunə:  ГУ МВД России по г. Санкт-Петербургу",
+                    "patient_number": "📇 Patent nömrəsini daxil edin\nNümunə: 78-324112233",
+                    "patient_date": "📆 Verilmə tarixini göstərin (GG.AA.İİİİ)\nNümunə: 14.06.2024",
+                    "patient_issue_place": "🏢 Sənədi kim verib göstər\nNümunə:  ГУ МВД России по г. Санкт-Петербургу",
                     "buttons": {
                         "serial_number": "🔢 Seriya nömrəsi",
                         "date_issue": "📆 buraxılış tarixi",
@@ -781,7 +781,7 @@
                     }
                 },
                 "phone_number": {
-                    "title": "☎️ Zəhmət olmasa cari telefon nömrənizi daxil edin\n\\nNümunə: 79809008090"
+                    "title": "☎️ Zəhmət olmasa cari telefon nömrənizi daxil edin\n\nNümunə: 79809008090"
                 }
             }
         }
@@ -916,7 +916,7 @@
             "btn_edit": "✏️ Dəyiş"
         }
     },
-    "adress_residence_permit": "🏠 Rusiya Federasiyasında yaşadığınız ünvanı daxil edin\nFormat: poçt indeksi, ölkə, şəhər, küçə, ev, bina, mənzil",
+    "adress_residence_permit": "🏠 Rusiya Federasiyasında yaşadığınız ünvanı daxil edin \nFormat: poçt indeksi, ölkə, şəhər, küçə, ev, bina, mənzil",
     "what_change_before_gen": "hansı sahəni dəyişmək istəyirsiniz?",
     "change_old_passport_data_dict_btn": " 📄 Köhnə pasport",
     "change_passport_data_dict_btn": " 📄 Pasport",
@@ -933,25 +933,25 @@
     "change_passport_expiry_date_btn": "📅 Etibarlılıq müddəti",
     "change_passport_issue_place_btn": "🏢 tərəfindən buraxılmışdır",
     "change_value_live_adress": "🏠 Rusiya Federasiyasında yaşadığınız ünvanı daxil edin\nFormat: şəhər, küçə, ev, bina, mənzil",
-    "change_value_phone_number": "☎️ Zəhmət olmasa cari telefon nömrənizi daxil edin\\nNümunə: 79809008090",
+    "change_value_phone_number": "☎️ Zəhmət olmasa cari telefon nömrənizi daxil edin \nNümunə: 79809008090",
     "change_value_mvd_adress": "Zəhmət olmasa, ərizə təqdim etmək üçün şöbənin tam adını daxil edin (adətən bu, əvvəlki qeydiyyatınızda və ya miqrasiya sənədinizdə göstərilir) \n\n\nNümunə: ОВМ УМВД России по Приморскому району г. Санкт-Петербурга",
     "change_value_passport_data": {
-        "full_name": "👤 Tam adınızı daxil edin (yalnız kiril əlifbası) \\nNümunə: Абдуллаев Жахонгир Нодирович",
+        "full_name": "👤 Tam adınızı daxil edin (yalnız kiril əlifbası)\nNümunə: Абдуллаев Жахонгир Нодирович",
         "birth_date": "📅 Ad günü: ",
-        "citizenship": "🌍 Vətəndaşlığı Kiril əlifbasında göstərin\\nNümunə: Узбекистан",
-        "passport_serial_number": "📇 Sənədin seriya və nömrəsini daxil edin\\nNümunə: №1225673",
-        "passport_issue_date": "🗓 Verilmə tarixini daxil edin (ДД.ММ.ГГГГ)\\nNümunə: 14.08.1996",
-        "passport_expiry_date": "🗓 Zəhmət olmasa pasportun etibarlılıq müddətini göstərin (GG.AA.YYYY)\\nNümunə: 14.08.1996",
-        "passport_issue_place": "🏢 Sənədi kim verib göstər\\nNümunə: МВД Узбекистана"
+        "citizenship": "🌍 Vətəndaşlığı Kiril əlifbasında göstərin\nNümunə: Узбекистан",
+        "passport_serial_number": "📇 Sənədin seriya və nömrəsini daxil edin\nNümunə: №1225673",
+        "passport_issue_date": "🗓 Verilmə tarixini daxil edin (ДД.ММ.ГГГГ)\nNümunə: 14.08.1996",
+        "passport_expiry_date": "🗓 Zəhmət olmasa pasportun etibarlılıq müddətini göstərin (GG.AA.YYYY)\nNümunə: 14.08.1996",
+        "passport_issue_place": "🏢 Sənədi kim verib göstər\nNümunə: МВД Узбекистана"
     },
     "change_value_old_passport_data": {
-        "full_name": "👤 Tam adını daxil edin (yalnız kiril əlifbası) \\nNümunə: Абдуллаев Жахонгир Нодирович",
+        "full_name": "👤 Tam adını daxil edin (yalnız kiril əlifbası) \nNümunə: Абдуллаев Жахонгир Нодирович",
         "birth_date": "📅 Ad günü: ",
-        "citizenship": "🌍 Vətəndaşlığı Kiril əlifbasında göstərin\\nNümunə: Узбекистан",
-        "passport_serial_number": "📇 Sənədin seriya və nömrəsini daxil edin\\nNümunə: №1225673",
-        "passport_issue_date": "🗓 Verilmə tarixini göstərin (GG.AA.İİİİ)\\nNümunə: 14.08.1996",
-        "passport_expiry_date": "🗓 Pasportun etibarlılıq müddətini göstərin (GG.AA.İİİİ)\\nNümunə: 14.08.1996",
-        "passport_issue_place": "🏢 Sənədi kim verib göstər\\nNümunə: МВД Узбекистана"
+        "citizenship": "🌍 Vətəndaşlığı Kiril əlifbasında göstərin\nNümunə: Узбекистан",
+        "passport_serial_number": "📇 Sənədin seriya və nömrəsini daxil edin\nNümunə: №1225673",
+        "passport_issue_date": "🗓 Verilmə tarixini göstərin (GG.AA.İİİİ)\nNümunə: 14.08.1996",
+        "passport_expiry_date": "🗓 Pasportun etibarlılıq müddətini göstərin (GG.AA.İİİİ)\nNümunə: 14.08.1996",
+        "passport_issue_place": "🏢 Sənədi kim verib göstər\nNümunə: МВД Узбекистана"
     },
     "change_value_residence_permit": {
         "serial_number": "📇 Sənədin seriya və nömrəsini daxil edin",
@@ -981,11 +981,11 @@
     "change_child_certificate_issue_place_btn": "🏢 tərəfindən buraxılmışdır",
     "change_who_for_child_btn": "👶 Qohumluq dərəcəsi",
     "change_value_patient_data": {
-        "patient_number": "📇 Patent nömrəsini daxil edin\\nNümunə: 78-324112233",
-        "patient_date": "📆 Verilmə tarixini göstərin (GG.AA.İİİİ)\\nNümunə: 14.06.2024",
-        "patient_issue_place": "🏢 Sənədi kim verib göstər\\nNümunə:  ГУ МВД России по г. Санкт-Петербургу"
+        "patient_number": "📇 Patent nömrəsini daxil edin\nNümunə: 78-324112233",
+        "patient_date": "📆 Verilmə tarixini göstərin (GG.AA.İİİİ)\nNümunə: 14.06.2024",
+        "patient_issue_place": "🏢 Sənədi kim verib göstər\nNümunə:  ГУ МВД России по г. Санкт-Петербургу"
     },
-    "change_value_passport_data.passport_data.passport_issue_place": "🏢 Sənədi kim verib göstər\\nNümunə: МВД Узбекистана",
+    "change_value_passport_data.passport_data.passport_issue_place": "🏢 Sənədi kim verib göstər\nNümunə: МВД Узбекистана",
     "change_entry_date_btn": "📅Giriş tarixi",
     "change_card_serial_number_btn": "🔢 Seriya və nömrə",
     "change_number_migr_card_arrival_btn": "kkkkkkkkkkkkkkkkk",
@@ -1047,22 +1047,46 @@
         "name_org": "👤 Təşkilatın adı"
     },
     "change_value_marriage_data": {
-        "spouse_fio": "👤 Tam adı həyat yoldaşını daxil edin (yalnız kiril)\\nNümunə: Кислякова Ирина Ивановна",
-        "issue_date": "📆 Nikah şəhadətnaməsinin verilmə tarixini GG.AA.İİİ formatında daxil edin\\nNümunə: 14.08.1996",
-        "marriage_number": "📇 Nikah şəhadətnaməsinin nömrəsini daxil edin\\nNümunə: серия VII-Б №847595",
-        "marriage_issue_place": "🏢 Sənədi kim verib göstər\\nNümunə: ЗАГС Центрального района г. Санкт-Петербурга"
+        "spouse_fio": "👤 Tam adı həyat yoldaşını daxil edin (yalnız kiril)\nNümunə: Кислякова Ирина Ивановна",
+        "issue_date": "📆 Nikah şəhadətnaməsinin verilmə tarixini GG.AA.İİİ formatında daxil edin\nNümunə: 14.08.1996",
+        "marriage_number": "📇 Nikah şəhadətnaməsinin nömrəsini daxil edin\nNümunə: серия VII-Б №847595",
+        "marriage_issue_place": "🏢 Sənədi kim verib göstər\nNümunə: ЗАГС Центрального района г. Санкт-Петербурга"
     },
     "change_value_child_data": {
-        "child_fio": "👶 Uşağın tam adı\\nNümunə: Расулова Махлиё Азизовна",
-        "child_birth_date": "📆 Doğum tarixini GG.AA.İİİ formatında daxil edin\\nNümunə: 14.08.1996",
-        "child_citizenship": "🌍 Vətəndaşlığı Kiril əlifbasında göstərin\\nNümunə: Узбекистан",
-        "child_certificate_number": "📇 Doğum şəhadətnaməsinin nömrəsini daxil edin\\nNümunə: №123456",
-        "child_certificate_issue_place": "🏢 Sənədi kim verib göstər\\nNümunə: ЗАГС Центрального района г. Санкт-Петербурга",
+        "child_fio": "👶 Uşağın tam adı\nNümunə: Расулова Махлиё Азизовна",
+        "child_birth_date": "📆 Doğum tarixini GG.AA.İİİ formatında daxil edin\nNümunə: 14.08.1996",
+        "child_citizenship": "🌍 Vətəndaşlığı Kiril əlifbasında göstərin\nNümunə: Узбекистан",
+        "child_certificate_number": "📇 Doğum şəhadətnaməsinin nömrəsini daxil edin\nNümunə: №123456",
+        "child_certificate_issue_place": "🏢 Sənədi kim verib göstər\nNümunə: ЗАГС Центрального района г. Санкт-Петербурга",
         "who_for_child": "🧑 Nəqədər yaxın olduğunuzu göstərin (uşaqla əlaqəniz)"
     },
+    "change_profession_btn": " 🧰 Peşə",
+"change_phone_by_organisation_btn": "📌 Qəbul edən təşkilatın telefonu",
 "change_phone_by_individual_btn": "📌 Qəbul edən tərəfin telefonu",
 "change_value_phone_by_individual": "☎️ Əlaqə şəxsin telefon nömrəsini daxil edin (əgər mövcuddursa)",
 "change_value_phone_by_organisation": "☎️ Əlaqə şəxsin telefon nömrəsini daxil edin (əgər mövcuddursa)",
 
-"change_who_btn": "Qohumluq dərəcəsi"
+"change_individual_data_dict_btn": "📄 Qəbul edən tərəfin pasportu",
+"change_representative_data_dict_btn": "👥 Qanuni nümayəndə",
+"change_who_btn": "Qohumluq dərəcəsi",
+"change_child_cert_info_dict_btn": "🧑 Doğum haqqında şəhadətnamə",
+
+"change_value_individual_data": {
+    "full_name": "Qəbul edən tərəfin tam adını mətndə göndərin",
+    "passport_give_date_input": "Pasportun verilmə tarixini mətndə göndərin",
+    "passport_issue_place_input": "Pasportu kim verdiyini mətndə göndərin\nNümunə: Отделом УФМС России в Санкт-Петербурге",
+    "passport_serial_number_input": "Pasportun seriya və nömrəsini mətndə göndərin",
+    "phone": "☎️ Qəbul edən tərəfin telefon nömrəsini daxil edin (əgər mövcuddursa)",
+    "adress": "🏠 Qəbul edən tərəfin qeydiyyat ünvanını daxil edin (şəhər, küçə, ev)"
+},
+"change_value_representative_data": {
+    "full_name": "👶 Uşağın qanuni nümayəndəsinin tam adını daxil edin",
+    "who": "Uşağı kimin müşayiət etdiyini və ya ərizəni kimin təqdim etdiyini göstərin"
+},
+"change_value_child_cert_info": {
+    "birth_date": "📆 Doğum tarixini GG.AA.İİİİ formatında daxil edin\nNümunə: 14.08.1996",
+    "child_certificate_number": "📇 Doğum haqqında şəhadətnamənin nömrəsini daxil edin\nNümunə: №123456",
+    "full_name": "👶 Uşağın tam adını daxil edin\nNümunə: Расулова Махлиё Азизовна",
+    "child_citizenship": "🌍 Vətəndaşlığı daxil edin (kiril əlifbası ilə)\nNümunə: Узбекистан"
+}
 }
