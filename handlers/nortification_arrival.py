@@ -352,16 +352,8 @@ async def arrival_after_org_message(message: Message, state: FSMContext):
         change_data_from_check="check_arrival_after_org_message",
     )
     lang = state_data.get("language")
-    waiting_data = state_data.get("waiting_data", None)
-    job = message.text.strip()
-    # Сохранение адреса в менеджер данных
-    session_id = state_data.get("session_id")
-    user_data = {
-        waiting_data: job,
-    }
-    await state.update_data({waiting_data: job})
+   
     state_data = await state.get_data()
-    data_manager.save_user_data(message.from_user.id, session_id, user_data)
     migration_data = state_data.get("migration_data", {})
     organization_data = state_data.get("organization_data", {})
     individual_data = state_data.get("individual_data", {})

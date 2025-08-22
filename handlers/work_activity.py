@@ -286,7 +286,7 @@ async def get_insurance_company(message: Message, state: FSMContext):
         await get_medical_policy_polis_date(message, state)
         return
 
-    text = f"{_.get_text("wa_patent.wa_patent_insurance_company.title", lang)}\n{_.get_text("wa_patent.wa_patent_insurance_company.example")}"
+    text = f"{_.get_text("wa_patent.wa_patent_insurance_company.title", lang)}\n{_.get_text("wa_patent.wa_patent_insurance_company.example", lang)}"
 
     await state.set_state(PatentedWorkActivity.medical_policy_validity_period)
     await message.answer(
@@ -312,7 +312,7 @@ async def get_medical_policy_validity_period(message: Message, state: FSMContext
         await get_medical_policy_polis_date(message, state)
         return
     
-    text = f"{_.get_text("wa_patent.wa_polis_date.title", lang)}\n\n{_.get_text("wa_patent.wa_polis_date.description")}"
+    text = f"{_.get_text("wa_patent.wa_polis_date.title", lang)}\n\n{_.get_text("wa_patent.wa_polis_date.description", lang)}"
 
     await state.set_state(PatentedWorkActivity.medical_policy_polis_date)
 
@@ -463,7 +463,7 @@ async def medical_policy_editor(query: CallbackQuery, state: FSMContext):
 
     if param_to_edit == "company":
         #Название страховой компании
-        text = f"{_.get_text("wa_patent.wa_patent_insurance_company.title", lang)}\n{_.get_text("wa_patent.wa_patent_insurance_company.example")}"
+        text = f"{_.get_text("wa_patent.wa_patent_insurance_company.title", lang)}\n{_.get_text("wa_patent.wa_patent_insurance_company.example", lang)}"
         await query.message.edit_text(
             text=text
         )
@@ -472,7 +472,7 @@ async def medical_policy_editor(query: CallbackQuery, state: FSMContext):
     
     if param_to_edit == "dateof":
         #Срок действия полиса
-        text = f"{_.get_text("wa_patent.wa_polis_date.title", lang)}\n\n{_.get_text("wa_patent.wa_polis_date.description")}"
+        text = f"{_.get_text("wa_patent.wa_polis_date.title", lang)}\n\n{_.get_text("wa_patent.wa_polis_date.description", lang)}"
         await query.message.edit_text(
             text=text
         )
@@ -537,7 +537,7 @@ async def edit_patent_data_fields(query: CallbackQuery, state: FSMContext):
 
     if param_to_edit in ["patient_number", "patient_date", "patient_issue_place"]:
 
-        text = _.get_text(f"wa_patent.wa_data_editor.sub_editor_data.patent.{param_to_edit}")
+        text = _.get_text(f"wa_patent.wa_data_editor.sub_editor_data.patent.{param_to_edit}", lang)
         await query.message.edit_text(
             text=text
         )

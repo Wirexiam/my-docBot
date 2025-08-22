@@ -52,7 +52,7 @@ data_blacklist = [
     "passport_description",
     "birth_date_cert",
     "number_migr_card_arrival",
-    "residence_reason",
+    "None",
     "residence_reason",
     "residence_reason",
     "residence_reason",
