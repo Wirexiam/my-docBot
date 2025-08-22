@@ -304,12 +304,12 @@ async def edit_f(message: Message, state: FSMContext):
 
         await state.update_data({primary_key: primary_key_data})
 
-    else:
-        user_data = {
-            waiting_data: message.text.strip(),
-        }
-        await state.update_data({waiting_data: message.text.strip()})
-        data_manager.save_user_data(message.from_user.id, session_id, user_data)
+    # else:
+    #     user_data = {
+    #         waiting_data: message.text.strip(),
+    #     }
+    #     await state.update_data({waiting_data: message.text.strip()})
+    #     data_manager.save_user_data(message.from_user.id, session_id, user_data)
 
     await arrival_after_org_callback(message, state)
 
@@ -477,19 +477,22 @@ async def arrival_after_org_callback(event: CallbackQuery, state: FSMContext):
     )
     lang = state_data.get("language")
     waiting_data = state_data.get("waiting_data", None)
-    # Сохранение адреса в менеджер данных
-    job = None
-    if isinstance(event, CallbackQuery):
-        job = event.data
-    else:
-        job = event.text
-    session_id = state_data.get("session_id")
-    user_data = {
-        waiting_data: job,
-    }
-    await state.update_data({waiting_data: job})
+    print(waiting_data)
+    if waiting_data is not None:
+        if "." not in waiting_data:
+            # Сохранение адреса в менеджер данных
+            job = None
+            if isinstance(event, CallbackQuery):
+                job = event.data
+            else:
+                job = event.text
+            session_id = state_data.get("session_id")
+            user_data = {
+                waiting_data: job,
+            }
+            await state.update_data({waiting_data: job})
+            data_manager.save_user_data(event.from_user.id, session_id, user_data)
     state_data = await state.get_data()
-    data_manager.save_user_data(event.from_user.id, session_id, user_data)
     migration_data = state_data.get("migration_data", {})
     organization_data = state_data.get("organization_data", {})
     individual_data = state_data.get("individual_data", {})
