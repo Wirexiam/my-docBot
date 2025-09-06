@@ -41,19 +41,19 @@ def create_docx_from_data(template_name: str, context: dict, user_path: str):
                                     run.font.name = "Arial"
                                     run.font.size = Pt(12)
 
-    doc.save(f"{user_path}/{name}.docx")
+    doc.save(f"{user_path}/{template_name}.docx")
 
     #заполняем шаблон после заполнения клеток
     # Загружаем шаблон
-    doc = DocxTemplate(f"{user_path}/{name}.docx")
+    doc = DocxTemplate(f"{user_path}/{template_name}.docx")
     
     # Данные для подстановки
     # Рендерим документ
     doc.render(context)
 
     # Сохраняем результат
-    doc.save(f"{user_path}/{name}.docx")
-    return f"{user_path}/{name}.docx"
+    doc.save(f"{user_path}/{template_name}.docx")
+    return f"{user_path}/{template_name}.docx"
 
 
 def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
