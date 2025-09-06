@@ -83,7 +83,7 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
     try:
         # Run the command and capture output
         subprocess.run(command, check=True, capture_output=True, text=True)
-        base_name = os.path.splitext(os.path.basename(input_docx_path))[0]
+        base_name = input_docx_path.split('.')[0]
         pdf_path = os.path.join(user_path, f"{base_name}.pdf")
         
         print(f"Successfully converted '{input_docx_path}' to PDF in '{user_path}'.")
