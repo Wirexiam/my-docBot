@@ -10,23 +10,6 @@ import string
 import subprocess
 import os
 
-import logging
-import os
-from logging.handlers import RotatingFileHandler
-
-def setup_logger():
-    logger = logging.getLogger("app")
-    logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    )
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
-    console_handler.setLevel(logging.INFO)
-    logger.addHandler(console_handler)
-    return logger
-
-logger = setup_logger()
 
 def create_docx_from_data(template_name: str, context: dict, user_path: str):
     # Загружаем шаблон
@@ -69,7 +52,6 @@ def create_docx_from_data(template_name: str, context: dict, user_path: str):
 
     # Сохраняем результат
     doc.save(f"{user_path}/{name}.docx")
-    logger.debug(f"{user_path}/{name}.docx")
     return f"{user_path}/{name}.docx"
 
 
@@ -84,11 +66,14 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
                                     same directory as the input file.
     """
     if not os.path.exists(input_docx_path):
-        logger.debug(f"Error: The file '{input_docx_path}' does not exist.")
+        pprint(f"Error: The file '{input_docx_path}' does not exist.")
         return
 
     if user_path is None:
         user_path = os.path.dirname(input_docx_path)
+
+    temp_user_dir = "/tmp/libreoffice_user"
+    os.makedirs(temp_user_dir, exist_ok=True)
 
     # The command to run LibreOffice in headless mode
     command = [
@@ -96,7 +81,7 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
         "--convert-to",
         "pdf",
         "--outdir",
-        "--env:UserInstallation=file://"+user_path,
+        f"--env:UserInstallation=file://{temp_user_dir}",
         user_path,
         input_docx_path,
     ]
@@ -104,22 +89,23 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
     try:
         # Run the command and capture output
         subprocess.run(command, check=True, capture_output=True, text=True)
+        
         base_name = os.path.splitext(os.path.basename(input_docx_path))[0]
         pdf_path = os.path.join(user_path, f"{base_name}.pdf")
 
         
-        logger.debug(f"Successfully converted '{input_docx_path}' to PDF in '{user_path}'.")
+        pprint(f"Successfully converted '{input_docx_path}' to PDF in '{user_path}'.")
 
         return pdf_path
         
     except FileNotFoundError:
-        logger.debug(
+        pprint(
             "Error: LibreOffice executable not found. Please ensure it's installed and in your PATH."
         )
     except subprocess.CalledProcessError as e:
-        logger.debug(f"An error occurred during conversion:")
-        logger.debug(f"Command output: {e.stdout}")
-        logger.debug(f"Command error: {e.stderr}")
+        pprint(f"An error occurred during conversion:")
+        pprint(f"Command output: {e.stdout}")
+        pprint(f"Command error: {e.stderr}")
 
 def create_user_doc(user_path, template_name, context):
     user_path_docx = create_docx_from_data(
@@ -127,7 +113,7 @@ def create_user_doc(user_path, template_name, context):
         context=context,
         user_path=user_path,
     )
-    logger.debug(f"{user_path_docx}------------")
+    pprint(f"{user_path_docx}------------")
     pdf_path = convert_docx_to_pdf_libreoffice(input_docx_path=user_path_docx, user_path=user_path)
     return pdf_path
 
