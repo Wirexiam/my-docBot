@@ -106,6 +106,6 @@ def create_user_doc(user_path, template_name, context):
     return user_path_docx
 
 
-create_user_doc(
-    "/home/johngoworks/projects/docBot/pdf_generator", "template", {"name": "Nastya","char_name": "Nastya"}
-)
+# create_user_doc(
+#     "/home/johngoworks/projects/docBot/pdf_generator", "template", {"name": "Nastya","char_name": "Nastya"}
+# )

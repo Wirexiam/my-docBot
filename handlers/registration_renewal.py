@@ -343,8 +343,8 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
             'passport_issue_date': state_data.get('passport_data', '').get('passport_issue_date', ''),
             'passport_issue_place': state_data.get('passport_data', '').get('passport_issue_place', ''),
             'passport_expiry_date': state_data.get('passport_data', '').get('passport_expiry_date', ''),
-            'patient_serial_number': state_data.get.get('patient_data', '').get('patient_number', ''),
-            'patient_issue_place': state_data.get.get('patient_data', '').get('patient_issue_place', ''),
+            'patient_serial_number': state_data.get('patient_data', '').get('patient_number', ''),
+            'patient_issue_place': state_data.get('patient_data', '').get('patient_issue_place', ''),
             'patient_date': state_data.get('patient_data', '').get('patient_date', ''),
             'phone_parent': state_data.get('phone_number', ''),
             }
