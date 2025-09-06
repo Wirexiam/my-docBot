@@ -74,6 +74,7 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
 
     temp_user_dir = "/tmp/libreoffice_user"
     os.makedirs(temp_user_dir, exist_ok=True)
+    os.environ['HOME'] = temp_user_dir
 
     # The command to run LibreOffice in headless mode
     command = [
@@ -82,7 +83,6 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
         "pdf",
         "--outdir",
         user_path,
-        f"--env:UserInstallation=file://{temp_user_dir}",
         input_docx_path,
     ]
 
