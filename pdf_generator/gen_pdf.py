@@ -1,12 +1,51 @@
 from docxtpl import DocxTemplate
+from docx import Document
+from docx.enum.table import WD_ALIGN_VERTICAL
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.shared import Pt
+
 import subprocess
 import os
 
 
 def create_docx_from_data(template_name: str, context: dict, user_path: str):
-    # Загружаем шаблон
-    doc = DocxTemplate(f"pdf_generator/templates/{template_name}.docx")
 
+    # Загружаем шаблон
+    
+
+    doc = Document(f"pdf_generator/templates/{template_name}.docx")
+
+
+    for table in doc.tables:
+        for row in table.rows:
+            cells = row.cells
+            for cell_num, cell in enumerate(cells):
+                for context_key in context:
+                    if context_key.startswith("char_"):
+                        context_key_str = "{{"+context_key+"}}"    
+                        if context_key_str in cell.text:
+                            letters = list(context[context_key])
+                            for i, ch in enumerate(letters):
+                                if cell_num + i < len(row.cells):
+                                    target_cell = row.cells[cell_num + i]
+                                    target_cell.text = ch
+
+                                    # Горизонтальное выравнивание текста
+                                    target_cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+                                    # Вертикальное выравнивание текста
+                                    target_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+
+                                    # Применяем Arial 12pt (можно поменять размер)
+                                    run = target_cell.paragraphs[0].runs[0]
+                                    run.font.name = "Arial"
+                                    run.font.size = Pt(12)
+
+    doc.save(f"{user_path}/{template_name}.docx")
+
+    #заполняем шаблон после заполнения клеток
+    # Загружаем шаблон
+    doc = DocxTemplate(f"{user_path}/{template_name}.docx")
+    
     # Данные для подстановки
     # Рендерим документ
     doc.render(context)
@@ -68,6 +107,6 @@ def create_user_doc(user_path, template_name, context):
     return user_path_docx
 
 
-# create_user_doc(
-#     "/home/johngoworks/projects/pdf_generator", "template_ready", {"full_name": "Nastya"}
-# )
+create_user_doc(
+    "/home/johngoworks/projects/docBot/pdf_generator", "template", {"name": "Nastya","char_name": "Nastya"}
+)
