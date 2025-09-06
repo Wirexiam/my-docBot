@@ -351,7 +351,7 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
         
         doc = create_user_doc(context=data, template_name='template_for_patient', user_path='pdf_generator')
     
-        ready_doc = FSInputFile(doc, filename='document.pdf')
+        ready_doc = FSInputFile(doc, filename='document.docx')
 
     elif who == 'child':
 
