@@ -103,5 +103,5 @@ def create_user_doc(user_path, template_name, context):
     )
     print(f"{user_path_docx}------------")
     pdf_path = convert_docx_to_pdf_libreoffice(input_docx_path=user_path_docx, user_path=user_path)
-    return user_path_docx
+    return pdf_path
 
