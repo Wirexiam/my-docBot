@@ -354,7 +354,7 @@ async def child_get_pdf(query: CallbackQuery, state: FSMContext):
     doc = create_user_doc(context=data, template_name='template_patient_actual', user_path='./pdf_generator/output')
 
     
-    ready_doc = FSInputFile(doc, filename='document.docx')
+    ready_doc = FSInputFile(doc, filename='document.pdf')
     await query.message.answer_document(
         document=ready_doc
     )
