@@ -93,7 +93,7 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
         print(f"An error occurred during conversion:")
         print(f"Command output: {e.stdout}")
         print(f"Command error: {e.stderr}")
-    return f"{user_path}.pdf"
+    return f"{input_docx_path}.pdf"
 
 def create_user_doc(user_path, template_name, context):
     user_path_docx = create_docx_from_data(
