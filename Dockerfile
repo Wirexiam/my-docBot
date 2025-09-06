@@ -2,6 +2,9 @@ FROM python:3.12
 
 WORKDIR /opt/app
 
+ENV HOME=/tmp
+ENV USER=1001
+
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir virtualenv && \
@@ -26,6 +29,12 @@ RUN /opt/venv/bin/pip install --no-cache-dir --upgrade pip && \
 COPY . .
 
 RUN chown -R 1001:1001 /opt/app
+
+RUN mkdir -p /tmp/libreoffice_user /tmp/.cache/dconf \
+    && chmod -R 777 /tmp/libreoffice_user /tmp/.cache/dconf
+
 USER 1001
+
+
 
 CMD ["/opt/venv/bin/python", "main.py"]
