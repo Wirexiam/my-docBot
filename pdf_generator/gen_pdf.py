@@ -5,6 +5,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt
 import random
 from pprint import pprint
+from main import logger
 import string
 
 import subprocess
@@ -51,6 +52,7 @@ def create_docx_from_data(template_name: str, context: dict, user_path: str):
 
     # Сохраняем результат
     doc.save(f"{user_path}/{name}.docx")
+    logger.info(f"{user_path}/{name}.docx")
     return f"{user_path}/{name}.docx"
 
 
@@ -65,7 +67,7 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
                                     same directory as the input file.
     """
     if not os.path.exists(input_docx_path):
-        pprint(f"Error: The file '{input_docx_path}' does not exist.")
+        logger.info(f"Error: The file '{input_docx_path}' does not exist.")
         return
 
     if user_path is None:
@@ -85,21 +87,22 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
     try:
         # Run the command and capture output
         subprocess.run(command, check=True, capture_output=True, text=True)
-        base_name = input_docx_path.split('.')[0]
-        pdf_path = f'{user_path}/{base_name}.pdf'
+        base_name = os.path.splitext(os.path.basename(input_docx_path))[0]
+        pdf_path = os.path.join(user_path, f"{base_name}.pdf")
+
         
-        pprint(f"Successfully converted '{input_docx_path}' to PDF in '{user_path}'.")
+        logger.info(f"Successfully converted '{input_docx_path}' to PDF in '{user_path}'.")
 
         return pdf_path
         
     except FileNotFoundError:
-        pprint(
+        logger.info(
             "Error: LibreOffice executable not found. Please ensure it's installed and in your PATH."
         )
     except subprocess.CalledProcessError as e:
-        pprint(f"An error occurred during conversion:")
-        pprint(f"Command output: {e.stdout}")
-        pprint(f"Command error: {e.stderr}")
+        logger.info(f"An error occurred during conversion:")
+        logger.info(f"Command output: {e.stdout}")
+        logger.info(f"Command error: {e.stderr}")
 
 def create_user_doc(user_path, template_name, context):
     user_path_docx = create_docx_from_data(
@@ -107,7 +110,7 @@ def create_user_doc(user_path, template_name, context):
         context=context,
         user_path=user_path,
     )
-    pprint(f"{user_path_docx}------------")
+    logger.info(f"{user_path_docx}------------")
     pdf_path = convert_docx_to_pdf_libreoffice(input_docx_path=user_path_docx, user_path=user_path)
     return pdf_path
 
