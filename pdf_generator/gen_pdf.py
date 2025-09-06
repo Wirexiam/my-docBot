@@ -31,12 +31,9 @@ def create_docx_from_data(template_name: str, context: dict, user_path: str):
                                     target_cell = row.cells[cell_num + i]
                                     target_cell.text = ch
 
-                                    # Горизонтальное выравнивание текста
                                     target_cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-                                    # Вертикальное выравнивание текста
                                     target_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
 
-                                    # Применяем Arial 12pt (можно поменять размер)
                                     run = target_cell.paragraphs[0].runs[0]
                                     run.font.name = "Arial"
                                     run.font.size = Pt(12)
