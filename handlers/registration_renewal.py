@@ -349,7 +349,7 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
             'phone_parent': state_data.get('phone_number', ''),
             }
         
-        doc = create_user_doc(context=data, template_name='template_for_patient', user_path='/pdf_generator/output')
+        doc = create_user_doc(context=data, template_name='template_for_patient', user_path='/opt/app/pdf_generator/output')
     
         ready_doc = FSInputFile(doc, filename='document.pdf')
 
