@@ -349,7 +349,7 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
             'phone_parent': state_data.get('phone_number', ''),
             }
         
-        doc = create_user_doc(context=data, template_name='template_for_patient', user_path='/Users/GoodMan/docBot/pdf_generator')
+        doc = create_user_doc(context=data, template_name='template_for_patient', user_path='./pdf_generator/output')
     
         ready_doc = FSInputFile(doc, filename='document.docx')
 
@@ -383,7 +383,7 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
             'phone_parent': state_data.get('phone_number', ''),
             }
         
-        doc = create_user_doc(context=data, template_name='template_for_patient_child', user_path='/Users/GoodMan/docBot/pdf_generator')
+        doc = create_user_doc(context=data, template_name='template_for_patient_child', user_path='./pdf_generator/output')
     
         ready_doc = FSInputFile(doc, filename='document.docx')
     else:
@@ -405,7 +405,7 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
             'phone_parent': state_data.get('phone_number', ''),
             }
         
-        doc = create_user_doc(context=data, template_name='template_for_patient_marriage_person', user_path='/Users/GoodMan/docBot/pdf_generator')
+        doc = create_user_doc(context=data, template_name='template_for_patient_marriage_person', user_path='./pdf_generator/output')
     
         ready_doc = FSInputFile(doc, filename='document.docx')
 
