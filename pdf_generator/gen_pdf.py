@@ -87,6 +87,8 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
         pdf_path = os.path.join(user_path, f"{base_name}.pdf")
         
         print(f"Successfully converted '{input_docx_path}' to PDF in '{user_path}'.")
+
+        return pdf_path
         
     except FileNotFoundError:
         print(
@@ -96,7 +98,6 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
         print(f"An error occurred during conversion:")
         print(f"Command output: {e.stdout}")
         print(f"Command error: {e.stderr}")
-    return pdf_path
 
 def create_user_doc(user_path, template_name, context):
     user_path_docx = create_docx_from_data(
