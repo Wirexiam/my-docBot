@@ -351,7 +351,7 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
         
         doc = create_user_doc(context=data, template_name='template_for_patient', user_path='pdf_generator/output')
     
-        ready_doc = FSInputFile(doc, filename='document.docx')
+        ready_doc = FSInputFile(doc, filename='document.pdf')
 
     elif who == 'child':
 
@@ -385,7 +385,7 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
         
         doc = create_user_doc(context=data, template_name='template_for_patient_child', user_path='pdf_generator/output')
     
-        ready_doc = FSInputFile(doc, filename='document.docx')
+        ready_doc = FSInputFile(doc, filename='document.pdf')
     else:
         data = {
             'marry_fio': state_data.get('marriage_data', '').get('spouse_fio', ''),
@@ -407,7 +407,7 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
         
         doc = create_user_doc(context=data, template_name='template_for_patient_marriage_person', user_path='pdf_generator/output')
     
-        ready_doc = FSInputFile(doc, filename='document.docx')
+        ready_doc = FSInputFile(doc, filename='document.pdf')
 
     await query.message.answer_document(
         document=ready_doc

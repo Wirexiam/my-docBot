@@ -17,8 +17,6 @@ def create_docx_from_data(template_name: str, context: dict, user_path: str):
     name = ''.join(random.choice(letters) for _ in range(8))
 
     # Загружаем шаблон
-
-
     for table in doc.tables:
         for row in table.rows:
             cells = row.cells
@@ -89,6 +87,7 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
         # Run the command and capture output
         subprocess.run(command, check=True, capture_output=True, text=True)
         print(f"Successfully converted '{input_docx_path}' to PDF in '{user_path}'.")
+        
     except FileNotFoundError:
         print(
             "Error: LibreOffice executable not found. Please ensure it's installed and in your PATH."
@@ -97,7 +96,7 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
         print(f"An error occurred during conversion:")
         print(f"Command output: {e.stdout}")
         print(f"Command error: {e.stderr}")
-
+    return f"{user_path}.pdf"
 
 def create_user_doc(user_path, template_name, context):
     user_path_docx = create_docx_from_data(
@@ -106,10 +105,6 @@ def create_user_doc(user_path, template_name, context):
         user_path=user_path,
     )
     print(f"{user_path_docx}------------")
-    convert_docx_to_pdf_libreoffice(input_docx_path=user_path_docx, user_path=user_path)
-    return user_path_docx
+    pdf_path = convert_docx_to_pdf_libreoffice(input_docx_path=user_path_docx, user_path=user_path)
+    return pdf_path
 
-
-# create_user_doc(
-#     "/home/johngoworks/projects/docBot/pdf_generator", "template", {"name": "Nastya","char_name": "Nastya"}
-# )
