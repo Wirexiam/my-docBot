@@ -23,5 +23,5 @@ networks:
 
 volumes:
   media-volume:
-
+  output-volume:
 
