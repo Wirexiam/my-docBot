@@ -2,7 +2,7 @@ FROM python:3.12
 
 WORKDIR /opt/app
 
-ENV HOME=/tmp
+ENV HOME=/tmp/libreoffice_user
 ENV USER=1001
 
 COPY requirements.txt .
