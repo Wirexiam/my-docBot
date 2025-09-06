@@ -26,5 +26,4 @@ networks:
 
 volumes:
   media-volume:
-  /pdf_generator/output:
 
