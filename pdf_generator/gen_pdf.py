@@ -4,7 +4,7 @@ from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt
 import random
-import pprint
+from pprint import pprint
 import string
 
 import subprocess
@@ -65,7 +65,7 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
                                     same directory as the input file.
     """
     if not os.path.exists(input_docx_path):
-        print(f"Error: The file '{input_docx_path}' does not exist.")
+        pprint(f"Error: The file '{input_docx_path}' does not exist.")
         return
 
     if user_path is None:
@@ -92,13 +92,13 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
         return pdf_path
         
     except FileNotFoundError:
-        print(
+        pprint(
             "Error: LibreOffice executable not found. Please ensure it's installed and in your PATH."
         )
     except subprocess.CalledProcessError as e:
-        print(f"An error occurred during conversion:")
-        print(f"Command output: {e.stdout}")
-        print(f"Command error: {e.stderr}")
+        pprint(f"An error occurred during conversion:")
+        pprint(f"Command output: {e.stdout}")
+        pprint(f"Command error: {e.stderr}")
 
 def create_user_doc(user_path, template_name, context):
     user_path_docx = create_docx_from_data(
@@ -106,7 +106,7 @@ def create_user_doc(user_path, template_name, context):
         context=context,
         user_path=user_path,
     )
-    print(f"{user_path_docx}------------")
+    pprint(f"{user_path_docx}------------")
     pdf_path = convert_docx_to_pdf_libreoffice(input_docx_path=user_path_docx, user_path=user_path)
     return pdf_path
 
