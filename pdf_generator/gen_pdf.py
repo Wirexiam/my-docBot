@@ -10,7 +10,7 @@ import os
 
 def create_docx_from_data(template_name: str, context: dict, user_path: str):
     # Загружаем шаблон
-    doc = DocxTemplate(f"/pdf_generator/templates/{template_name}.docx")
+    doc = DocxTemplate(f"pdf_generator/templates/{template_name}.docx")
 
     # Загружаем шаблон
 
