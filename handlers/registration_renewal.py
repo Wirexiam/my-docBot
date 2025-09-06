@@ -331,15 +331,6 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
     who = state_data.get('who')
     ready_doc = None
 
-    parent = None
-
-    if state_data.get('child_data', '').get('who_for_child', '') == "father":
-        parent = "отец"
-    elif state_data.get('child_data', '').get('who_for_child', '') == "mother":
-        parent = "мать"
-    else:
-        parent = "опекун"
-
 
     if who == 'patient':
         data = {
@@ -363,6 +354,16 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
         ready_doc = FSInputFile(doc, filename='document.docx')
 
     elif who == 'child':
+
+        parent = None
+
+        if state_data.get('child_data', '').get('who_for_child', '') == "father":
+            parent = "отец"
+        elif state_data.get('child_data', '').get('who_for_child', '') == "mother":
+            parent = "мать"
+        else:
+            parent = "опекун"
+
         data = {
             'child_fio': state_data.get('child_data', '').get('full_name', ''),
             'child_ship': state_data.get('child_data', '').get('citizenship', ''),
@@ -382,7 +383,7 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
             'phone_parent': state_data.get('phone_number', ''),
             }
         
-        doc = create_user_doc(context=data, template_name='template_for_patientchild', user_path='/Users/GoodMan/docBot/pdf_generator')
+        doc = create_user_doc(context=data, template_name='template_for_patient_child', user_path='/Users/GoodMan/docBot/pdf_generator')
     
         ready_doc = FSInputFile(doc, filename='document.docx')
     else:
