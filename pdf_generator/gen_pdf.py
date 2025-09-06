@@ -13,10 +13,15 @@ def create_docx_from_data(template_name: str, context: dict, user_path: str):
     # Загружаем шаблон
     doc = Document(f"pdf_generator/templates/{template_name}.docx")
 
+    # генерим уникальное имя
     letters = string.ascii_lowercase
     name = ''.join(random.choice(letters) for _ in range(8))
 
-    # Загружаем шаблон
+    # Временный файл
+    tmp_path = os.path.join(user_path, f"{name}_tmp.docx")
+    final_path = os.path.join(user_path, f"{name}.docx")
+
+    # работа с таблицами
     for table in doc.tables:
         for row in table.rows:
             cells = row.cells
@@ -30,30 +35,24 @@ def create_docx_from_data(template_name: str, context: dict, user_path: str):
                                 if cell_num + i < len(row.cells):
                                     target_cell = row.cells[cell_num + i]
                                     target_cell.text = ch
-
-                                    # Горизонтальное выравнивание текста
                                     target_cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-                                    # Вертикальное выравнивание текста
                                     target_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-
-                                    # Применяем Arial 12pt (можно поменять размер)
                                     run = target_cell.paragraphs[0].runs[0]
                                     run.font.name = "Arial"
                                     run.font.size = Pt(12)
 
-    doc.save(f"{user_path}/{name}.docx")
+    # сохраняем во временный
+    doc.save(tmp_path)
 
-    #заполняем шаблон после заполнения клеток
-    # Загружаем шаблон
-    doc = DocxTemplate(f"{user_path}/{name}.docx")
-    
-    # Данные для подстановки
-    # Рендерим документ
+    # загружаем во второй раз и рендерим
+    doc = DocxTemplate(tmp_path)
     doc.render(context)
+    doc.save(final_path)
 
-    # Сохраняем результат
-    doc.save(f"{user_path}/{name}.docx")
-    return f"{user_path}/{name}.docx"
+    # удаляем временный
+    os.remove(tmp_path)
+
+    return final_path
 
 
 def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
