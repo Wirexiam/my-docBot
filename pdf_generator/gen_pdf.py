@@ -77,6 +77,7 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
         "--convert-to",
         "pdf",
         "--outdir",
+        "--env:UserInstallation=file://"+user_path,
         user_path,
         input_docx_path,
     ]
