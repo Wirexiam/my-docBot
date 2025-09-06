@@ -10,7 +10,6 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir virtualenv && \
     python -m virtualenv /opt/venv
 
-RUN apt-get --no-install-recommends install libreoffice -y
 RUN apt-get install -y libreoffice-java-common
 
 RUN /opt/venv/bin/pip install --no-cache-dir --upgrade pip && \
