@@ -5,7 +5,7 @@ import os
 
 def create_docx_from_data(template_name: str, context: dict, user_path: str):
     # Загружаем шаблон
-    doc = DocxTemplate(f"./templates/{template_name}.docx")
+    doc = DocxTemplate(f"pdf_generator/templates/{template_name}.docx")
 
     # Данные для подстановки
     # Рендерим документ
@@ -65,6 +65,7 @@ def create_user_doc(user_path, template_name, context):
     )
     print(f"{user_path_docx}------------")
     convert_docx_to_pdf_libreoffice(input_docx_path=user_path_docx, user_path=user_path)
+    return user_path_docx
 
 
 # create_user_doc(

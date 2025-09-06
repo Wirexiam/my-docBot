@@ -3,6 +3,7 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message, FSInputFile
 from aiogram.fsm.context import FSMContext
 
+from pdf_generator.gen_pdf import create_user_doc
 from states.registration_renewal import RegistrationRenewalStates
 from states.components.live_adress import LiveAdress
 from keyboards.registration_renewal import (
@@ -184,6 +185,7 @@ async def handle_registration_renewal_after_residence_reason_and_location(
 
     residence_reason = state_data.get("residence_reason", "Не найдено")
     if residence_reason == "residence_reason_patent":
+        await state.update_data(who='patient')
         text = (
             f"{_.get_text('registration_renewal_patient_check_data.title', lang)}\n\n"
         )
@@ -202,6 +204,7 @@ async def handle_registration_renewal_after_residence_reason_and_location(
             f"{_.get_text('registration_renewal_marriage_check_data.title', lang)}\n\n"
         )
         marriage_data = state_data.get("marriage_data", {})
+        await state.update_data(who='marriage')
         text += f"{_.get_text('registration_renewal_marriage_check_data.full_name', lang)}{state_data.get("passport_data",{}).get("full_name","Не найдено")}\n"
         text += f"{_.get_text('registration_renewal_marriage_check_data.birth_date', lang)}{state_data.get("passport_data",{}).get("birth_date","Не найдено")}\n"
         text += f"{_.get_text('registration_renewal_marriage_check_data.citizenship', lang)}{state_data.get("passport_data",{}).get("citizenship","Не найдено")}\n"
@@ -213,6 +216,7 @@ async def handle_registration_renewal_after_residence_reason_and_location(
         text += f"{_.get_text('registration_renewal_marriage_check_data.marriage_certificate_number', lang)}{marriage_data.get("marriage_number","Не найдено")}{_.get_text("registration_renewal_marriage_check_data.issue_place")}\n{marriage_data.get("issue_date","Не найдено")} {marriage_data.get("marriage_issue_place","Не найдено")}"
     elif residence_reason == "residence_reason_child":
         child_data = state_data.get("child_data", {})
+        await state.update_data(who='child')
         text = f"{_.get_text('registration_renewal_child_check_data.title', lang)}\n\n"
         text += f"{_.get_text('registration_renewal_child_check_data.full_name', lang)}{state_data.get("passport_data",{}).get("full_name","Не найдено")}\n"
         text += f"{_.get_text('registration_renewal_child_check_data.birth_date', lang)}{state_data.get("passport_data",{}).get("birth_date","Не найдено")}\n"
@@ -264,6 +268,7 @@ async def handle_registration_renewal_after_residence_reason_and_location(
     )
     residence_reason = state_data.get("residence_reason", "Не найдено")
     if residence_reason == "residence_reason_patent":
+        await state.update_data(who='patient')
         text = (
             f"{_.get_text('registration_renewal_patient_check_data.title', lang)}\n\n"
         )
@@ -278,6 +283,7 @@ async def handle_registration_renewal_after_residence_reason_and_location(
         text += f"{_.get_text('registration_renewal_patient_check_data.patient_date', lang)}{patient_data.get("patient_date","Не найдено")}\n"
         text += f"{_.get_text('registration_renewal_patient_check_data.patient_issue_place', lang)}{patient_data.get("patient_issue_place","Не найдено")}\n\n"
     elif residence_reason == "residence_reason_marriage":
+        await state.update_data(who='mariage')
         text = (
             f"{_.get_text('registration_renewal_marriage_check_data.title', lang)}\n\n"
         )
@@ -292,6 +298,7 @@ async def handle_registration_renewal_after_residence_reason_and_location(
         text += f"{_.get_text('registration_renewal_marriage_check_data.marriage_citizenship', lang)}\n"
         text += f"{_.get_text('registration_renewal_marriage_check_data.marriage_certificate_number', lang)}{marriage_data.get("marriage_number","Не найдено")}{_.get_text("registration_renewal_marriage_check_data.issue_place")}\n{marriage_data.get("issue_date","Не найдено")} {marriage_data.get("marriage_issue_place","Не найдено")}"
     elif residence_reason == "residence_reason_child":
+        await state.update_data(who='child')
         child_data = state_data.get("child_data", {})
         text = f"{_.get_text('registration_renewal_child_check_data.title', lang)}\n\n"
         text += f"{_.get_text('registration_renewal_child_check_data.full_name', lang)}{state_data.get("passport_data",{}).get("full_name","Не найдено")}\n"
@@ -311,4 +318,96 @@ async def handle_registration_renewal_after_residence_reason_and_location(
         reply_markup=get_registration_renewal_after_residence_reason_and_location_keyboard(
             lang
         ),
+    )
+
+@registration_renewal_router.callback_query(
+    F.data == 'registration_renewal_patient_check_data_all_true'
+)
+async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
+    """Обработчик нажатия кнопки Верно"""
+    print('отправка файла')
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+    who = state_data.get('who')
+    ready_doc = None
+
+    parent = None
+
+    if state_data.get('child_data', '').get('who_for_child', '') == "father":
+        parent = "отец"
+    elif state_data.get('child_data', '').get('who_for_child', '') == "mother":
+        parent = "мать"
+    else:
+        parent = "опекун"
+
+
+    if who == 'patient':
+        data = {
+            'live_adress': state_data.get('live_adress', ''),
+            'mvd_adress': state_data.get('mvd_adress', ''),
+            'fio': state_data.get('passport_data', '').get('full_name', ''),
+            'birth_data': state_data.get('passport_data', '').get('birth_date', ''),
+            'citizenship': state_data.get('passport_data', '').get('citizenship', ''),
+            'serial_number': state_data.get('passport_data', '').get('passport_serial_number', ''),
+            'passport_issue_date': state_data.get('passport_data', '').get('passport_issue_date', ''),
+            'passport_issue_place': state_data.get('passport_data', '').get('passport_issue_place', ''),
+            'passport_expiry_date': state_data.get('passport_data', '').get('passport_expiry_date', ''),
+            'patient_serial_number': state_data.get.get('patient_data', '').get('patient_number', ''),
+            'patient_issue_place': state_data.get.get('patient_data', '').get('patient_issue_place', ''),
+            'patient_date': state_data.get('patient_data', '').get('patient_date', ''),
+            'phone_parent': state_data.get('phone_number', ''),
+            }
+        
+        doc = create_user_doc(context=data, template_name='template_for_patient', user_path='/Users/GoodMan/docBot/pdf_generator')
+    
+        ready_doc = FSInputFile(doc, filename='document.docx')
+
+    elif who == 'child':
+        data = {
+            'child_fio': state_data.get('child_data', '').get('full_name', ''),
+            'child_ship': state_data.get('child_data', '').get('citizenship', ''),
+            'child_date_birth': state_data.get('child_data', '').get('birth_date', ''),
+            'child_certificate_number': state_data.get('child_data', '').get('child_certificate_number', ''),
+            'child_certificate_issue_place': state_data.get('child_data', '').get('child_certificate_issue_place', ''),
+            'parent': parent,
+            'live_adress': state_data.get('live_adress', ''),
+            'mvd_adress': state_data.get('mvd_adress', ''),
+            'fio': state_data.get('passport_data', '').get('full_name', ''),
+            'birth_data': state_data.get('passport_data', '').get('birth_date', ''),
+            'citizenship': state_data.get('passport_data', '').get('citizenship', ''),
+            'serial_number': state_data.get('passport_data', '').get('passport_serial_number', ''),
+            'passport_issue_date': state_data.get('passport_data', '').get('passport_issue_date', ''),
+            'passport_issue_place': state_data.get('passport_data', '').get('passport_issue_place', ''),
+            'passport_expiry_date': state_data.get('passport_data', '').get('passport_expiry_date', ''),
+            'phone_parent': state_data.get('phone_number', ''),
+            }
+        
+        doc = create_user_doc(context=data, template_name='template_for_patientchild', user_path='/Users/GoodMan/docBot/pdf_generator')
+    
+        ready_doc = FSInputFile(doc, filename='document.docx')
+    else:
+        data = {
+            'marry_fio': state_data.get('marriage_data', '').get('spouse_fio', ''),
+            'marry_issue_date': state_data.get('marriage_data', '').get('issue_date', ''),
+            'data_get_marriage_doc': state_data.get('marriage_data', '').get('issue_data', ''),
+            'marriage_number': state_data.get('marriage_data', '').get('marriage_number', ''),
+            'marriage_issue_place': state_data.get('marriage_data', '').get('marriage_issue_place', ''),
+            'live_adress': state_data.get('live_adress', ''),
+            'mvd_adress': state_data.get('mvd_adress', ''),
+            'fio': state_data.get('passport_data', '').get('full_name', ''),
+            'birth_data': state_data.get('passport_data', '').get('birth_date', ''),
+            'citizenship': state_data.get('passport_data', '').get('citizenship', ''),
+            'serial_number': state_data.get('passport_data', '').get('passport_serial_number', ''),
+            'passport_issue_date': state_data.get('passport_data', '').get('passport_issue_date', ''),
+            'passport_issue_place': state_data.get('passport_data', '').get('passport_issue_place', ''),
+            'passport_expiry_date': state_data.get('passport_data', '').get('passport_expiry_date', ''),
+            'phone_parent': state_data.get('phone_number', ''),
+            }
+        
+        doc = create_user_doc(context=data, template_name='template_for_patient_marriage_person', user_path='/Users/GoodMan/docBot/pdf_generator')
+    
+        ready_doc = FSInputFile(doc, filename='document.docx')
+
+    await query.message.answer_document(
+        document=ready_doc
     )

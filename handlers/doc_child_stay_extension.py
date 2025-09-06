@@ -2,6 +2,8 @@ from pprint import pprint
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
+from aiogram.types import InputFileUnion
+from aiogram.types import FSInputFile
 
 from handlers.components.live_adress import handle_live_adress_input
 from handlers.components.residence_reason_patent import func_residence_reason_patent
@@ -9,6 +11,7 @@ from keyboards.components.child_data import get_child_data_start_keyboard
 from keyboards.registration_renewal import (
     get_registration_renewal_after_residence_reason_and_location_keyboard,
 )
+from pdf_generator.gen_pdf import create_user_doc
 from states.components.live_adress import LiveAdress
 from states.components.phone_number import PhoneNumberStates
 from states.doc_child_stay_extension import DocChildStayExtensionStates
@@ -308,6 +311,52 @@ async def handle_child_data(message: Message, state: FSMContext):
     await message.answer(
         text=text,
         reply_markup=get_doc_child_accept_data(lang)
+    )
+
+@doc_child_stay_extension_router.callback_query(F.data=="child_stay_accept")
+async def child_get_pdf(query: CallbackQuery, state: FSMContext):
+    """Обработчик нажатия кнопки Верно"""
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+    parent = None
+
+    if state_data.get('related_child', '') == "father":
+        parent = "Отец"
+    elif state_data.get('related_child', '') == "mother":
+        parent = "Мать"
+    else:
+        parent = "Опекун"
+
+    data = {
+        'extend_child_stay_date': state_data.get("extend_child_stay_date", ''),
+        'child_fio': state_data.get('child_data', '').get('full_name', ''),
+        'child_ship': state_data.get('child_data', '').get('citizenship', ''),
+        'child_date_birth': state_data.get('child_data', '').get('birth_date', ''),
+        'child_passport_serial_number': state_data.get('child_data', '').get('passport_serial_number', ''),
+        'child_passport_when_give': state_data.get('child_data', '').get('passport_issue_date', ''),
+        'child_passport_who_where_give': state_data.get('child_data', '').get('passport_data.passport_issue_place', ''),
+        'child_parent': parent,
+        'patient_number': state_data.get('patient_data').get('patient_number', ''),
+        'patient_date': state_data.get('patient_data').get('patient_date', ''),
+        'live_adress': state_data.get('live_adress', ''),
+        'reason': state_data.get('child_cannot_leave_cause', ''),
+        'mvd_adress': state_data.get('mvd_adress', ''),
+        'fio_parent': state_data.get('parent_passport_data', '').get('full_name', ''),
+        'birth_data_parent': state_data.get('parent_passport_data', '').get('birth_date', ''),
+        'citizenship_parent': state_data.get('parent_passport_data', '').get('citizenship', ''),
+        'serial_number_parent': state_data.get('parent_passport_data', '').get('passport_serial_number', ''),
+        'passport_issue_date_parent': state_data.get('parent_passport_data', '').get('passport_issue_date', ''),
+        'passport_issue_place_parent': state_data.get('parent_passport_data', '').get('passport_issue_place', ''),
+        'phone_parent': state_data.get('phone_number', ''),
+        }
+    
+    doc = create_user_doc(context=data, template_name='template_patient_actual', user_path='/Users/GoodMan/docBot/pdf_generator')
+
+    
+    ready_doc = FSInputFile(doc, filename='document.docx')
+    await query.message.answer_document(
+        document=ready_doc
     )
 
 
