@@ -3,6 +3,8 @@ from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt
+import random
+import string
 
 import subprocess
 import os
@@ -10,6 +12,9 @@ import os
 def create_docx_from_data(template_name: str, context: dict, user_path: str):
     # Загружаем шаблон
     doc = Document(f"pdf_generator/templates/{template_name}.docx")
+
+    letters = string.ascii_lowercase
+    name = ''.join(random.choice(letters) for _ in range(8))
 
     # Загружаем шаблон
 
@@ -38,19 +43,19 @@ def create_docx_from_data(template_name: str, context: dict, user_path: str):
                                     run.font.name = "Arial"
                                     run.font.size = Pt(12)
 
-    doc.save(f"{user_path}/{template_name}.docx")
+    doc.save(f"{user_path}/{name}.docx")
 
     #заполняем шаблон после заполнения клеток
     # Загружаем шаблон
-    doc = DocxTemplate(f"{user_path}/{template_name}.docx")
+    doc = DocxTemplate(f"{user_path}/{name}.docx")
     
     # Данные для подстановки
     # Рендерим документ
     doc.render(context)
 
     # Сохраняем результат
-    doc.save(f"{user_path}/{template_name}.docx")
-    return f"{user_path}/{template_name}.docx"
+    doc.save(f"{user_path}/{name}.docx")
+    return f"{user_path}/{name}.docx"
 
 
 def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
