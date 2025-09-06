@@ -81,15 +81,15 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
         "--convert-to",
         "pdf",
         "--outdir",
-        f"--env:UserInstallation=file://{temp_user_dir}",
         user_path,
+        f"--env:UserInstallation=file://{temp_user_dir}",
         input_docx_path,
     ]
 
     try:
         # Run the command and capture output
         subprocess.run(command, check=True, capture_output=True, text=True)
-        
+
         base_name = os.path.splitext(os.path.basename(input_docx_path))[0]
         pdf_path = os.path.join(user_path, f"{base_name}.pdf")
 
