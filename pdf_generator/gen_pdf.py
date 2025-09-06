@@ -4,6 +4,7 @@ from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt
 import random
+import pprint
 import string
 
 import subprocess
@@ -86,7 +87,7 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
         base_name = input_docx_path.split('.')[0]
         pdf_path = f'{user_path}/{base_name}.pdf'
         
-        print(f"Successfully converted '{input_docx_path}' to PDF in '{user_path}'.")
+        pprint(f"Successfully converted '{input_docx_path}' to PDF in '{user_path}'.")
 
         return pdf_path
         
