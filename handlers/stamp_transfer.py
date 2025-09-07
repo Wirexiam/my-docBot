@@ -1,8 +1,9 @@
 from pprint import pprint
 from aiogram import Router, F
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message,FSInputFile
 from aiogram.fsm.context import FSMContext
 
+from pdf_generator.gen_pdf import create_user_doc
 from states.stamp_transfer import Stamp_transfer
 from states.components.passport_manual import PassportManualStates
 from states.components.live_adress import LiveAdress
@@ -240,4 +241,42 @@ async def handle_new_passport_data(message: CallbackQuery, state: FSMContext):
     await message.message.edit_text(
         text=text,
         reply_markup=get_stamp_transfer_check_data_before_gen(lang),
+    )
+
+@stamp_transfer_router.callback_query(F.data == "all_true_in_stamp")
+async def handle_all_true_in_stamp(callback: CallbackQuery, state: FSMContext):
+    """Обработка подтверждения правильности данных перед генерацией штампа"""
+    state_data = await state.get_data()
+    # pprint(state_data)
+    lang = state_data.get("language")
+    city = state_data.get("live_adress","").split(",")[0] if state_data.get("live_adress","") else ""
+    street = state_data.get("live_adress","").split(",")[1] if state_data.get("live_adress","") and len(state_data.get("live_adress","").split(","))>1 else ""
+    house = state_data.get("live_adress","").split(",")[2] if state_data.get("live_adress","") and len(state_data.get("live_adress","").split(","))>2 else ""
+    house = state_data.get("live_adress","").split(house)[1].strip() if state_data.get("live_adress","") and len(state_data.get("live_adress","").split(","))>2 else ""
+    data = {
+        "mvd_adress":state_data.get("mvd_adress",""),
+        "citizenship":state_data.get("passport_data",{}).get("citizenship",""),
+        "full_name":state_data.get("passport_data",{}).get("full_name",""),
+        "city":city,
+        "street":street,
+        "house":house,
+        "phone":state_data.get("phone_number",""),
+        "old_passport_number":state_data.get("old_passport_data",{}).get("passport_serial_number",""),
+        "old_passport_issue_place":state_data.get("old_passport_data",{}).get("passport_issue_place",""),
+        "old_passport_issue_date": state_data.get("old_passport_data",{}).get("passport_issue_date",""),
+        "old_passport_expiry_date": state_data.get("old_passport_data",{}).get("passport_expiry_date",""),
+        "new_passport_number":state_data.get("passport_data",{}).get("passport_serial_number",""),
+        "new_passport_issue_place":state_data.get("passport_data",{}).get("passport_issue_place",""),
+        "new_passport_issue_date": state_data.get("passport_data",{}).get("passport_issue_date",""),
+        "new_passport_expiry_date": state_data.get("passport_data",{}).get("passport_expiry_date",""),
+
+    }    
+    doc = create_user_doc(context=data, template_name='template_ready', user_path='pdf_generator')
+    ready_doc = FSInputFile(doc, filename='Заявление о перестановке штампа ВНЖ.docx')
+    await state.clear()
+
+    text = f"{_.get_text('ready_to_download_doc', lang)}\n"
+    await callback.message.edit_text(text=text)
+    await callback.message.answer_document(
+        document=ready_doc
     )
