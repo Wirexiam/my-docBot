@@ -409,7 +409,7 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
     
         ready_doc = FSInputFile(doc, filename='Заявление_о_продлениеи_по_браку.docx')
 
-    text += f"{_.get_text('ready_to_download_doc', lang)}\n"
+    text = f"{_.get_text('ready_to_download_doc', lang)}\n"
     await query.message.edit_text(text=text)
     await query.message.answer_document(
         document=ready_doc

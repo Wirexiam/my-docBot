@@ -355,7 +355,7 @@ async def child_get_pdf(query: CallbackQuery, state: FSMContext):
 
     
     ready_doc = FSInputFile(doc, filename='Заявление_о_продлении_по_патенту_матери.docx')
-    text += f"{_.get_text('ready_to_download_doc', lang)}\n"
+    text = f"{_.get_text('ready_to_download_doc', lang)}\n"
     await query.message.answer_document(
         document=ready_doc
     )
