@@ -365,9 +365,9 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
             parent = "опекун"
 
         data = {
-            'child_fio': state_data.get('child_data', '').get('full_name', ''),
-            'child_ship': state_data.get('child_data', '').get('citizenship', ''),
-            'child_date_birth': state_data.get('child_data', '').get('birth_date', ''),
+            'child_fio': state_data.get('child_data', '').get('child_fio', ''),
+            'child_ship': state_data.get('child_data', '').get('child_citizenship', ''),
+            'child_date_birth': state_data.get('child_data', '').get('child_birth_date', ''),
             'child_certificate_number': state_data.get('child_data', '').get('child_certificate_number', ''),
             'child_certificate_issue_place': state_data.get('child_data', '').get('child_certificate_issue_place', ''),
             'parent': parent,
