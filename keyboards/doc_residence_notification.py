@@ -83,7 +83,7 @@ def get_check_data_before_gen(lang: str = "ru"):
     builder = InlineKeyboardBuilder()
     builder.button(
         text=_.get_text("stamp_check_datas_info.all_true_in_stamp_button", lang),
-        callback_data="all_true_in_stamp",
+        callback_data="all_true_in_doc_residence_notification",
     )
     builder.button(
         text=_.get_text("stamp_check_datas_info.change_data_stamp_button", lang),

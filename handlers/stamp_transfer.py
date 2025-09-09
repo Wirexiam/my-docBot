@@ -249,10 +249,13 @@ async def handle_all_true_in_stamp(callback: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
     # pprint(state_data)
     lang = state_data.get("language")
+    print(state_data.get("live_adress",""))
     city = state_data.get("live_adress","").split(",")[0] if state_data.get("live_adress","") else ""
     street = state_data.get("live_adress","").split(",")[1] if state_data.get("live_adress","") and len(state_data.get("live_adress","").split(","))>1 else ""
     house = state_data.get("live_adress","").split(",")[2] if state_data.get("live_adress","") and len(state_data.get("live_adress","").split(","))>2 else ""
-    house = state_data.get("live_adress","").split(house)[1].strip() if state_data.get("live_adress","") and len(state_data.get("live_adress","").split(","))>2 else ""
+    print(f"old_{house}")
+    house = f'{house} {state_data.get("live_adress","").split(house)[1].strip() if state_data.get("live_adress","") and len(state_data.get("live_adress","").split(","))>2 else ""}'
+    print(f"new_{house}")
     data = {
         "mvd_adress":state_data.get("mvd_adress",""),
         "citizenship":state_data.get("passport_data",{}).get("citizenship",""),
@@ -264,12 +267,11 @@ async def handle_all_true_in_stamp(callback: CallbackQuery, state: FSMContext):
         "old_passport_number":state_data.get("old_passport_data",{}).get("passport_serial_number",""),
         "old_passport_issue_place":state_data.get("old_passport_data",{}).get("passport_issue_place",""),
         "old_passport_issue_date": state_data.get("old_passport_data",{}).get("passport_issue_date",""),
-        "old_passport_expiry_date": state_data.get("old_passport_data",{}).get("passport_expiry_date",""),
+        "old_passport_expire_date": state_data.get("old_passport_data",{}).get("passport_expiry_date",""),
         "new_passport_number":state_data.get("passport_data",{}).get("passport_serial_number",""),
         "new_passport_issue_place":state_data.get("passport_data",{}).get("passport_issue_place",""),
         "new_passport_issue_date": state_data.get("passport_data",{}).get("passport_issue_date",""),
-        "new_passport_expiry_date": state_data.get("passport_data",{}).get("passport_expiry_date",""),
-
+        "new_passport_expire_date": state_data.get("passport_data",{}).get("passport_expiry_date",""),
     }    
     doc = create_user_doc(context=data, template_name='template_ready', user_path='pdf_generator')
     ready_doc = FSInputFile(doc, filename='Заявление о перестановке штампа ВНЖ.docx')

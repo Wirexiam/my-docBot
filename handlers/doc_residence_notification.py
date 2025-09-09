@@ -1,10 +1,10 @@
 from pprint import pprint
 from aiogram import Router, F
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message,FSInputFile
 from aiogram.filters import StateFilter
 
 from aiogram.fsm.context import FSMContext
-
+from pdf_generator.gen_pdf import create_user_doc
 from handlers.components.live_adress import handle_live_adress_input
 from handlers.components.residence_permit import func_residence_permit
 from handlers.components.residence_reason_patent import func_residence_reason_patent
@@ -676,3 +676,169 @@ async def edit_doc_residence_notification(message: Message, state: FSMContext):
         data_manager.save_user_data(message.from_user.id, session_id, user_data)
 
     await check_doc_residence_notification(message, state)
+
+# {'RP_issue_date': '14.11.2023',
+#  'RP_issue_place': 'ГУ МВД России по г. Санкт-Петербургу и Ленинградской обл',
+#  'RP_serial_number': '83№08725021',
+#  'change_data_from_check': 'check_doc_residence_notification',
+#  'change_id': None,
+#  'date': '08.10.2024 – 08.11.2024',
+#  'dismissal_date': 'по настоящее время',
+#  'form_NDFL': 'form_3_NDFL',
+#  'from_action': <State 'DocResidenceNotificationStates:check_data'>,
+#  'hiring_date': '04.2024',
+#  'income': '91\xa0943,00',
+#  'income_last_year': [{'form_NDFL': 'form_3_NDFL', 'income': '91\xa0943,00'}],
+#  'is_working': 'y',
+#  'job_title': 'водитель',
+#  'language': 'ru',
+#  'live_adress': '193318, Россия, город Санкт-Петербург, проспект Союзный, дом '
+#                 '8, корпус 1, литера А, квартира 68',
+#  'live_adress_conf': True,
+#  'mvd_adress': 'ОВМ ОМВД России по Невскому району г. Санкт-Петербурга',
+#  'next_states': [<State 'LiveAdress:adress'>],
+#  'org_name': 'ООО «ТехСтройСервис»',
+#  'passport_data': {'birth_date': '14.08.1996',
+#                    'citizenship': 'Узбекистан',
+#                    'full_name': 'Иванов Иван Иванович',
+#                    'passport_expiry_date': '24.09.2029',
+#                    'passport_issue_date': '25.09.2019',
+#                    'passport_issue_place': 'МВД Азербайджана',
+#                    'passport_serial_number': 'С02612613'},
+#  'passport_title': 'registration_renewal_passport_title',
+#  'place': 'Азербайджан',
+#  'residence_permit': {'issue_date': '14.11.2023',
+#                       'issue_place': 'ГУ МВД России по г. Санкт-Петербургу и '
+#                                      'Ленинградской обл',
+#                       'serial_number': '83№08725021'},
+#  'sema_components': {'end_hendler': <function end_worked_last_year at 0x7f8f19385e40>,
+#                      'state_obj': <class 'states.components.sema_components.WorkedLastYearStates'>},
+#  'session_id': '66339c12-fda8-4d98-89da-0ce73f0a9ade',
+#  'travel_outside_Ru': [{'date': '08.10.2024 – 08.11.2024',
+#                         'place': 'Азербайджан'}],
+#  'waiting_data': 'live_adress',
+#  'work_adress': 'г. Санкт-Петербург, пр-кт Союзный, д.8, к.1,лит.А, кв.68',
+#  'worked_last_year': [{'dismissal_date': 'по настоящее время',
+#                        'hiring_date': '04.2024',
+#                        'job_title': 'водитель',
+#                        'org_name': 'ООО «ТехСтройСервис»',
+#                        'work_adress': 'г. Санкт-Петербург, пр-кт Союзный, д.8, '
+#                                       'к.1,лит.А, кв.68'}]}
+
+
+@doc_residence_notification_router.callback_query(F.data == "all_true_in_doc_residence_notification",)
+async def generate_doc_residence_notification(
+    callback: CallbackQuery, state: FSMContext
+):
+    state_data = await state.get_data()
+    # pprint(state_data)
+    lang = state_data.get("language")
+    mvd_adress = state_data.get("mvd_adress", "")
+    mvd_adress_short_1 = mvd_adress[:38]
+    mvd_adress_split_1 = mvd_adress[38:]
+    mvd_adress_short_2 = mvd_adress[:44]
+    mvd_adress_split_2 = mvd_adress[44:]
+    live_adress = state_data.get("live_adress", "")
+    live_adress_short = live_adress[:75]
+    live_adress_split = live_adress[75:]
+    worked_last_year = state_data.get("worked_last_year", [])
+    working_start_1 = worked_last_year[0].get("hiring_date", "") if len(worked_last_year) > 0 else ""
+    working_start_2 = worked_last_year[1].get("hiring_date", "") if len(worked_last_year) > 1 else ""
+    working_start_3 = worked_last_year[2].get("hiring_date", "") if len(worked_last_year) > 2 else ""
+    working_end_1 = worked_last_year[0].get("dismissal_date", "") if len(worked_last_year) > 0 else ""
+    working_end_2 = worked_last_year[1].get("dismissal_date", "") if len(worked_last_year) > 1 else ""
+    working_end_3 = worked_last_year[2].get("dismissal_date", "") if len(worked_last_year) > 2 else ""
+    working_org_1 = worked_last_year[0].get("org_name", "") if len(worked_last_year) > 0 else ""
+    working_org_2 = worked_last_year[1].get("org_name", "") if len(worked_last_year) > 1 else ""
+    working_org_3 = worked_last_year[2].get("org_name", "") if len(worked_last_year) > 2 else ""
+    working_job_1 = worked_last_year[0].get("job_title", "") if len(worked_last_year) > 0 else ""
+    working_job_2 = worked_last_year[1].get("job_title", "") if len(worked_last_year) > 1 else ""
+    working_job_3 = worked_last_year[2].get("job_title", "") if len(worked_last_year) > 2 else ""
+    if working_org_1 == "не работаю":
+        working_place_1 = "не работаю"
+    else:
+        working_place_1= f"{working_org_1}, {working_job_1}" if len(worked_last_year) > 0 else ""
+    if working_org_2 == "не работаю":
+        working_place_2 = "не работаю"
+    else:
+        working_place_2= f"{working_org_2}, {working_job_2}" if len(worked_last_year) > 1 else ""
+    if working_org_3 == "не работаю":
+        working_place_3 = "не работаю"
+    else:
+        working_place_3= f"{working_org_3}, {working_job_3}" if len(worked_last_year) > 2 else ""
+    working_adress_1 = worked_last_year[0].get("work_adress", "") if len(worked_last_year) > 0 else ""
+    working_adress_2 = worked_last_year[1].get("work_adress", "") if len(worked_last_year) > 1 else ""
+    working_adress_3 = worked_last_year[2].get("work_adress", "") if len(worked_last_year) > 2 else ""
+    outside_ru = state_data.get("travel_outside_Ru", [])
+    outside_country_1 = outside_ru[0].get("place", "") if len(outside_ru) > 0 else ""
+    outside_country_2 = outside_ru[1].get("place", "") if len(outside_ru) > 1 else ""
+    outside_country_3 = outside_ru[2].get("place", "") if len(outside_ru) > 2 else ""
+    outside_time_1 = outside_ru[0].get("date", "") if len(outside_ru) > 0 else ""
+    outside_time_2 = outside_ru[1].get("date", "") if len(outside_ru) > 1 else ""
+    outside_time_3 = outside_ru[2].get("date", "") if len(outside_ru) > 2 else ""
+    income_last_year = state_data.get("income_last_year", [])
+    source_of_income_1 = income_last_year[0].get("form_NDFL", "") if len(income_last_year) > 0 else ""
+    source_of_income_2 = income_last_year[1].get("form_NDFL", "") if len(income_last_year) > 1 else ""
+    source_of_income_3 = income_last_year[2].get("form_NDFL", "") if len(income_last_year) > 2 else ""
+    source_of_income_4 = income_last_year[3].get("form_NDFL", "") if len(income_last_year) > 3 else ""
+    source_of_income_5 = income_last_year[4].get("form_NDFL", "") if len(income_last_year) > 4 else ""
+    salary_of_income_1 = income_last_year[0].get("income", "") if len(income_last_year) > 0 else ""
+    salary_of_income_2 = income_last_year[1].get("income", "") if len(income_last_year) > 1 else ""
+    salary_of_income_3 = income_last_year[2].get("income", "") if len(income_last_year) > 2 else ""
+    salary_of_income_4 = income_last_year[3].get("income", "") if len(income_last_year) > 3 else ""
+    salary_of_income_5 = income_last_year[4].get("income", "") if len(income_last_year) > 4 else ""
+    data = {
+        "mvd_adress_short_1": mvd_adress_short_1,
+        "mvd_adress_split_1": mvd_adress_split_1,
+        "mvd_adress": mvd_adress,
+        "mvd_adress_short_2": mvd_adress_short_2,
+        "mvd_adress_split_2": mvd_adress_split_2,
+        "full_name": state_data.get("passport_data", {}).get("full_name", ""),
+        "live_adress": live_adress,
+        "live_adress_short": live_adress_short,
+        "live_adress_split": live_adress_split,
+        "working_start_1": working_start_1,
+        "working_start_2": working_start_2,
+        "working_start_3": working_start_3,
+        "working_end_1": working_end_1,
+        "working_end_2": working_end_2,
+        "working_end_3": working_end_3,
+        "working_place_1": working_place_1,
+        "working_place_2": working_place_2,
+        "working_place_3": working_place_3,
+        "working_adress_1": working_adress_1,
+        "working_adress_2": working_adress_2,
+        "working_adress_3": working_adress_3,
+        "outside_country_1": outside_country_1,
+        "outside_country_2": outside_country_2,
+        "outside_country_3": outside_country_3,
+        "outside_time_1": outside_time_1,
+        "outside_time_2": outside_time_2,
+        "outside_time_3": outside_time_3,
+        "pass_num" : state_data.get("passport_data", {}).get("passport_serial_number", ""),
+        "pass_isp" : state_data.get("passport_data", {}).get("passport_issue_place", ""),
+        "pas_isd" : state_data.get("passport_data", {}).get("passport_issue_date", ""),
+        "pas_exp" : state_data.get("passport_data", {}).get("passport_expiry_date", ""),
+        "residence_permit_serial_number" : state_data.get("residence_permit", {}).get("serial_number", ""),
+        "residence_permit_issue_date" : state_data.get("residence_permit", {}).get("issue_date", ""),
+        "residence_permit_issue_place" : state_data.get("residence_permit", {}).get("issue_place", ""),
+        "source_of_income_1": source_of_income_1,
+        "source_of_income_2": source_of_income_2,
+        "source_of_income_3": source_of_income_3,
+        "source_of_income_4": source_of_income_4,
+        "source_of_income_5": source_of_income_5,
+        "salary_of_income_1": salary_of_income_1,
+        "salary_of_income_2": salary_of_income_2,
+        "salary_of_income_3": salary_of_income_3,
+        "salary_of_income_4": salary_of_income_4,
+        "salary_of_income_5": salary_of_income_5,
+    }    
+    doc = create_user_doc(context=data, template_name='check_living_vnj', user_path='pdf_generator')
+    ready_doc = FSInputFile(doc, filename='Уведомление о подтверждении проживания по ВНЖ.docx')
+    await state.clear()
+
+    text = f"{_.get_text('ready_to_download_doc', lang)}\n"
+    await callback.message.edit_text(text=text)
+    await callback.message.answer_document(
+        document=ready_doc
+    )
