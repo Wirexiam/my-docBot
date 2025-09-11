@@ -787,6 +787,11 @@ async def generate_doc_residence_notification(
     salary_of_income_3 = income_last_year[2].get("income", "") if len(income_last_year) > 2 else ""
     salary_of_income_4 = income_last_year[3].get("income", "") if len(income_last_year) > 3 else ""
     salary_of_income_5 = income_last_year[4].get("income", "") if len(income_last_year) > 4 else ""
+    ndfl_values = {
+        "form_3_NDFL":"Декларация по форме 3-НДФЛ",
+        "form_2_NDFL":"Справка по форме 2-НДФЛ",
+        "no":"Нет дохода",
+    }
     data = {
         "mvd_adress_short_1": mvd_adress_short_1,
         "mvd_adress_split_1": mvd_adress_split_1,
@@ -822,11 +827,11 @@ async def generate_doc_residence_notification(
         "residence_permit_serial_number" : state_data.get("residence_permit", {}).get("serial_number", ""),
         "residence_permit_issue_date" : state_data.get("residence_permit", {}).get("issue_date", ""),
         "residence_permit_issue_place" : state_data.get("residence_permit", {}).get("issue_place", ""),
-        "source_of_income_1": source_of_income_1,
-        "source_of_income_2": source_of_income_2,
-        "source_of_income_3": source_of_income_3,
-        "source_of_income_4": source_of_income_4,
-        "source_of_income_5": source_of_income_5,
+        "source_of_income_1": ndfl_values.get(source_of_income_1, ""),
+        "source_of_income_2": ndfl_values.get(source_of_income_2, ""),
+        "source_of_income_3": ndfl_values.get(source_of_income_3, ""),
+        "source_of_income_4": ndfl_values.get(source_of_income_4, ""),
+        "source_of_income_5": ndfl_values.get(source_of_income_5, ""),
         "salary_of_income_1": salary_of_income_1,
         "salary_of_income_2": salary_of_income_2,
         "salary_of_income_3": salary_of_income_3,
