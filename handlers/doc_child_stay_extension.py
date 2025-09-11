@@ -351,7 +351,7 @@ async def child_get_pdf(query: CallbackQuery, state: FSMContext):
         'phone_parent': state_data.get('phone_number', ''),
         }
     
-    doc = create_user_doc(context=data, template_name='template_patient_actual', user_path='pdf_generator')
+    doc = create_user_doc(context=data, template_name='template_patient_actual', user_path='pdf_generator', font_name="Arial")
 
     
     ready_doc = FSInputFile(doc, filename='Заявление_о_продлении_по_патенту_матери.docx')
