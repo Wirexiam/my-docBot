@@ -354,7 +354,7 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
         ready_doc = FSInputFile(doc, filename='Заявление_о_продление_по_патенту.docx')
 
     elif who == 'child':
-
+        
         parent = None
 
         if state_data.get('child_data', '').get('who_for_child', '') == "father":
@@ -387,6 +387,7 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
     
         ready_doc = FSInputFile(doc, filename='Заявление_о_продлении_по_ребенку.docx')
     else:
+
         data = {
             'marry_fio': state_data.get('marriage_data', '').get('spouse_fio', ''),
             'marry_issue_date': state_data.get('marriage_data', '').get('issue_date', ''),
