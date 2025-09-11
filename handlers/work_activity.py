@@ -1,7 +1,9 @@
+from pprint import pprint
 from aiogram import Router, F
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, FSInputFile
 from aiogram.fsm.context import FSMContext
 
+from pdf_generator.gen_pdf import create_user_doc
 from localization import _
 from data_manager import SecureDataManager
 from handlers.components.passport_manual import *
@@ -336,13 +338,13 @@ async def get_medical_policy_polis_date(message: Message, state: FSMContext):
             medical_policy_polis_date=medical_policy_polis_date
         )
         state_data = await state.get_data()
-
-
+    patient_data = state_data.get("patient_data", {})
+    pprint(state_data)
     text = (
         f"{_.get_text("wa_patent.edit_wa_data.title", lang)}\n\n"
         f"{_.get_text("wa_patent.edit_wa_data.full_name", lang)}: {passport.get('full_name')}\n"
         f"{_.get_text("wa_patent.edit_wa_data.passport", lang)}: {passport.get('passport_serial_number')}, {passport.get('passport_issue_date')}, {passport.get('passport_issued')}, {passport.get('passport_expiry_date')}\n"
-        f"{_.get_text("wa_patent.edit_wa_data.patent", lang)}: {state_data.get('patient_number')}, {state_data.get('patient_date')}, {state_data.get('patient_issue_place')}\n"
+        f"{_.get_text("wa_patent.edit_wa_data.patent", lang)}: {patient_data.get('patient_number')}, {patient_data.get('patient_date')}, {state_data.get('patient_issue_place')}\n"
         f"{_.get_text("wa_patent.edit_wa_data.work_adress", lang)}: {state_data.get('emp_adress')}\n"
         f"{_.get_text("wa_patent.edit_wa_data.profession", lang)}: {state_data.get('work_name')}\n"
         f"{_.get_text("wa_patent.edit_wa_data.inn", lang)}: {state_data.get('inn')}\n"
@@ -353,6 +355,168 @@ async def get_medical_policy_polis_date(message: Message, state: FSMContext):
     await message.answer(
         text=text,
         reply_markup=kbs_policy_data_confirmation(lang)
+    )
+
+
+def to_uppercase(data: dict) -> dict:
+    result = {}
+    for key, value in data.items():
+        if isinstance(value, dict):
+            result[key] = to_uppercase(value)
+        elif isinstance(value, str):
+            result[key] = value.upper()
+        else:
+            result[key] = value
+    return result
+
+import re
+
+def split_series_number(doc: str):
+    doc = doc.strip()
+
+    # 1. Если только цифры → номер
+    if doc.isdigit():
+        return {"серия": "", "номер": doc}
+
+    # 2. Если есть "-" или "/"
+    if "-" in doc or "/" in doc:
+        # Разбиваем по последнему дефису или слэшу
+        match = re.match(r"^(.*?)[-/](.+)$", doc)
+        if match:
+            series, number = match.groups()
+            return {"серия": series, "номер": number}
+
+    # 3. Всё остальное → в номер
+    return {"серия": "", "номер": doc}
+
+
+@work_activity_router.callback_query(F.data == "accept_wa_patent_data")
+async def handle_all_true_in_wa(callback: CallbackQuery, state: FSMContext):
+    """Обработка подтверждения правильности данных перед генерацией штампа"""
+    state_data = await state.get_data()
+    # pprint(state_data)
+    mvd_adress = state_data.get("department_full_name")
+    if mvd_adress:
+        mvd_adress_1 = mvd_adress[:31]
+        mvd_adress_2 = mvd_adress[31:31*2]
+        mvd_adress_3 = mvd_adress[31*2:31*3]
+    passport_data = state_data.get("passport_data", {})
+    full_name = state_data.get("passport_data", {}).get("full_name", "")
+    if full_name:
+        name_parts = full_name.split(" ")
+        name = name_parts[1] if len(name_parts) > 1 else ""
+        first_name = name_parts[0] if len(name_parts) > 0 else ""
+        father_name = name_parts[2] if len(name_parts) > 2 else ""
+    birth_date = passport_data.get("birth_date", "")
+    if birth_date:
+        birth_date_parts = birth_date.split(".")
+        birth_date_day = birth_date_parts[0] if len(birth_date_parts) > 0 else ""
+        birth_date_month = birth_date_parts[1] if len(birth_date_parts) > 1 else ""
+        birth_date_year = birth_date_parts[2] if len(birth_date_parts) > 2 else ""
+    passport_issue_date = passport_data.get("passport_issue_date", "")
+    if passport_issue_date:
+        passport_issue_date_parts = passport_issue_date.split(".")
+        passport_issue_date_day = passport_issue_date_parts[0] if len(passport_issue_date_parts) > 0 else ""
+        passport_issue_date_month = passport_issue_date_parts[1] if len(passport_issue_date_parts) > 1 else ""
+        passport_issue_date_year = passport_issue_date_parts[2] if len(passport_issue_date_parts) > 2 else ""
+    passport_issue_place = passport_data.get("passport_issued", "")
+    if passport_issue_place:
+        passport_issue_place_1 = passport_issue_place[:25]
+        passport_issue_place_2 = passport_issue_place[25:25*2+1]
+    patient_data = state_data.get("patient_data", {})
+    if patient_data:
+        patent_series = patient_data.get("patient_number", "")[:2]
+        patent_numbers = patient_data.get("patient_number", "")[2:] 
+        patent_numbers = patent_numbers.replace("-", "").replace(" ", "")
+        patient_date = patient_data.get("patient_date", "")
+        if patient_date:
+            patient_date_parts = patient_date.split(".")
+            patent_issue_date_day = patient_date_parts[0] if len(patient_date_parts) > 0 else ""
+            patent_issue_date_month = patient_date_parts[1] if len(patient_date_parts) > 1 else ""
+            patent_issue_date_year = patient_date_parts[2] if len(patient_date_parts) > 2 else ""
+    job_name = state_data.get("work_name", "")
+    if job_name:
+        job_name_1 = job_name[:31]
+        job_name_2 = job_name[31:31*2]
+        job_name_3 = job_name[31*2:31*3]
+    work_adress = state_data.get("emp_adress", "")
+    if work_adress:
+        work_adress_1 = work_adress[:31]
+        work_adress_2 = work_adress[31:31*2]
+    
+    med_data_name = state_data.get("medical_policy_company", "")
+    if med_data_name:
+        med_data_name_1 = med_data_name[:32]
+        med_data_name_2 = med_data_name[32:32*2]
+        med_data_name_3 = med_data_name[32*2:32*3]
+    med_policy_date = state_data.get("medical_policy_polis_date", "")
+    if med_policy_date:
+        med_policy_date_parts = med_policy_date.split(" по ")
+        if len(med_policy_date_parts) == 2:
+            med_policy_start_date = med_policy_date_parts[0].replace("с ", "").strip()
+            med_policy_end_date = med_policy_date_parts[1].strip()
+            med_policy_start_date_parts = med_policy_start_date.split(".")
+            med_data_issue_date_day = med_policy_start_date_parts[0] if len(med_policy_start_date_parts) > 0 else ""
+            med_data_issue_date_month = med_policy_start_date_parts[1] if len(med_policy_start_date_parts) > 1 else ""
+            med_data_issue_date_year = med_policy_start_date_parts[2] if len(med_policy_start_date_parts) > 2 else ""
+        else:
+            med_data_issue_date_day = ""
+            med_data_issue_date_month = ""
+            med_data_issue_date_year = ""
+    med_policy_series_number = state_data.get("policy_number", "")
+    med_policy_sn = split_series_number(med_policy_series_number)
+    med_data_series = med_policy_sn.get("серия", "")
+    med_data_numbers = med_policy_sn.get("номер", "")
+    
+    lang = state_data.get("language")
+    data = {
+"char_mvd_adress_short_1": mvd_adress_1,
+"char_mvd_adress_short_2": mvd_adress_2,
+"char_mvd_adress_short_3": mvd_adress_3,
+"char_first_name": first_name,
+"char_name": name,
+"char_father_name": father_name,
+"char_cityzenship": passport_data.get("citizenship", ""),
+"char_birth_date_day": birth_date_day,
+"char_birth_date_month": birth_date_month,
+"char_birth_date_year": birth_date_year,
+"char_passport_series": passport_data.get("passport_serial_number", "")[:2],
+"char_passport_numbers": passport_data.get("passport_serial_number", "")[2:],
+"char_passport_issue_date_day": passport_issue_date_day,
+"char_passport_issue_date_month": passport_issue_date_month,
+"char_passport_issue_date_year": passport_issue_date_year,
+"char_passport_issue_place_short_1" : passport_issue_place_1,
+"char_passport_issue_place_short_2": passport_issue_place_2,
+"char_patent_series": patent_series,
+"char_patent_numbers": patent_numbers,
+"char_patent_issue_date_day": patent_issue_date_day,
+"char_patent_issue_date_month": patent_issue_date_month,
+"char_patent_issue_date_year": patent_issue_date_year,
+"char_job_name_short_1": job_name_1,
+"char_job_name_short_2": job_name_2,
+"char_job_name_short_3": job_name_3,
+"char_work_adress_short_1": work_adress_1,
+"char_work_adress_short_2": work_adress_2,
+"char_inn": state_data.get("inn", ""),
+"char_med_data_name_short_1": med_data_name_1,
+"char_med_data_name_short_2": med_data_name_2,
+"char_med_data_name_short_3": med_data_name_3,
+"char_med_data_series": med_data_series,
+"char_med_data_numbers": med_data_numbers ,
+"char_med_data_issue_date_day":  med_data_issue_date_day,
+"char_med_data_issue_date_month": med_data_issue_date_month,
+"char_med_data_issue_date_year": med_data_issue_date_year,
+"char_phone": state_data.get("phone_number", ""),
+    }
+    data = to_uppercase(data)
+    doc = create_user_doc(context=data, template_name='working_notification', user_path='pdf_generator',font_name="Times New Roman")
+    ready_doc = FSInputFile(doc, filename='Уведомление о трудовой деятельности по патенту.docx')
+    await state.clear()
+
+    text = f"{_.get_text('ready_to_download_doc', lang)}\n"
+    await callback.message.edit_text(text=text)
+    await callback.message.answer_document(
+        document=ready_doc
     )
 
 

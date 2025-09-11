@@ -11,7 +11,7 @@ import subprocess
 import os
 
 
-def create_docx_from_data(template_name: str, context: dict, user_path: str):
+def create_docx_from_data(template_name: str, context: dict, user_path: str, font_name="Arial") -> str:
     # Загружаем шаблон
     doc = Document(f"pdf_generator/templates/{template_name}.docx")
 
@@ -37,8 +37,8 @@ def create_docx_from_data(template_name: str, context: dict, user_path: str):
                                     target_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
 
                                     run = target_cell.paragraphs[0].runs[0]
-                                    run.font.name = "Arial"
-                                    run.font.size = Pt(12)
+                                    run.font.name = font_name
+                                    run.font.size = Pt(11)
 
     doc.save(f"{user_path}/{name}.docx")
 
@@ -107,11 +107,12 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
         pprint(f"Command output: {e.stdout}")
         pprint(f"Command error: {e.stderr}")
 
-def create_user_doc(user_path, template_name, context):
+def create_user_doc(user_path, template_name, context, font_name):
     user_path_docx = create_docx_from_data(
         template_name=template_name,
         context=context,
         user_path=user_path,
+        font_name=font_name,
     )
     pprint(f"{user_path_docx}------------")
     # pdf_path = convert_docx_to_pdf_libreoffice(input_docx_path=user_path_docx, user_path=user_path)
