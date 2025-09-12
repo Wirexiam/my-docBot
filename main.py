@@ -1,14 +1,14 @@
 import asyncio
 import logging
+
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
-
 from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
 
-from config import BOT_TOKEN, API_TOKEN
+from config import BOT_TOKEN
 from data_manager import SecureDataManager
-from ocr.ocr import DocumentsOcr
+from handlers.components.passport_photo import passport_photo_router
 
 # Настройка логирования (без персональных данных)
 logging.basicConfig(
@@ -17,7 +17,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Глобальные объекты
-DocMaster = DocumentsOcr(api_key=API_TOKEN)
 data_manager = SecureDataManager()
 bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher(storage=MemoryStorage())
@@ -74,12 +73,11 @@ async def main():
         from handlers.components.residence_permit import residence_permit_router
         from handlers.components.sema_components import sema_components_router
         from handlers.components.birth_certificate import birth_certificate_router
-
-        dp.include_router(birth_certificate_router)
         from handlers.components.changing_data import changing_data_router
         from handlers.components.individual import individual_router
         from handlers.components.representative import representative_router
 
+        dp.include_router(birth_certificate_router)
         dp.include_router(representative_router)
         dp.include_router(individual_router)
         dp.include_router(changing_data_router)
@@ -92,6 +90,7 @@ async def main():
         dp.include_router(stamp_transfer_router)
         dp.include_router(select_region_router)
         dp.include_router(passport_manual_router)
+        dp.include_router(passport_photo_router)  # ← OCR по фото
         dp.include_router(phone_number_router)
         dp.include_router(live_adress_router)
         dp.include_router(nortification_arrival)
@@ -106,8 +105,13 @@ async def main():
         dp.include_router(sema_components_router)
 
         await dp.start_polling(bot)
+
     finally:
         cleanup_task_handle.cancel()
+        try:
+            await cleanup_task_handle
+        except asyncio.CancelledError:
+            pass
         await bot.session.close()
 
 
