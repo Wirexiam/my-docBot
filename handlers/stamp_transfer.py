@@ -11,8 +11,9 @@ from states.components.phone_number import PhoneNumberStates
 from keyboards.stamp_transfer import (
     get_stamp_transfer_check_data_before_gen,
     get_waiting_confirm_stamp_transfer_start_keyboard,
-    stamp_transfer_passport_start_keyboard,
+    passport_start_keyboard,
 )
+
 from localization import _
 from data_manager import SecureDataManager
 
@@ -59,48 +60,39 @@ async def handle_stamp_transfer_after_mvd(callback: CallbackQuery, state: FSMCon
     # Отправка сообщения с клавиатурой для начала передачи паспорта
     await callback.message.edit_text(
         text=text,
-        reply_markup=stamp_transfer_passport_start_keyboard(lang),
+        reply_markup=passport_start_keyboard("old", lang),  # ← стало
     )
 
 
 @stamp_transfer_router.message(Stamp_transfer.after_old_passport)
 async def handle_old_passport_data(message: Message, state: FSMContext):
-    """Обработка начала передачи паспорта после выбора МВД"""
-    passport_data = await state.get_data()
-    passport_data = passport_data.get("passport_data")
-    passport_issue_place = message.text.strip()
-    passport_data["passport_issue_place"] = passport_issue_place
-
-    # Get the user's language preference from state data
+    """
+    Раньше тут просили 'ввести место выдачи'. Теперь это поле идёт из OCR.
+    Этот хэндлер играет роль 'моста' на ввод нового паспорта:
+    переносим текущие passport_data -> old_passport_data и предлагаем выбрать способ ввода НОВОГО паспорта.
+    """
     state_data = await state.get_data()
     lang = state_data.get("language")
-    old_passport_data = passport_data
-    passport_data = {}
-    # Update the state with the passport issue place
-    await state.update_data(passport_data=passport_data)
-    user_data = {
-        "passport_data": passport_data,
-    }
     session_id = state_data.get("session_id")
-    data_manager.save_user_data(message.from_user.id, session_id, user_data)
-    user_data = {
-        "old_passport_data": old_passport_data,
-    }
-    await state.update_data(old_passport_data=old_passport_data)
-    data_manager.save_user_data(message.from_user.id, session_id, user_data)
-    # Установка состояния для передачи паспорта
+
+    # Забираем распознанный старый паспорт из passport_data
+    current_pd = state_data.get("passport_data") or {}
+    await state.update_data(old_passport_data=current_pd, passport_data={})
+    data_manager.save_user_data(message.from_user.id, session_id, {"old_passport_data": current_pd})
+
+    # Готовим шаг НОВОГО паспорта
+    await state.update_data(from_action=Stamp_transfer.after_new_passport,
+                            passport_title="stamp_transfer_passport_new_title")
 
     text = f"{_.get_text('stamp_transfer_start_new_passport.title', lang)}\n\n{_.get_text('stamp_transfer_start_new_passport.description', lang)}"
-
-    # Отправка сообщения с клавиатурой для начала передачи паспорта
     await message.answer(
         text=text,
+        reply_markup=passport_start_keyboard("new", lang),
     )
+
+    # на дальнейший сценарий (адрес/телефон) сохраним желаемые next_states
     next_states = [LiveAdress.adress, PhoneNumberStates.phone_number_input]
-    await state.update_data(
-        from_action=Stamp_transfer.after_new_passport, next_states=next_states
-    )
-    await state.set_state(PassportManualStates.birth_date_input)
+    await state.update_data(next_states=next_states)
 
 
 @stamp_transfer_router.message(Stamp_transfer.after_new_passport)
@@ -231,8 +223,9 @@ async def handle_new_passport_data(message: CallbackQuery, state: FSMContext):
 
     text = f"{_.get_text('stamp_check_datas_info.title', lang)}\n\n"
     text += f"{_.get_text('stamp_check_datas_info.full_name', lang)}{data_to_view['name']}\n"
-    text += f"{_.get_text('stamp_check_datas_info.new_passport')}{data_to_view['new_passport_number']}{_.get_text('stamp_check_datas_info.issue_date')}{data_to_view['new_passport_issue_date']} {data_to_view['new_passport_issue_place']}{_.get_text('stamp_check_datas_info.expiry_date')}{data_to_view['new_passport_expiry_date']}\n"
-    text += f"{_.get_text('stamp_check_datas_info.old_passport')}{data_to_view['old_passport_number']}{_.get_text('stamp_check_datas_info.issue_date')}{data_to_view['old_passport_issue_date']} {data_to_view['old_passport_issue_place']}{_.get_text('stamp_check_datas_info.expiry_date')}{data_to_view['old_passport_expiry_date']}\n"
+    text += f"{_.get_text('stamp_check_datas_info.new_passport', lang)}{data_to_view['new_passport_number']}{_.get_text('stamp_check_datas_info.issue_date', lang)}{data_to_view['new_passport_issue_date']} {data_to_view['new_passport_issue_place']}{_.get_text('stamp_check_datas_info.expiry_date', lang)}{data_to_view['new_passport_expiry_date']}\n"
+    text += f"{_.get_text('stamp_check_datas_info.old_passport', lang)}{data_to_view['old_passport_number']}{_.get_text('stamp_check_datas_info.issue_date', lang)}{data_to_view['old_passport_issue_date']} {data_to_view['old_passport_issue_place']}{_.get_text('stamp_check_datas_info.expiry_date', lang)}{data_to_view['old_passport_expiry_date']}\n"
+
     text += f"{_.get_text('stamp_check_datas_info.stamp_in', lang)}\n"
     text += f"{_.get_text('stamp_check_datas_info.adress', lang)}{data_to_view['live_adress']}\n"
     text += f"{_.get_text('stamp_check_datas_info.phone', lang)}{data_to_view['phone_number']}\n"
