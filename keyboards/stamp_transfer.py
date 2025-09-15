@@ -19,8 +19,8 @@ def get_waiting_confirm_stamp_transfer_start_keyboard(lang: str = "ru"):
 def passport_start_keyboard(prefix: str, lang: str = "ru"):
     """
     Универсальная клавиатура выбора способа ввода паспорта (по фото / вручную).
-    prefix: "old" или "new"
-    Колбэки синхронизированы с handlers/components/passport_photo.py
+    prefix: "old" или "new".
+    Колбэки синхронизированы с handlers/components/passport_* хэндлерами.
     """
     builder = InlineKeyboardBuilder()
     builder.button(
