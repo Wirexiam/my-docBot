@@ -1,7 +1,9 @@
 from aiogram import Router, F
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, FSInputFile
 from aiogram.fsm.context import FSMContext
 from pprint import pprint
+
+from pdf_generator.gen_pdf import create_user_doc
 
 from states.migr_card import MigrCardManualStates
 
@@ -326,6 +328,7 @@ async def edit_f(message: Message, state: FSMContext):
 async def arrival_after_org_message(message: Message, state: FSMContext):
     print('arrival_after_org_message')
     state_data = await state.get_data()
+    await state.set_state(None)
     waiting_data = state_data.get("waiting_data", None)
     lang = state_data.get("language")
     # Сохранение адреса в менеджер данных
@@ -396,6 +399,110 @@ async def arrival_after_org_message(message: Message, state: FSMContext):
     )
 
 
+@nortification_arrival.callback_query(F.data == "true_arrival_doc_to_ready")
+async def true_arrival_doc(event: CallbackQuery, state: FSMContext):
+    print('ответ')
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+
+    # state_data.get('migration_data', '').get('card_serial_number', '')
+    # state_data.get('migration_data', '').get('citizenship', '')
+    # state_data.get('migration_data', '').get('entry_date', '')
+    # state_data.get('migration_data', '').get('full_name', '').split(' ')
+    # state_data.get('migration_data', '').get('goal', '')
+    # state_data.get('migration_data', '').get('number_migr_card_arrival', '')
+    # state_data.get('migration_data', '').get('pretria_period', '').split(',')
+
+    # state_data.get('passport_data', '').get('birth_date', '').split('.')
+    # state_data.get('passport_data', '').get('citizenship', '')
+    # state_data.get('passport_data', '').get('full_name', '')
+    # state_data.get('passport_data', '').get('passport_expiry_date', '').split('.')
+    # state_data.get('passport_data', '').get('passport_issue_date', '').split(',')
+    # state_data.get('passport_data', '').get('passport_issue_place', '')
+    # state_data.get('passport_data', '').get('passport_serial_number', '')
+
+    data = {
+        "char_first_name": state_data.get('migration_data', '').get('full_name', '').split(' ')[0],
+        "char_name": state_data.get('migration_data', '').get('full_name', '').split(' ')[1],
+        "char_father_name": state_data.get('migration_data', '').get('full_name', '').split(' ')[2],
+        # "char_latin_first_name": ,
+        # "char_latin_name": ,
+        # "char_latin_father_name": ,
+        "char_cityzenship": state_data.get('passport_data', '').get('citizenship', ''),
+        "char_birth_date_day": state_data.get('passport_data', '').get('birth_date', '').split('.')[0],
+        "char_birth_date_month": state_data.get('passport_data', '').get('birth_date', '').split('.')[1],
+        "char_birth_date_year": state_data.get('passport_data', '').get('birth_date', '').split('.')[2],
+        # "char_birth_place": ,
+        # "char_passport_series": ,
+        "char_passport_numbers": state_data.get('passport_data', '').get('passport_serial_number', ''),
+        "char_passport_issue_date_day": state_data.get('passport_data', '').get('passport_issue_date', '').split('.')[0],
+        "char_passport_issue_date_month": state_data.get('passport_data', '').get('passport_issue_date', '').split('.')[1],
+        "char_passport_issue_date_year": state_data.get('passport_data', '').get('passport_issue_date', '').split('.')[2],
+        "char_passport_expire_date_day": state_data.get('passport_data', '').get('passport_expiry_date', '').split('.')[0],
+        "char_passport_expire_date_month": state_data.get('passport_data', '').get('passport_expiry_date', '').split('.')[1],
+        "char_passport_expire_date_year": state_data.get('passport_data', '').get('passport_expiry_date', '').split('.')[2],
+        "char_job_name": state_data.get('profession', ''),
+        # "char_goal_official_trip": ,
+        # "char_goal_tourism": ,
+        # "char_goal_business_trip": ,
+        # "char_goal_study": ,
+        # "char_goal_work": ,
+        # "char_goal_private_visit": ,
+        # "char_goal_transit": ,
+        # "char_living_quarters": ,
+        # "char_other_premises": ,
+        # "char_organization": ,
+        # "char_arrive_date_day": ,
+        # "char_arrive_date_month": ,
+        # "char_arrive_date_year": ,
+        # "char_exit_date_day": ,
+        # "char_exit_date_month": ,
+        # "char_exit_date_year": ,
+        # "char_migr_cart_series": ,
+        # "char_migr_cart_numbers": ,
+        # "char_city_region": ,
+        # "char_district_city": ,
+        # "char_street_name": ,
+        # "house_adress": ,
+        # "corpus": ,
+        # "room": ,
+        # "street_name_2": ,
+        # "char_doc_name_to_verifi_1": ,
+        # "char_doc_name_to_verifi_2": ,
+        # "char_doc_name_to_verifi_3": ,
+        # "char_doc_name_to_verifi_4": ,
+        # "char_doc_name_to_verifi_5": ,
+        # "char_sex_male": ,
+        # "char_sex_female": ,
+        # "char_reciever_father_name": ,
+        # "char_reciever_name": ,
+        # "char_reciever_first_name": ,
+        # "char_reciever_passport_series": ,
+        # "char_reciever_passport_numbers": ,
+        # "char_reciever_passport_issue_date_day": ,
+        # "char_reciever_passport_issue_date_month": ,
+        # "char_reciever_passport_issue_date_year": ,
+        # "char_reciever_passport_expire_date_day": ,
+        # "char_reciever_passport_expire_date_month": ,
+        # "char_reciever_passport_expire_date_year": ,
+        # "char_reciever_city_region": ,
+        # "char_reciever_district_city": ,
+        # "char_reciever_street_name": ,
+        # "reciever_house_adress": ,
+        # "reciever_corpus": ,
+        # "reciever_room": ,
+        # "reciever_street_name_2": ,
+    }
+
+    doc = create_user_doc(context=data, template_name='template_for_migr_acc', user_path='pdf_generator', font_name="Arial")
+
+    ready_doc = FSInputFile(doc, filename='Уведомление о прибытии (миграционный учёт).docx')
+
+    text = f"{_.get_text('ready_to_download_doc', lang)}\n"
+    await event.message.edit_text(text=text)
+    await event.message.answer_document(
+        document=ready_doc
+    )
 
 
 
@@ -541,4 +648,3 @@ async def arrival_after_org_callback(event: CallbackQuery, state: FSMContext):
         await event.message.edit_text(**msg_obj)
     else:
         await event.answer(**msg_obj)
-
