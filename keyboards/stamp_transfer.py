@@ -43,7 +43,9 @@ def get_stamp_transfer_check_data_before_gen(lang: str = "ru"):
     )
     builder.button(
         text=_.get_text("stamp_check_datas_info.change_data_stamp_button", lang),
-        callback_data="change_data_stamp_transfer",
+        # БЫЛО: "change_data_stamp_transfer"
+        callback_data="change_data_start",  # ← начинается с "change_data_"
     )
     builder.adjust(1)
     return builder.as_markup()
+

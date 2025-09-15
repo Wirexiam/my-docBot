@@ -1,7 +1,7 @@
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
-
+from keyboards.passport_preview import old_preview_kb, new_preview_kb
 from data_manager import SecureDataManager
 from ocr.service import PassbotOcrService, OcrError
 from localization import _
@@ -13,27 +13,6 @@ from states.components.phone_number import PhoneNumberStates
 passport_photo_router = Router()
 data_manager = SecureDataManager()
 ocr_service = PassbotOcrService()
-
-
-# ─────────────────────────── вспомогательные клавиатуры ───────────────────────────
-
-def _kb_old_preview() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="✅ Всё верно", callback_data="old_ok")],
-        [InlineKeyboardButton(text="✏️ Изменить одно из полей", callback_data="old_edit")],
-        [InlineKeyboardButton(text="🖼 Загрузить другое фото", callback_data="old_retry")],
-        [InlineKeyboardButton(text="➡️ Перейти к новому паспорту (по фото)", callback_data="goto_new_by_photo")],
-        [InlineKeyboardButton(text="⌨️ Новый паспорт — ввести вручную", callback_data="goto_new_manual")],
-    ])
-
-
-def _kb_new_preview() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="✅ Всё верно", callback_data="new_ok")],
-        [InlineKeyboardButton(text="✏️ Изменить одно из полей", callback_data="new_edit")],
-        [InlineKeyboardButton(text="🖼 Загрузить другое фото", callback_data="new_retry")],
-    ])
-
 
 # ───────────────────────────── стартовые кнопки ─────────────────────────────
 
@@ -84,13 +63,43 @@ async def on_passport_photo(message: Message, state: FSMContext):
     try:
         result = await ocr_service.process_passport(img_path)
 
-        # Куда кладём результат
-        key = "old_passport_data" if is_old else "passport_data"
-        await state.update_data(**{key: result.passport_data})
-        data_manager.save_user_data(message.from_user.id, session_id, {key: result.passport_data})
+        # ── НОРМАЛИЗАЦИЯ ПОЛЕЙ ОТ OCR ─────────────────────────────────────
+        p = dict(result.passport_data)  # копия, чтобы не портить исходник
+        aliases = {
+            "doc_id": "passport_serial_number",
+            "issued_by": "passport_issue_place",
+            "issue_date": "passport_issue_date",
+            "expiry_date": "passport_expiry_date",
+            "fullName": "full_name",
+            "birthDate": "birth_date",
+        }
+        for src, dst in aliases.items():
+            if src in p and dst not in p:
+                p[dst] = p.pop(src)
 
-        # предпросмотр
-        p = result.passport_data
+        # гарантируем наличие всех полей паспорта
+        required_fields = [
+            "full_name",
+            "birth_date",
+            "citizenship",
+            "passport_serial_number",
+            "passport_issue_date",
+            "passport_expiry_date",
+            "passport_issue_place",
+        ]
+        for f in required_fields:
+            p.setdefault(f, "")  # создаём пустое поле, если OCR его не нашёл
+
+        # уберём пустые строки, чтобы не плодить лишние кнопки/поля
+        p = {k: v for k, v in p.items() if isinstance(v, str) and v.strip()} | {f: p.get(f, "") for f in
+                                                                                required_fields}
+
+        # ── складываем в state под нужным ключом ──────────────────────────
+        key = "old_passport_data" if is_old else "passport_data"
+        await state.update_data(**{key: p})
+        data_manager.save_user_data(message.from_user.id, session_id, {key: p})
+
+        # ── предпросмотр ──────────────────────────────────────────────────
         preview_tpl = _.get_text("ocr.passport.success.preview", lang)
         preview = preview_tpl.format(
             full_name=p.get("full_name", "—"),
@@ -103,8 +112,9 @@ async def on_passport_photo(message: Message, state: FSMContext):
         )
 
         title = _.get_text("ocr.passport.success.title", lang)
-        kb = _kb_old_preview() if is_old else _kb_new_preview()
+        kb = old_preview_kb() if is_old else new_preview_kb()
         await note_msg.edit_text(f"{title}\n\n{preview}", reply_markup=kb)
+
 
     except OcrError as e:
         fail_title = _.get_text("ocr.passport.fail.title", lang)
@@ -119,10 +129,6 @@ async def old_retry(cb: CallbackQuery, state: FSMContext):
     await state.set_state(PassportPhotoStates.waiting_old_passport_photo)
     await cb.message.edit_text("🖼 Пришлите другое фото СТАРОГО паспорта.")
 
-@passport_photo_router.callback_query(F.data == "old_edit")
-async def old_edit(cb: CallbackQuery, state: FSMContext):
-    # здесь можно открыть твой уже существующий ручной редактор полей
-    await cb.message.edit_text("✏️ Какое поле нужно исправить? Выберите в меню редактирования.")
 
 @passport_photo_router.callback_query(F.data == "old_ok")
 async def old_ok(cb: CallbackQuery, state: FSMContext):
@@ -170,37 +176,72 @@ async def new_retry(cb: CallbackQuery, state: FSMContext):
     await state.set_state(PassportPhotoStates.waiting_new_passport_photo)
     await cb.message.edit_text("🖼 Пришлите другое фото НОВОГО паспорта.")
 
-@passport_photo_router.callback_query(F.data == "new_edit")
-async def new_edit(cb: CallbackQuery, state: FSMContext):
-    await cb.message.edit_text("✏️ Какое поле нужно исправить? Выберите в меню редактирования.")
 
 @passport_photo_router.callback_query(F.data == "new_ok")
 async def new_ok(cb: CallbackQuery, state: FSMContext):
     """
-    Подтверждён новый паспорт → переводим пользователя к следующему шагу
-    (обычно: ввод адреса, затем ввод телефона).
+    Подтверждён НОВЫЙ паспорт → показываем МИНИ-СВОДКУ (только паспортные данные),
+    с кнопками: перейти к адресу/телефону ИЛИ редактировать.
     """
+    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
     data = await state.get_data()
     lang = data.get("language")
-    # куда возвращаться по сценарию stamp_transfer
+
     from_action = data.get("from_action") or Stamp_transfer.after_new_passport
-    # список шагов после паспортов (мы его сохраняли ранее при переходе со старого паспорта)
-    next_states = data.get("next_states") or [LiveAdress.adress, PhoneNumberStates.phone_number_input]
-
-    # 1) ставим "корневое" состояние сценария после паспортов
     await state.set_state(from_action)
-    await cb.message.edit_text("✅ Паспортные данные сохранены. Продолжаем оформление.")
 
-    # Обрежем очередь: удалим первый шаг, чтобы в хэндлере адреса не остался self
-    first_next = next_states[0] if next_states else None
-    rest = next_states[1:] if next_states else []
-    await state.update_data(next_states=rest)
+    sd = await state.get_data()
+    new_pd = sd.get("passport_data") or {}
+    old_pd = sd.get("old_passport_data") or {}
 
-    if first_next:
-        await state.update_data(waiting_data="live_adress")
-        await state.set_state(first_next)
+    def _val(d, k, default="—"):
+        v = (d.get(k) or "").strip()
+        return v if v else default
 
-        prompt = _.get_text("live_adress.ask", lang)
-        if prompt.startswith("[Missing:"):
-            prompt = "📝 Укажите адрес проживания в РФ в одной строке: город, улица, дом, корпус/строение (если есть), квартира."
-        await cb.message.answer(prompt)
+    text = (
+        "Проверьте паспортные данные\n\n"
+        f"👤 ФИО: {_val(new_pd, 'full_name')}\n"
+        f"🗓 Дата рождения: {_val(new_pd, 'birth_date')}\n"
+        f"🌍 Гражданство: {_val(new_pd, 'citizenship')}\n"
+        f"📄 Номер: {_val(new_pd, 'passport_serial_number')}\n"
+        f"🏢 Кем выдан / дата: {_val(new_pd, 'passport_issue_place')} / {_val(new_pd, 'passport_issue_date')}\n"
+        f"⏳ Срок действия: {_val(new_pd, 'passport_expiry_date')}\n\n"
+        f"📄 Старый паспорт: {_val(old_pd, 'passport_serial_number')} "
+        f"({_val(old_pd, 'passport_issue_place')} / {_val(old_pd, 'passport_issue_date')})"
+    )
+
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✅ Всё верно — перейти к адресу и телефону", callback_data="goto_adress_phone")],
+        [InlineKeyboardButton(text="✏️ Изменить", callback_data="new_edit")],
+        [InlineKeyboardButton(text="🖼 Загрузить другое фото", callback_data="new_retry")],
+    ])
+
+    await cb.message.edit_text(text, reply_markup=kb)
+
+
+@passport_photo_router.callback_query(F.data.in_({"old_edit", "new_edit"}))
+async def start_edit_bridge(cb: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+
+    if cb.data == "old_edit":
+        # будем редачить СТАРЫЙ паспорт → после ввода вернемся к превью старого
+        await state.update_data(
+            change_data_from_check="old_preview",                 # сюда вернёмся «назад» из меню правки
+            from_action=Stamp_transfer.after_old_passport,        # сюда временно переключаем обработчик ввода
+            return_after_edit="old_preview",                      # флаг: после ввода показать превью старого
+        )
+    else:
+        # будем редачить НОВЫЙ паспорт → после ввода вернемся к сводке
+        await state.update_data(
+            change_data_from_check="stamp_transfer_after_new_passport",
+            from_action=Stamp_transfer.after_new_passport,
+            return_after_edit="stamp_transfer_after_new_passport",  # флаг: после ввода показать сводку
+        )
+
+    # Локальный импорт, чтобы избежать циклических зависимостей
+    from handlers.components.changing_data import handle_change_data
+
+    # подменяем data, чтобы открыть меню правки
+    fake_cb = cb.model_copy(update={"data": "change_data_dummy"})
+    await handle_change_data(fake_cb, state)
+
