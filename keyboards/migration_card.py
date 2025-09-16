@@ -28,13 +28,25 @@ def kbs_for_goals(lang: str):
         text=_.get_text("goals_migr_card_arrival.goals.goal_one", lang), callback_data="Трудовая"
     )
     builder.button(
-        text=_.get_text("goals_migr_card_arrival.goals.goal_two", lang), callback_data="Учёба"
+        text=_.get_text("goals_migr_card_arrival.goals.goal_two", lang), callback_data="Служебная"
     )
     builder.button(
-        text=_.get_text("goals_migr_card_arrival.goals.goal_three", lang), callback_data="Семейная"
+        text=_.get_text("goals_migr_card_arrival.goals.goal_three", lang), callback_data="Учёба"
     )
     builder.button(
-        text=_.get_text("goals_migr_card_arrival.goals.goal_four", lang), callback_data="Туризм"
+        text=_.get_text("goals_migr_card_arrival.goals.goal_four", lang), callback_data="Транзит"
+    )
+    builder.button(
+        text=_.get_text("goals_migr_card_arrival.goals.goal_five", lang), callback_data="Работа"
+    )
+    builder.button(
+        text=_.get_text("goals_migr_card_arrival.goals.goal_six", lang), callback_data="Частная"
+    )
+    builder.button(
+        text=_.get_text("goals_migr_card_arrival.goals.goal_seven", lang), callback_data="Семейная"
+    )
+    builder.button(
+        text=_.get_text("goals_migr_card_arrival.goals.goal_eight", lang), callback_data="Туризм"
     )
     builder.button(
         text=_.get_text("goals_migr_card_arrival.goals.other", lang), callback_data="other"

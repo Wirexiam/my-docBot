@@ -29,7 +29,7 @@ def ur_work(lang: str):
 def true_or_change_final_doc(lang: str):
     builder = InlineKeyboardBuilder()
     builder.button(
-        text=_.get_text("organisation_info_correct.true_in_organization_doc", lang), callback_data="d"
+        text=_.get_text("organisation_info_correct.true_in_organization_doc", lang), callback_data="true_arrival_doc_to_ready"
     )
     builder.button(
         text=_.get_text("organisation_info_correct.change_in_organization_doc", lang), callback_data="change_data_"

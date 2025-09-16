@@ -12,3 +12,19 @@ def kbs_have_doc(lang: str):
     )
     builder.adjust(1)
     return builder.as_markup()
+
+def kbs_choose_place(lang: str):
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text=_.get_text("place_choose.button_one", lang), callback_data="Жилое помещение"
+    )
+    builder.button(
+        text=_.get_text("place_choose.button_two", lang),
+        callback_data="Иное помещение",
+    )
+    builder.button(
+        text=_.get_text("place_choose.button_three", lang),
+        callback_data="Организация",
+    )
+    builder.adjust(1)
+    return builder.as_markup()

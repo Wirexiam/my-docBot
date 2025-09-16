@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 
 from states.components.home_migr_data import HomeMigrData
 
-from keyboards.components.home_migr_data import kbs_have_doc
+from keyboards.components.home_migr_data import kbs_have_doc, kbs_choose_place
 
 from states.arrival import Arrival_transfer
 
@@ -54,7 +54,7 @@ async def handle_adress_migr_input(message: Message, state: FSMContext):
         text = f"{_.get_text(home_migr_title, lang)}"
 
     await message.answer_photo(caption=text, photo=photo)
-    await state.set_state(HomeMigrData.havedoc)
+    await state.set_state(HomeMigrData.place)
     # await state.update_data(waiting_data="adress")
     # next_states = state_data.get("next_states", [])
     # from_action = state_data.get("from_action")
@@ -113,7 +113,7 @@ async def handle_adress_migr_input(call: CallbackQuery, state: FSMContext):
         text = f"{_.get_text(home_migr_title, lang)}"
 
     await call.message.answer_photo(caption=text, photo=photo)
-    await state.set_state(HomeMigrData.havedoc)
+    await state.set_state(HomeMigrData.place)
     # await state.update_data(waiting_data="adress")
     # next_states = state_data.get("next_states", [])
     # from_action = state_data.get("from_action")
@@ -126,10 +126,11 @@ async def handle_adress_migr_input(call: CallbackQuery, state: FSMContext):
     # else:
     #     # If no next states, return to the previous action
     #     await state.set_state(from_action)
-    
-@home_migr_data.message(HomeMigrData.havedoc)
-async def handle_adress_migr_input(message: Message, state: FSMContext):
-    """Обработка ввода адреса проживания в РФ"""
+
+
+@home_migr_data.message(HomeMigrData.place)
+async def handle_place_migr_input(message: Message, state: FSMContext):
+    """Обработка выбора места проживания в РФ"""
     # Получение данных состояния
     state_data = await state.get_data()
     lang = state_data.get("language", "ru")
@@ -155,17 +156,37 @@ async def handle_adress_migr_input(message: Message, state: FSMContext):
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
     # Отправка подтверждения пользователю
 
-    text = f"{_.get_text('doc_migr_card_arrival.title', lang)}\n{_.get_text('doc_migr_card_arrival.example', lang)}"
+    text = f"{_.get_text('place_choose.title', lang)}\n{_.get_text('place_choose.example', lang)}"
 
-    await message.answer(text, reply_markup=kbs_have_doc(lang))
-    # await state.set_state(Arrival_transfer.after_about_home)
+    await message.answer(text, reply_markup=kbs_choose_place(lang))
+    await state.set_state(HomeMigrData.havedoc)
+    
      
-@home_migr_data.callback_query(F.data == "havedoc")
+@home_migr_data.callback_query(HomeMigrData.havedoc)
 async def handle_access_doc(call: CallbackQuery, state: FSMContext):
     """Обработка ввода адреса проживания в РФ"""
     # Получение данных состояния
     state_data = await state.get_data()
     lang = state_data.get("language", "ru")
+
+    place = call.data
+    
+    migration_data = await state.get_data()
+    migration_data = migration_data.get("migration_data")
+    print(migration_data)
+
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+    
+    await state.update_data(place=place)
+    await state.update_data(migration_data=migration_data)
+    user_data = {
+        "migration_data": migration_data,
+    }
+    
+    # Сохранение адреса в менеджер данных
+    session_id = state_data.get("session_id")
+    data_manager.save_user_data(call.from_user.id, session_id, user_data)
 
     text = f"{_.get_text('doc_details_migr_card_arrival.title', lang)}\n{_.get_text('doc_details_migr_card_arrival.example', lang)}"
     
