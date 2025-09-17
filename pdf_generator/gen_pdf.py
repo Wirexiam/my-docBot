@@ -107,13 +107,14 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
         pprint(f"Command output: {e.stdout}")
         pprint(f"Command error: {e.stderr}")
 
-def create_user_doc(user_path, template_name, context, font_name):
+def create_user_doc(user_path, template_name, context, font_name="Arial"):
     user_path_docx = create_docx_from_data(
         template_name=template_name,
         context=context,
         user_path=user_path,
         font_name=font_name,
     )
+    return user_path_docx
     pprint(f"{user_path_docx}------------")
     # pdf_path = convert_docx_to_pdf_libreoffice(input_docx_path=user_path_docx, user_path=user_path)
     return user_path_docx

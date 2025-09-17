@@ -60,7 +60,8 @@ data_blacklist = [
     "residence_reason",
     "residence_reason",
     "residence_reason",
-
+    "doc_id",
+    "return_after_edit",
 ]
 
 
@@ -210,12 +211,29 @@ async def handle_change_dict_data(callback: CallbackQuery, state: FSMContext):
 @changing_data_router.callback_query(F.data.startswith("change_value_"))
 async def handle_change_value_data(callback: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
-    dict_key = callback.data.split("change_value_")[1]
+    dict_key = callback.data.split("change_value_")[1]   # например: passport_data.full_name
     lang = state_data.get("language", "ru")
 
+    # 1) ставим маркер ожидания и переводим FSM на нужный handler
     await state.update_data({"waiting_data": dict_key})
     from_action = state_data.get("from_action", None)
     if from_action is not None:
         await state.set_state(from_action)
+
+    # 2) достанем текущее значение, чтобы показать в подсказке
+    current_value = "—"
+    if "." in dict_key:
+        primary, secondary = dict_key.split(".", 1)
+        current_value = (state_data.get(primary) or {}).get(secondary, "—")
+    else:
+        current_value = state_data.get(dict_key, "—")
+
+    # 3) текст подсказки: локализация ИЛИ фолбэк
     text = _.get_text(callback.data, lang)
+    if text.startswith("[Missing:"):
+        # универсальная подсказка
+        human = dict_key.split(".", 1)[-1].replace("_", " ").capitalize()
+        text = f"Введите значение для «{human}».\nТекущее: {current_value}"
+
     await callback.message.edit_text(text=text)
+
