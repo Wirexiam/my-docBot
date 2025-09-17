@@ -419,7 +419,7 @@ async def true_arrival_doc(event: CallbackQuery, state: FSMContext):
         "char_cityzenship": state_data.get('passport_data', '').get('citizenship', ' '),
         "char_birth_date_day": state_data.get('passport_data', '').get('birth_date', ' ').split('.')[0],
         "char_birth_date_month": state_data.get('passport_data', '').get('birth_date', ' ').split('.')[1],
-        "char_birth_date_year": state_data.get('passport_data', '').get('birth_date', ' ').split(' ')[2],
+        "char_birth_date_year": state_data.get('passport_data', '').get('birth_date', ' ').split('.')[2],
         "char_birth_place": '',
         "char_passport_series": state_data.get('passport_data', '').get('passport_serial_number', ' ').split(' ')[0],
         "char_passport_numbers": state_data.get('passport_data', '').get('passport_serial_number', '').split(' ')[1],
@@ -450,24 +450,27 @@ async def true_arrival_doc(event: CallbackQuery, state: FSMContext):
         "char_doc_name_to_verifi_3": state_data.get('docaboutegrn', ''),
         "char_doc_name_to_verifi_4": "Трудовой договор",
         "char_doc_name_to_verifi_5": "Регистрация по месту пребывания",
-        "char_reciever_city_region": state_data.get('organization_data', '').get('live_adress', '').split(',')[0],
-        "char_reciever_district_city": state_data.get('organization_data', '').get('live_adress', '').split(',')[1],
-        "char_reciever_street_name": state_data.get('organization_data', '').get('live_adress', '').split(',')[2].split(' ')[1],
-        "reciever_house_adress": state_data.get('organization_data', '').get('live_adress', '').split(',')[3].split(' ')[-1],
-        "reciever_corpus": state_data.get('organization_data', '').get('live_adress', '').split(',')[4].split(' ')[-1],
-        "reciever_room": state_data.get('organization_data', '').get('live_adress', '').split(',')[6].split(' ')[-1],
-        "reciever_street_name_2": state_data.get('organization_data', '').get('live_adress', '').split(',')[5],
     }
 
     if state_data.get('organization_data'):
+        data["org"] = "V"
+        data["char_reciever_city_region"] = state_data.get('organization_data', '').get('adress', '').split(',')[0],
+        data["char_reciever_district_city"] = state_data.get('organization_data', '').get('adress', '').split(',')[1],
+        data["char_reciever_street_name"] = state_data.get('organization_data', '').get('adress', '').split(',')[2].split(' ')[1],
+        data["reciever_house_adress"] = state_data.get('organization_data', '').get('adress', '').split(',')[3].split(' ')[-1],
+        data["reciever_corpus"] = state_data.get('organization_data', '').get('adress', '').split(',')[4].split(' ')[-1],
+        data["reciever_room"] = state_data.get('organization_data', '').get('adress', '').split(',')[6].split(' ')[-1],
+        data["reciever_street_name_2"] = state_data.get('organization_data', '').get('adress', '').split(',')[5],
         data["char_reciever_father_name"] = state_data.get('organization_data', '').get('full_name_contact_of_organization', '').split(' ')[2],
         data["char_reciever_name"] = state_data.get('organization_data').get('full_name_contact_of_organization', '').split(' ')[0],
         data["char_reciever_first_name"] = state_data.get('organization_data').get('full_name_contact_of_organization', '').split(' ')[1],
-        data["name_org"] = state_data.get('organization_data').get('name_org', '')
-        data["inn"] = state_data.get('organization_data').get('inn', '')
+        data["char_reciever_name_short_1"] = state_data.get('organization_data').get('name_org', '').split(' ')[0]
+        data["char_reciever_name_short_2"] = state_data.get('organization_data').get('name_org', '').split(' ')[1]
+        data["char_reciever_inn"] = state_data.get('organization_data').get('inn', '')
         data["adress"] = state_data.get('organization_data').get('adress', '')
         data["char_phone"] = state_data.get('phone_by_organisation', '')
     else:
+        data["f_face"] = "V"
         data["char_reciever_father_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[2],
         data["char_reciever_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[1],
         data["char_reciever_first_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[0],
@@ -501,7 +504,7 @@ async def true_arrival_doc(event: CallbackQuery, state: FSMContext):
     elif state_data.get('migration_data').get('goal', '') == 'Туризм':
         data["char_goal_tourism"] = "V"
 
-    doc = create_user_doc(context=data, template_name='notif_arrival_my', user_path='pdf_generator', font_name="Arial")
+    doc = create_user_doc(context=data, template_name='notif_arrival', user_path='pdf_generator', font_name="Arial")
 
     ready_doc = FSInputFile(doc, filename='Уведомление о прибытии (миграционный учёт).docx')
 
