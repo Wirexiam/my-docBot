@@ -181,19 +181,21 @@ async def new_retry(cb: CallbackQuery, state: FSMContext):
 async def new_ok(cb: CallbackQuery, state: FSMContext):
     """
     Подтверждён НОВЫЙ паспорт → показываем мини-сводку паспортных данных.
-    В сценарии штампа ВНЖ: кнопка "адрес/телефон".
-    В сценарии уведомления по ВНЖ (DRN): кнопка "перейти к ВНЖ".
+    - Штамп ВНЖ: кнопка "адрес/телефон".
+    - Уведомление по ВНЖ (DRN): кнопка "перейти к ВНЖ".
+    - Работа по патенту (WA): кнопка "перейти к патенту".
     """
     from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
     from states.stamp_transfer import Stamp_transfer
     from states.doc_residence_notification import DocResidenceNotificationStates
+    from states.work_activity import PatentedWorkActivity
     from localization import _
 
     data = await state.get_data()
     lang = data.get("language")
 
     from_action = data.get("from_action") or Stamp_transfer.after_new_passport
-    ocr_flow = data.get("ocr_flow")  # мы туда заранее пишем "drn" или None
+    ocr_flow = data.get("ocr_flow")  # "drn", "wa" или None
     await state.set_state(from_action)
 
     sd = await state.get_data()
@@ -221,10 +223,16 @@ async def new_ok(cb: CallbackQuery, state: FSMContext):
             f"({_val(old_pd, 'passport_issue_place')} / {_val(old_pd, 'passport_issue_date')})"
         )
 
-    # --- клавиатура зависит от потока ---
+    # --- клавиатура зависит от сценария ---
     if ocr_flow == "drn" and from_action == DocResidenceNotificationStates.after_passport:
         kb = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="✅ Всё верно — перейти к ВНЖ", callback_data="drn_after_passport")],
+            [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang), callback_data="new_edit")],
+            [InlineKeyboardButton(text=_.get_text("buttons.new_retry", lang), callback_data="new_retry")],
+        ])
+    elif ocr_flow == "wa" and from_action == PatentedWorkActivity.passport_data:
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="✅ Всё верно — перейти к патенту", callback_data="wa_after_passport")],
             [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang), callback_data="new_edit")],
             [InlineKeyboardButton(text=_.get_text("buttons.new_retry", lang), callback_data="new_retry")],
         ])
@@ -236,7 +244,6 @@ async def new_ok(cb: CallbackQuery, state: FSMContext):
         ])
 
     await cb.message.edit_text(text, reply_markup=kb)
-
 
 
 @passport_photo_router.callback_query(F.data.in_({"old_edit", "new_edit"}))
