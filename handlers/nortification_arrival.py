@@ -463,8 +463,10 @@ async def true_arrival_doc(event: CallbackQuery, state: FSMContext):
         data["char_reciever_father_name"] = state_data.get('organization_data', '').get('full_name_contact_of_organization', '').split(' ')[2],
         data["char_reciever_name"] = state_data.get('organization_data').get('full_name_contact_of_organization', '').split(' ')[0],
         data["char_reciever_first_name"] = state_data.get('organization_data').get('full_name_contact_of_organization', '').split(' ')[1],
-        data["org_name"] = state_data.get('organization_data').get('name_org', '')
+        data["name_org"] = state_data.get('organization_data').get('name_org', '')
         data["inn"] = state_data.get('organization_data').get('inn', '')
+        data["adress"] = state_data.get('organization_data').get('adress', '')
+        data["char_phone"] = state_data.get('phone_by_organisation', '')
     else:
         data["char_reciever_father_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[2],
         data["char_reciever_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[1],
@@ -499,7 +501,7 @@ async def true_arrival_doc(event: CallbackQuery, state: FSMContext):
     elif state_data.get('migration_data').get('goal', '') == 'Туризм':
         data["char_goal_tourism"] = "V"
 
-    doc = create_user_doc(context=data, template_name='template_for_migr_acc', user_path='pdf_generator', font_name="Arial")
+    doc = create_user_doc(context=data, template_name='notif_arrival_my', user_path='pdf_generator', font_name="Arial")
 
     ready_doc = FSInputFile(doc, filename='Уведомление о прибытии (миграционный учёт).docx')
 
