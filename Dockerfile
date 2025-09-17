@@ -14,7 +14,10 @@ RUN pip install --no-cache-dir virtualenv && \
 #     libreoffice-java-common \
 #     libreoffice
 
-RUN apt install -y tesseract-ocr tesseract-ocr-rus tesseract-ocr-eng libgl1
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    tesseract-ocr-rus \
+    tesseract-ocr-eng libgl1
 
 RUN /opt/venv/bin/pip install --no-cache-dir --upgrade pip && \
     /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
