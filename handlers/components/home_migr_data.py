@@ -160,16 +160,49 @@ async def handle_place_migr_input(message: Message, state: FSMContext):
 
     await message.answer(text, reply_markup=kbs_choose_place(lang))
     await state.set_state(HomeMigrData.havedoc)
+
+
+@home_migr_data.callback_query(HomeMigrData.havedoc)
+async def handle_adress_migr_input(call: CallbackQuery, state: FSMContext):
+    """Обработка ввода адреса проживания в РФ"""
+    # Получение данных состояния
+    state_data = await state.get_data()
+    lang = state_data.get("language", "ru")
+    
+    place = call.data
+    
+    migration_data = await state.get_data()
+    migration_data = migration_data.get("migration_data")
+    # Get the user's language preference from state data
+    state_data = await state.get_data()
+    lang = state_data.get("language")
+    migration_data['place'] = place
+    
+    await state.update_data(place=place)
+    await state.update_data(migration_data=migration_data)
+    user_data = {
+        "migration_data": migration_data,
+    }
+    
+    # Сохранение адреса в менеджер данных
+    session_id = state_data.get("session_id")
+    data_manager.save_user_data(call.from_user.id, session_id, user_data)
+    # Отправка подтверждения пользователю
+
+    text = f"{_.get_text('doc_migr_card_arrival.title', lang)}\n{_.get_text('doc_migr_card_arrival.example', lang)}"
+
+    await call.message.edit_text(text, reply_markup=kbs_have_doc(lang))
+    await state.set_state(None)
     
      
-@home_migr_data.callback_query(HomeMigrData.havedoc)
+@home_migr_data.callback_query(F.data == "havedoc")
 async def handle_access_doc(call: CallbackQuery, state: FSMContext):
     """Обработка ввода адреса проживания в РФ"""
     # Получение данных состояния
     state_data = await state.get_data()
     lang = state_data.get("language", "ru")
 
-    place = call.data
+    docaboutegrn = 'Выписка из ЕГРН'
     
     migration_data = await state.get_data()
     migration_data = migration_data.get("migration_data")
@@ -178,7 +211,7 @@ async def handle_access_doc(call: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
     lang = state_data.get("language")
     
-    await state.update_data(place=place)
+    await state.update_data(docaboutegrn=docaboutegrn)
     await state.update_data(migration_data=migration_data)
     user_data = {
         "migration_data": migration_data,
