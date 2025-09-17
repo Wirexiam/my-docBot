@@ -18,6 +18,8 @@ RUN pip install --no-cache-dir virtualenv && \
 RUN /opt/venv/bin/pip install --no-cache-dir --upgrade pip && \
     /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
 
+RUN apt install -y tesseract-ocr tesseract-ocr-rus tesseract-ocr-eng libgl1
+
 COPY . .
 
 RUN chown -R 1001:1001 /opt/app

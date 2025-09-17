@@ -13,31 +13,30 @@ from datetime import datetime, timedelta
 migration_manual_router = Router()
 data_manager = SecureDataManager()
 
+# @migration_manual_router.callback_query(F.data == "migration_manual_start")
+# async def handle_migr_manual_start(callback: CallbackQuery, state: FSMContext):
+#     """Handle the start of manual migratuion card input."""
 
-@migration_manual_router.callback_query(F.data == "migration_manual_start")
-async def handle_migr_manual_start(callback: CallbackQuery, state: FSMContext):
-    """Handle the start of manual migratuion card input."""
+#     # Set the state for migr card handling
+#     # await state.set_state(PassportManualStates.full_name_input)
 
-    # Set the state for migr card handling
-    # await state.set_state(PassportManualStates.full_name_input)
-
-    # Get the user's language preference from state data
-    state_data = await state.get_data()
-    lang = state_data.get("language")
+#     # Get the user's language preference from state data
+#     state_data = await state.get_data()
+#     lang = state_data.get("language")
     
-    # Prepare the initial message for manual passport input
-    migr_desc = state_data.get("migr_desc", "name_migr_card_arrival.description")
-    age = state_data.get("age", False)
-    if age:
-        pass
-    text = f"{_.get_text("name_migr_card_arrival.title", lang)}\n\n{_.get_text(migr_desc, lang)}"
+#     # Prepare the initial message for manual passport input
+#     migr_desc = state_data.get("migr_desc", "name_migr_card_arrival.description")
+#     age = state_data.get("age", False)
+#     if age:
+#         pass
+#     text = f"{_.get_text("name_migr_card_arrival.title", lang)}\n\n{_.get_text(migr_desc, lang)}"
 
-    # Update the state with the action context
-    await state.set_state(MigrCardManualStates.entry_date_input)
-    # Send the initial message to the user
-    await callback.message.edit_text(
-        text=text, reply_markup=None  # No keyboard for this step
-    )
+#     # Update the state with the action context
+#     await state.set_state(MigrCardManualStates.entry_date_input)
+#     # Send the initial message to the user
+#     await callback.message.edit_text(
+#         text=text, reply_markup=None  # No keyboard for this step
+#     )
     
 # @migration_manual_router.message(MigrCardManualStates.migr_card_start_manual)
 # async def handle_migr_manual_start(message: Message, state: FSMContext):
@@ -61,94 +60,31 @@ async def handle_migr_manual_start(callback: CallbackQuery, state: FSMContext):
 #     )
 
 
-@migration_manual_router.message(MigrCardManualStates.entry_date_input)
-async def request_birth_date_input(message: Message, state: FSMContext):
+@migration_manual_router.callback_query(F.data == "migration_manual_start")
+async def request_birth_date_input(call: CallbackQuery, state: FSMContext):
     """Handle the input of the birth date in manual passport handling."""
-    migration_data = {}
-    full_name = message.text.strip()
-    migration_data["full_name"] = full_name
+
     # Get the user's language preference from state data
     state_data = await state.get_data()
     lang = state_data.get("language")
     # Update the state with the full name
-    await state.update_data(migration_data=migration_data)
-    user_data = {
-        "migration_data": migration_data,
-    }
-    session_id = state_data.get("session_id")
-    data_manager.save_user_data(message.from_user.id, session_id, user_data)
-    
+
     age = state_data.get("age", False)
     if age:
         await state.update_data(migr_title="migr_manual_citizenship_kid.title")
 
     text = f"{_.get_text('data_migr_card_arrival.title', lang)}\n{_.get_text('data_migr_card_arrival.example_text', lang)}"
-    await message.answer(text=text, reply_markup=None)  # No keyboard for this step
+    await call.message.edit_text(text=text, reply_markup=None)  # No keyboard for this step
     # Move to the next state
-    await state.set_state(MigrCardManualStates.citizenship_input)
-
-
-@migration_manual_router.message(MigrCardManualStates.citizenship_input)
-async def handle_entry_date_input(message: Message, state: FSMContext):
-    """Handle the input of the birth date in manual passport handling."""
-    migration_data = await state.get_data()
-    migration_data = migration_data.get("migration_data")
-    entry_date = message.text.strip()
-    migration_data["entry_date"] = entry_date
-
-    # Get the user's language preference from state data
-    state_data = await state.get_data()
-    lang = state_data.get("language")
-
-    # Update the state with the birth date
-    await state.update_data(migration_data=migration_data)
-    user_data = {
-        "migration_data": migration_data,
-    }
-    session_id = state_data.get("session_id")
-    data_manager.save_user_data(message.from_user.id, session_id, user_data)
-    
-    migr_title = state_data.get("migr_title", "passport_manual_citizenship.title")
-
-    text = f"{_.get_text(migr_title, lang)}\n{_.get_text('passport_manual_citizenship.example_text', lang)}"
-    await message.answer(text=text, reply_markup=None)
-
     await state.set_state(MigrCardManualStates.place_point_input)
 
 
 @migration_manual_router.message(MigrCardManualStates.place_point_input)
 async def handle_citizenship_input(message: Message, state: FSMContext):
     """Handle the input of the citizenship in manual passport handling."""
-    migration_data = await state.get_data()
-    migration_data = migration_data.get("migration_data")
-    citizenship = message.text.strip()
-    migration_data["citizenship"] = citizenship
-
-    # Get the user's language preference from state data
-    state_data = await state.get_data()
-    lang = state_data.get("language")
-
-    # Update the state with the citizenship
-    await state.update_data(migration_data=migration_data)
-    user_data = {
-        "migration_data": migration_data,
-    }
-    session_id = state_data.get("session_id")
-    data_manager.save_user_data(message.from_user.id, session_id, user_data)
-
-    text = f"{_.get_text('country_point_migr_card_arrival.title', lang)}\n{_.get_text('country_point_migr_card_arrival.example_text', lang)}"
-    await message.answer(text=text, reply_markup=None)
-
-    await state.set_state(MigrCardManualStates.card_serial_number_input)
-
-
-@migration_manual_router.message(MigrCardManualStates.card_serial_number_input)
-async def handle_card_serial_number_input(message: Message, state: FSMContext):
-    """Handle the input of the passport serial number in manual passport handling."""
-    migration_data = await state.get_data()
-    migration_data = migration_data.get("migration_data")
-    card_serial_number = message.text.strip()
-    migration_data["card_serial_number"] = card_serial_number
+    migration_data = {}
+    entry_date = message.text.strip()
+    migration_data["entry_date"] = entry_date
 
     # Get the user's language preference from state data
     state_data = await state.get_data()

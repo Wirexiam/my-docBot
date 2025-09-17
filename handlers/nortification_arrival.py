@@ -22,6 +22,10 @@ from keyboards.migration_card import *
 from localization import _
 from data_manager import SecureDataManager
 
+from transliterate import translit
+
+
+
 nortification_arrival = Router()
 data_manager = SecureDataManager()
 
@@ -405,36 +409,20 @@ async def true_arrival_doc(event: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
     lang = state_data.get("language")
 
-    # state_data.get('migration_data', '').get('card_serial_number', '')
-    # state_data.get('migration_data', '').get('citizenship', '')
-    # state_data.get('migration_data', '').get('entry_date', '')
-    # state_data.get('migration_data', '').get('full_name', '').split(' ')
-    # state_data.get('migration_data', '').get('goal', '')
-    # state_data.get('migration_data', '').get('number_migr_card_arrival', '')
-    # state_data.get('migration_data', '').get('pretria_period', '').split(',')
-
-    # state_data.get('passport_data', '').get('birth_date', '').split('.')
-    # state_data.get('passport_data', '').get('citizenship', '')
-    # state_data.get('passport_data', '').get('full_name', '')
-    # state_data.get('passport_data', '').get('passport_expiry_date', '').split('.')
-    # state_data.get('passport_data', '').get('passport_issue_date', '').split(',')
-    # state_data.get('passport_data', '').get('passport_issue_place', '')
-    # state_data.get('passport_data', '').get('passport_serial_number', '')
-
     data = {
-        "char_first_name": state_data.get('migration_data', '').get('full_name', '').split(' ')[0],
-        "char_name": state_data.get('migration_data', '').get('full_name', '').split(' ')[1],
-        "char_father_name": state_data.get('migration_data', '').get('full_name', '').split(' ')[2],
-        # "char_latin_first_name": ,
-        # "char_latin_name": ,
-        # "char_latin_father_name": ,
-        "char_cityzenship": state_data.get('passport_data', '').get('citizenship', ''),
-        "char_birth_date_day": state_data.get('passport_data', '').get('birth_date', '').split('.')[0],
-        "char_birth_date_month": state_data.get('passport_data', '').get('birth_date', '').split('.')[1],
-        "char_birth_date_year": state_data.get('passport_data', '').get('birth_date', '').split('.')[2],
-        # "char_birth_place": ,
-        # "char_passport_series": ,
-        "char_passport_numbers": state_data.get('passport_data', '').get('passport_serial_number', ''),
+        "char_first_name": state_data.get('passport_data', '').get('full_name', ' ').split(' ')[0],
+        "char_name": state_data.get('passport_data', '').get('full_name', ' ').split(' ')[1],
+        "char_father_name": state_data.get('passport_data', '').get('full_name', ' ').split(' ')[2],
+        "char_latin_first_name": translit(state_data.get('passport_data', '').get('full_name', ' ').split(' ')[0], 'ru'),
+        "char_latin_name": translit(state_data.get('passport_data', '').get('full_name', ' ').split(' ')[1], 'ru'),
+        "char_latin_father_name": translit(state_data.get('passport_data', '').get('full_name', ' ').split(' ')[2], 'ru'),
+        "char_cityzenship": state_data.get('passport_data', '').get('citizenship', ' '),
+        "char_birth_date_day": state_data.get('passport_data', '').get('birth_date', ' ').split('.')[0],
+        "char_birth_date_month": state_data.get('passport_data', '').get('birth_date', ' ').split('.')[1],
+        "char_birth_date_year": state_data.get('passport_data', '').get('birth_date', ' ').split(' ')[2],
+        "char_birth_place": '',
+        "char_passport_series": state_data.get('passport_data', '').get('passport_serial_number', ' ').split(' ')[0],
+        "char_passport_numbers": state_data.get('passport_data', '').get('passport_serial_number', '').split(' ')[1],
         "char_passport_issue_date_day": state_data.get('passport_data', '').get('passport_issue_date', '').split('.')[0],
         "char_passport_issue_date_month": state_data.get('passport_data', '').get('passport_issue_date', '').split('.')[1],
         "char_passport_issue_date_year": state_data.get('passport_data', '').get('passport_issue_date', '').split('.')[2],
@@ -442,57 +430,74 @@ async def true_arrival_doc(event: CallbackQuery, state: FSMContext):
         "char_passport_expire_date_month": state_data.get('passport_data', '').get('passport_expiry_date', '').split('.')[1],
         "char_passport_expire_date_year": state_data.get('passport_data', '').get('passport_expiry_date', '').split('.')[2],
         "char_job_name": state_data.get('profession', ''),
-        # "char_goal_official_trip": ,
-        # "char_goal_tourism": ,
-        # "char_goal_business_trip": ,
-        # "char_goal_study": ,
-        # "char_goal_work": ,
-        # "char_goal_private_visit": ,
-        # "char_goal_transit": ,
-        # "char_living_quarters": ,
-        # "char_other_premises": ,
-        # "char_organization": ,
-        # "char_arrive_date_day": ,
-        # "char_arrive_date_month": ,
-        # "char_arrive_date_year": ,
-        # "char_exit_date_day": ,
-        # "char_exit_date_month": ,
-        # "char_exit_date_year": ,
-        # "char_migr_cart_series": ,
-        # "char_migr_cart_numbers": ,
-        # "char_city_region": ,
-        # "char_district_city": ,
-        # "char_street_name": ,
-        # "house_adress": ,
-        # "corpus": ,
-        # "room": ,
-        # "street_name_2": ,
-        # "char_doc_name_to_verifi_1": ,
-        # "char_doc_name_to_verifi_2": ,
-        # "char_doc_name_to_verifi_3": ,
-        # "char_doc_name_to_verifi_4": ,
-        # "char_doc_name_to_verifi_5": ,
-        # "char_sex_male": ,
-        # "char_sex_female": ,
-        # "char_reciever_father_name": ,
-        # "char_reciever_name": ,
-        # "char_reciever_first_name": ,
-        # "char_reciever_passport_series": ,
-        # "char_reciever_passport_numbers": ,
-        # "char_reciever_passport_issue_date_day": ,
-        # "char_reciever_passport_issue_date_month": ,
-        # "char_reciever_passport_issue_date_year": ,
-        # "char_reciever_passport_expire_date_day": ,
-        # "char_reciever_passport_expire_date_month": ,
-        # "char_reciever_passport_expire_date_year": ,
-        # "char_reciever_city_region": ,
-        # "char_reciever_district_city": ,
-        # "char_reciever_street_name": ,
-        # "reciever_house_adress": ,
-        # "reciever_corpus": ,
-        # "reciever_room": ,
-        # "reciever_street_name_2": ,
+        "char_arrive_date_day": state_data.get('migration_data', '').get('entry_date', ' ').split('.')[0],
+        "char_arrive_date_month": state_data.get('migration_data', '').get('entry_date', ' ').split('.')[1],
+        "char_arrive_date_year": state_data.get('migration_data', '').get('entry_date', ' ').split('.')[2],
+        "char_exit_date_day": state_data.get('migration_data', '').get('pretria_period', ' ').split('.')[0],
+        "char_exit_date_month": state_data.get('migration_data', '').get('pretria_period', ' ').split('.')[1],
+        "char_exit_date_year": state_data.get('migration_data', '').get('pretria_period', ' ').split('.')[2],
+        "char_migr_cart_series": state_data.get('migration_data', '').get('number_migr_card_arrival', ' ').split(' ')[0],
+        "char_migr_cart_numbers": state_data.get('migration_data', '').get('number_migr_card_arrival', ' ').split(' ')[1],
+        "char_city_region": state_data.get('live_adress', '').split(',')[0],
+        "char_district_city": state_data.get('live_adress', '').split(',')[1],
+        "char_street_name": state_data.get('live_adress', '').split(',')[2].split(' ')[1],
+        "house_adress": state_data.get('live_adress', '').split(',')[3].split(' ')[-1],
+        "corpus": state_data.get('live_adress', '').split(',')[4].split(' ')[-1],
+        "room": state_data.get('live_adress', '').split(',')[6].split(' ')[-1],
+        "street_name_2": state_data.get('live_adress', '').split(',')[5],
+        "char_doc_name_to_verifi_1": f"Паспорт гражданина {state_data.get('passport_data', '').get('citizenship', ' ')}a",
+        "char_doc_name_to_verifi_2": "Миграционная карта",
+        "char_doc_name_to_verifi_3": state_data.get('docaboutegrn', ''),
+        "char_doc_name_to_verifi_4": "Трудовой договор",
+        "char_doc_name_to_verifi_5": "Регистрация по месту пребывания",
+        "char_reciever_city_region": state_data.get('organization_data', '').get('live_adress', '').split(',')[0],
+        "char_reciever_district_city": state_data.get('organization_data', '').get('live_adress', '').split(',')[1],
+        "char_reciever_street_name": state_data.get('organization_data', '').get('live_adress', '').split(',')[2].split(' ')[1],
+        "reciever_house_adress": state_data.get('organization_data', '').get('live_adress', '').split(',')[3].split(' ')[-1],
+        "reciever_corpus": state_data.get('organization_data', '').get('live_adress', '').split(',')[4].split(' ')[-1],
+        "reciever_room": state_data.get('organization_data', '').get('live_adress', '').split(',')[6].split(' ')[-1],
+        "reciever_street_name_2": state_data.get('organization_data', '').get('live_adress', '').split(',')[5],
     }
+
+    if state_data.get('organization_data'):
+        data["char_reciever_father_name"] = state_data.get('organization_data', '').get('full_name_contact_of_organization', '').split(' ')[2],
+        data["char_reciever_name"] = state_data.get('organization_data').get('full_name_contact_of_organization', '').split(' ')[0],
+        data["char_reciever_first_name"] = state_data.get('organization_data').get('full_name_contact_of_organization', '').split(' ')[1],
+        data["org_name"] = state_data.get('organization_data').get('name_org', '')
+        data["inn"] = state_data.get('organization_data').get('inn', '')
+    else:
+        data["char_reciever_father_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[2],
+        data["char_reciever_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[1],
+        data["char_reciever_first_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[0],
+        data["char_reciever_passport_series"] = state_data.get('individual_data', '').get('passport_serial_number_input', '').split(' ')[0],
+        data["char_reciever_passport_numbers"] = state_data.get('individual_data', '').get('passport_serial_number_input', '').split(' ')[1],
+        data["char_reciever_passport_issue_date_day"] = state_data.get('individual_data', '').get('passport_give_date_input', '').split('.')[0],
+        data["char_reciever_passport_issue_date_month"] = state_data.get('individual_data', '').get('passport_give_date_input', '').split('.')[1],
+        data["char_reciever_passport_issue_date_year"] = state_data.get('individual_data', '').get('passport_give_date_input', '').split('.')[2],
+        data["char_reciever_passport_expire_date_day"] = "",
+        data["char_reciever_passport_expire_date_month"] = "",
+        data["char_reciever_passport_expire_date_year"] = "",
+    
+    if state_data.get('migration_data').get('place', '') == 'Жилое помещение':
+        data['char_living_quarters'] = 'V'
+    elif state_data.get('migration_data').get('place', '') == 'Иное помещение':
+        data['char_other_premises'] = 'V'
+    elif state_data.get('migration_data').get('place', '') == 'Организация':
+        data['char_organizations'] = 'V'
+    
+        
+    if state_data.get('migration_data').get('goal', '') == 'Деловая':
+        data["char_goal_business_trip"] = "V"
+    elif state_data.get('migration_data').get('goal', '') == 'Учёба':
+        data["char_goal_study"] = "V"
+    elif state_data.get('migration_data').get('goal', '') == 'Транзит':
+        data["char_goal_transit"] = "V"
+    elif state_data.get('migration_data').get('goal', '') == 'Работа':
+        data["char_goal_work"] = "V"
+    elif state_data.get('migration_data').get('goal', '') == 'Частная':
+        data["char_goal_private_visit"] = "V"
+    elif state_data.get('migration_data').get('goal', '') == 'Туризм':
+        data["char_goal_tourism"] = "V"
 
     doc = create_user_doc(context=data, template_name='template_for_migr_acc', user_path='pdf_generator', font_name="Arial")
 
