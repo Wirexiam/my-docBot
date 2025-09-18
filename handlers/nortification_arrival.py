@@ -440,10 +440,10 @@ async def true_arrival_doc(event: CallbackQuery, state: FSMContext):
         "char_migr_cart_numbers": state_data.get('migration_data', '').get('number_migr_card_arrival', ' ').split(' ')[1],
         "char_city_region": state_data.get('live_adress', '').split(',')[0],
         "char_district_city": state_data.get('live_adress', '').split(',')[1],
-        "char_street_name": state_data.get('live_adress', '').split(',')[2].split(' ')[1],
-        "house_adress": state_data.get('live_adress', '').split(',')[3].split(' ')[-1],
-        "corpus": state_data.get('live_adress', '').split(',')[4].split(' ')[-1],
-        "room": state_data.get('live_adress', '').split(',')[6].split(' ')[-1],
+        "char_street_name": state_data.get('live_adress', '').split(',')[2],
+        "house_adress": state_data.get('live_adress', '').split(',')[3],
+        "corpus": state_data.get('live_adress', '').split(',')[4],
+        "room": state_data.get('live_adress', '').split(',')[6],
         "street_name_2": state_data.get('live_adress', '').split(',')[5],
         "char_doc_name_to_verifi_1": f"Паспорт гражданина {state_data.get('passport_data', '').get('citizenship', ' ')}a",
         "char_doc_name_to_verifi_2": "Миграционная карта",
@@ -454,34 +454,35 @@ async def true_arrival_doc(event: CallbackQuery, state: FSMContext):
 
     if state_data.get('organization_data'):
         data["org"] = "V"
-        data["char_reciever_city_region"] = state_data.get('organization_data', '').get('adress', '').split(',')[0],
-        data["char_reciever_district_city"] = state_data.get('organization_data', '').get('adress', '').split(',')[1],
-        data["char_reciever_street_name"] = state_data.get('organization_data', '').get('adress', '').split(',')[2].split(' ')[1],
-        data["reciever_house_adress"] = state_data.get('organization_data', '').get('adress', '').split(',')[3].split(' ')[-1],
-        data["reciever_corpus"] = state_data.get('organization_data', '').get('adress', '').split(',')[4].split(' ')[-1],
-        data["reciever_room"] = state_data.get('organization_data', '').get('adress', '').split(',')[6].split(' ')[-1],
-        data["reciever_street_name_2"] = state_data.get('organization_data', '').get('adress', '').split(',')[5],
-        data["char_reciever_father_name"] = state_data.get('organization_data', '').get('full_name_contact_of_organization', '').split(' ')[2],
-        data["char_reciever_name"] = state_data.get('organization_data').get('full_name_contact_of_organization', '').split(' ')[0],
-        data["char_reciever_first_name"] = state_data.get('organization_data').get('full_name_contact_of_organization', '').split(' ')[1],
+        print(state_data.get('organization_data', '').get('adress', '').split(','))
+        print(state_data.get('organization_data', '').get('full_name_contact_of_organization', ''))
+        data["char_reciever_city_region"] = state_data.get('organization_data', '').get('adress', '').split(',')[0]
+        data["char_reciever_district_city"] = state_data.get('organization_data', '').get('adress', '').split(',')[1]
+        data["char_reciever_street_name"] = state_data.get('organization_data', '').get('adress', '').split(',')[2]
+        data["reciever_house_adress"] = state_data.get('organization_data', '').get('adress', '').split(',')[3]
+        data["reciever_corpus"] = state_data.get('organization_data', '').get('adress', '').split(',')[4]
+        data["reciever_room"] = state_data.get('organization_data', '').get('adress', '').split(',')[6]
+        data["reciever_street_name_2"] = state_data.get('organization_data', '').get('adress', '').split(',')[5]
+        data["char_reciever_father_name"] = state_data.get('organization_data', '').get('full_name_contact_of_organization', '').split(' ')[2]
+        data["char_reciever_name"] = state_data.get('organization_data').get('full_name_contact_of_organization', '').split(' ')[0]
+        data["char_reciever_first_name"] = state_data.get('organization_data').get('full_name_contact_of_organization', '').split(' ')[1]
         data["char_reciever_name_short_1"] = state_data.get('organization_data').get('name_org', '').split(' ')[0]
         data["char_reciever_name_short_2"] = state_data.get('organization_data').get('name_org', '').split(' ')[1]
         data["char_reciever_inn"] = state_data.get('organization_data').get('inn', '')
-        data["adress"] = state_data.get('organization_data').get('adress', '')
         data["char_phone"] = state_data.get('phone_by_organisation', '')
     else:
         data["f_face"] = "V"
-        data["char_reciever_father_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[2],
-        data["char_reciever_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[1],
-        data["char_reciever_first_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[0],
-        data["char_reciever_passport_series"] = state_data.get('individual_data', '').get('passport_serial_number_input', '').split(' ')[0],
-        data["char_reciever_passport_numbers"] = state_data.get('individual_data', '').get('passport_serial_number_input', '').split(' ')[1],
-        data["char_reciever_passport_issue_date_day"] = state_data.get('individual_data', '').get('passport_give_date_input', '').split('.')[0],
-        data["char_reciever_passport_issue_date_month"] = state_data.get('individual_data', '').get('passport_give_date_input', '').split('.')[1],
-        data["char_reciever_passport_issue_date_year"] = state_data.get('individual_data', '').get('passport_give_date_input', '').split('.')[2],
-        data["char_reciever_passport_expire_date_day"] = "",
-        data["char_reciever_passport_expire_date_month"] = "",
-        data["char_reciever_passport_expire_date_year"] = "",
+        data["char_reciever_father_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[2]
+        data["char_reciever_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[1]
+        data["char_reciever_first_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[0]
+        data["char_reciever_passport_series"] = state_data.get('individual_data', '').get('passport_serial_number_input', '').split(' ')[0]
+        data["char_reciever_passport_numbers"] = state_data.get('individual_data', '').get('passport_serial_number_input', '').split(' ')[1]
+        data["char_reciever_passport_issue_date_day"] = state_data.get('individual_data', '').get('passport_give_date_input', '').split('.')[0]
+        data["char_reciever_passport_issue_date_month"] = state_data.get('individual_data', '').get('passport_give_date_input', '').split('.')[1]
+        data["char_reciever_passport_issue_date_year"] = state_data.get('individual_data', '').get('passport_give_date_input', '').split('.')[2]
+        data["char_reciever_passport_expire_date_day"] = ""
+        data["char_reciever_passport_expire_date_month"] = ""
+        data["char_reciever_passport_expire_date_year"] = ""
     
     if state_data.get('migration_data').get('place', '') == 'Жилое помещение':
         data['char_living_quarters'] = 'V'
@@ -503,6 +504,8 @@ async def true_arrival_doc(event: CallbackQuery, state: FSMContext):
         data["char_goal_private_visit"] = "V"
     elif state_data.get('migration_data').get('goal', '') == 'Туризм':
         data["char_goal_tourism"] = "V"
+
+    print(data)
 
     doc = create_user_doc(context=data, template_name='notif_arrival', user_path='pdf_generator', font_name="Arial")
 
