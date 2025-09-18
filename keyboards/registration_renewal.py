@@ -61,15 +61,22 @@ def get_registration_renewal_residence_reason_keyboard(lang: str = "ru"):
 
 def get_registration_renewal_after_residence_reason_and_location_keyboard(
     lang: str = "ru",
+    who: str = "patient",  # 'patient' | 'marriage' | 'child'
 ):
-    """Клавиатура после выбора причины продления регистрации и адреса"""
     builder = InlineKeyboardBuilder()
+    cb_map = {
+        "patient":  "registration_renewal_patient_check_data_all_true",
+        "marriage": "registration_renewal_marriage_check_data_all_true",
+        "child":    "registration_renewal_child_check_data_all_true",
+    }
+    confirm_cb = cb_map.get(who, "registration_renewal_patient_check_data_all_true")
+
     builder.button(
         text=_.get_text(
             "registration_renewal_patient_check_data.all_true_in_registration_renewal_patient_button",
             lang,
         ),
-        callback_data="registration_renewal_patient_check_data_all_true",
+        callback_data=confirm_cb,
     )
     builder.button(
         text=_.get_text(
@@ -80,3 +87,4 @@ def get_registration_renewal_after_residence_reason_and_location_keyboard(
     )
     builder.adjust(1)
     return builder.as_markup()
+

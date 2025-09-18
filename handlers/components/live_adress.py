@@ -55,17 +55,22 @@ async def handle_live_adress(message: Message, state: FSMContext):
     session_id = state_data.get("session_id")
 
     # ── нормализация и лёгкая валидация адреса ─────────────────────
-    import re
     raw = (message.text or "").strip()
-    value = re.sub(r"[ \t]+", " ", raw)
-    value = re.sub(r"\s*,\s*", ", ", value).strip(", ")
-    parts = [p for p in value.split(",") if p]
-    if len(parts) < 2:
-        hint = _.get_text("live_adress.example", lang)
-        if hint.startswith("[Missing:"):
-            hint = "Формат: город, улица, дом, корпус/строение (если есть), квартира."
-        await message.answer("Адрес выглядит неполным. " + hint)
-        return
+    value = re.sub(r"[ \t]+", " ", raw)  # Убираем лишние пробелы
+    value = re.sub(r"\s*,\s*", ", ", value).strip(", ")  # Убираем лишние пробелы после запятой
+
+    # Если в строке нет запятой, но это не пустая строка, считаем, что адрес валиден
+    if len(value.split(",")) == 1 and value:
+        # Если строка состоит только из одного компонента и она не пустая, пропускаем её
+        pass
+    else:
+        parts = [p for p in value.split(",") if p]  # Разделяем по запятой, убираем пустые элементы
+        if len(parts) < 2:  # Если меньше двух компонентов, то это неполный адрес
+            hint = _.get_text("live_adress.example", lang)
+            if hint.startswith("[Missing:"):
+                hint = "Формат: город, улица, дом, корпус/строение (если есть), квартира."
+            await message.answer("Адрес выглядит неполным. " + hint)
+            return
 
     # ── сохранение (dot-path поддержан) ────────────────────────────
     if waiting_data and "." in waiting_data:

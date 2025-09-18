@@ -193,7 +193,7 @@ async def handle_passport_data(message: Message, state: FSMContext):
 
 # ─────────────────────── Патент: выбор/ручной ввод ─────────────────────────
 
-@work_activity_router.callback_query(F.data.in_({"wa_patent_manual_start", "patent_manual_start"}))
+@work_activity_router.callback_query(F.data == "wa_patent_manual_start")
 async def patent_manual_start(cb: CallbackQuery, state: FSMContext):
     """Переходим на ручной ввод: номер патента."""
     lang = (await state.get_data()).get("language")
@@ -279,7 +279,7 @@ async def patent_manual_issue_place(message: Message, state: FSMContext):
     )
 
 
-@work_activity_router.callback_query(F.data.in_({"wa_patent_photo_start", "patent_photo_start"}))
+@work_activity_router.callback_query(F.data == "wa_patent_photo_start")
 async def patent_photo_start(cb: CallbackQuery, state: FSMContext):
     """
     Пользователь выбрал загрузку фото патента.
