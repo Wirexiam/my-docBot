@@ -19,6 +19,7 @@ data_manager = SecureDataManager()
 # ───────────────────────── Старт: выбор способа (фото/вручную) ─────────────────────────
 @residence_reason_child_router.callback_query(F.data == "residence_reason_child")
 async def handle_residence_reason_child_start(callback: CallbackQuery, state: FSMContext):
+    """Запуск ветки 'Продление по ребёнку': выбор способа ввода данных (фото/вручную)."""
     await state.set_state(ResidenceReasonChildStates.choose_photo_or_manual)
     await state.update_data(residence_reason="residence_reason_child")
 
@@ -35,9 +36,12 @@ async def handle_residence_reason_child_start(callback: CallbackQuery, state: FS
 # ───────────────────────── Ручной ввод: ФИО ребёнка ─────────────────────────
 @residence_reason_child_router.callback_query(F.data == "start_residence_reason_child_manual")
 async def handle_start_manual(callback: CallbackQuery, state: FSMContext):
+    """Переход к ручному вводу данных ребёнка."""
     await state.set_state(ResidenceReasonChildStates.child_fio)
+
     sd = await state.get_data()
     lang = sd.get("language")
+
     text = (
         f"{_.get_text('residence_reason_manual_child_messages.child_fio.title', lang)}\n\n"
         f"{_.get_text('residence_reason_manual_child_messages.child_fio.description', lang)}\n\n"
@@ -49,6 +53,7 @@ async def handle_start_manual(callback: CallbackQuery, state: FSMContext):
 
 @residence_reason_child_router.message(ResidenceReasonChildStates.child_fio)
 async def get_child_fio(message: Message, state: FSMContext):
+    """ФИО ребёнка → дата рождения."""
     sd = await state.get_data()
     child_data = dict(sd.get("child_data") or {})
     child_data["child_fio"] = (message.text or "").strip()
@@ -63,6 +68,7 @@ async def get_child_fio(message: Message, state: FSMContext):
     await message.answer(text=text)
 
 
+# ───────────────────────── Дата рождения → гражданство ─────────────────────────
 @residence_reason_child_router.message(ResidenceReasonChildStates.child_birth_date)
 async def get_child_birth_date(message: Message, state: FSMContext):
     sd = await state.get_data()
@@ -79,6 +85,7 @@ async def get_child_birth_date(message: Message, state: FSMContext):
     await message.answer(text=text)
 
 
+# ───────────────────────── Гражданство → № свидетельства ─────────────────────────
 @residence_reason_child_router.message(ResidenceReasonChildStates.child_citizenship)
 async def get_child_citizenship(message: Message, state: FSMContext):
     sd = await state.get_data()
@@ -95,6 +102,7 @@ async def get_child_citizenship(message: Message, state: FSMContext):
     await message.answer(text=text)
 
 
+# ───────────────────────── № свидетельства → место выдачи ─────────────────────────
 @residence_reason_child_router.message(ResidenceReasonChildStates.child_certificate_number)
 async def get_child_certificate_number(message: Message, state: FSMContext):
     sd = await state.get_data()
@@ -111,6 +119,7 @@ async def get_child_certificate_number(message: Message, state: FSMContext):
     await message.answer(text=text)
 
 
+# ───────────────────────── Место выдачи → кто для ребёнка ─────────────────────────
 @residence_reason_child_router.message(ResidenceReasonChildStates.child_certificate_issue_place)
 async def get_child_certificate_issue_place(message: Message, state: FSMContext):
     sd = await state.get_data()
@@ -127,6 +136,7 @@ async def get_child_certificate_issue_place(message: Message, state: FSMContext)
 # ───────────────────────── Выбор: отец/мать/опекун → адрес проживания ─────────────────────────
 @residence_reason_child_router.callback_query(F.data.startswith("residence_reason_child_"))
 async def handle_residence_reason_child_who(callback: CallbackQuery, state: FSMContext):
+    """Выбрали: residence_reason_child_father / _mother / _guardian → спрашиваем адрес."""
     who_for_child = callback.data.split("child_")[1]  # father|mother|guardian
 
     sd = await state.get_data()
@@ -135,6 +145,7 @@ async def handle_residence_reason_child_who(callback: CallbackQuery, state: FSMC
     child_data = dict(sd.get("child_data") or {})
     child_data["who_for_child"] = who_for_child
 
+    # фиксируем основание/шаблон и что дальше ждём адрес
     await state.update_data(
         residence_reason="residence_reason_child",
         who="child",
@@ -142,11 +153,8 @@ async def handle_residence_reason_child_who(callback: CallbackQuery, state: FSMC
         waiting_data="live_adress",
     )
 
-    try:
-        photo = FSInputFile("static/live_adress_example.png")
-        caption = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
-        await callback.message.answer_photo(photo=photo, caption=caption)
-    except Exception:
-        await callback.message.answer(f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}")
+    photo = FSInputFile("static/live_adress_example.png")
+    caption = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
+    await callback.message.answer_photo(photo=photo, caption=caption)
 
     await state.set_state(LiveAdress.adress)
