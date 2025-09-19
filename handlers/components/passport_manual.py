@@ -233,15 +233,15 @@ async def handle_passport_issue_place_input(message: Message, state: FSMContext)
 
     # Если дальше должен быть ввод адреса — спрашиваем адрес
     if next_states and next_states[0] == LiveAdress.adress:
+        from handlers.components.live_adress import ask_live_adress
+
         await state.update_data(next_states=next_states[1:], waiting_data="live_adress")
         await state.set_state(LiveAdress.adress)
-        title = _.get_text("live_adress.title", lang)
-        if title.startswith("[Missing:"):
-            title = "📝 Укажите адрес проживания в РФ в одной строке."
-        example = _.get_text("live_adress.example", lang)
-        if example.startswith("[Missing:"):
-            example = "Формат: город, улица, дом, корпус/строение (если есть), квартира."
-        await message.answer(f"{title}\n{example}")
+
+        class _FakeCB:
+            def __init__(self, msg): self.message = msg
+
+        await ask_live_adress(_FakeCB(message), state)  # ← прикрепит фото и текст
         return
 
     # ⚡ Вариант A: если дальше «мост» к новому паспорту — запускаем его СРАЗУ
