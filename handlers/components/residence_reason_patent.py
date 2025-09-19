@@ -70,23 +70,16 @@ async def get_patient_issue_place(message: Message, state: FSMContext):
 
     patient_data = dict(sd.get("patient_data") or {})
     patient_data["patient_issue_place"] = (message.text or "").strip()
+    await state.update_data(patient_data=patient_data)
 
-    # сохраняем и фиксируем «кто» — для генерации шаблона
-    await state.update_data(patient_data=patient_data, who="patient")
-
-    # просим адрес проживания (общий компонент «адрес» + пример с картинкой)
+    # ждём адрес
     await state.update_data(waiting_data="live_adress")
-    photo = FSInputFile("static/live_adress_example.png")
-    caption = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
-    await message.answer_photo(photo=photo, caption=caption)
-
     await state.set_state(LiveAdress.adress)
 
-
-# ───────────────────────── Back-compat: ожидается функция ─────────────────────────
-# В некоторых старых модулях (например, handlers/doc_child_stay_extension.py)
-# делают импорт: from handlers.components.residence_reason_patent import func_residence_reason_patent
-# Делаем алиас на стартовый хэндлер, чтобы импорт прошёл и логика сохранилась.
-async def func_residence_reason_patent(callback: CallbackQuery, state: FSMContext):
-    """Back-compat wrapper: перенаправляет на актуальный старт 'По патенту'."""
-    await start_patient_flow(callback, state)
+    # с подсказкой-изображением из static (если есть)
+    try:
+        photo = FSInputFile("static/live_adress_example.png")
+        caption = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
+        await message.answer_photo(photo=photo, caption=caption)
+    except Exception:
+        await message.answer(f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}")

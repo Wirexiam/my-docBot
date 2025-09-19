@@ -44,7 +44,7 @@ async def handle_registration_renewal_after_mvd(callback: CallbackQuery, state: 
     session_id = sd.get("session_id")
     data_manager.save_user_data(callback.from_user.id, session_id, {"mvd_adress": mvd_adress})
 
-    # ВАЖНО: отделяемся от штампа
+    # ВАЖНО: изоляция от «штампа»
     await state.update_data(
         ocr_flow="sp",
         from_action=RegistrationRenewalStates.after_passport,
@@ -71,6 +71,7 @@ async def handle_registration_renewal_after_passport(message: Message, state: FS
         await state.update_data({waiting_data: message.text.strip()})
         data_manager.save_user_data(message.from_user.id, session_id, {waiting_data: message.text.strip()})
 
+    # После паспорта: выбор основания, затем всегда адрес
     await state.update_data(
         next_states=[LiveAdress.adress],
         from_action=RegistrationRenewalStates.after_residence_reason_and_location,
@@ -96,6 +97,28 @@ async def handle_sp_after_passport(callback: CallbackQuery, state: FSMContext):
     )
 
 
+# ───────────────────────── АДРЕС (изолированный перехват ветки продления) ─────────────────────────
+@registration_renewal_router.message(LiveAdress.adress)
+async def rr_capture_address_then_finish(message: Message, state: FSMContext):
+    """
+    Ветка ПРОДЛЕНИЯ: ловим адрес, не уходим в телефон (как в «штампе»),
+    а сразу показываем финалку по выбранному основанию.
+    """
+    sd = await state.get_data()
+    if sd.get("ocr_flow") != "sp":
+        return  # если это не продление — не вмешиваемся
+
+    lang = sd.get("language")
+    session_id = sd.get("session_id")
+
+    addr = (message.text or "").strip()
+    await state.update_data(live_adress=addr, waiting_data=None)
+    data_manager.save_user_data(message.from_user.id, session_id, {"live_adress": addr})
+
+    await state.set_state(RegistrationRenewalStates.after_residence_reason_and_location)
+    await handle_registration_renewal_after_residence_reason_and_location(message, state)
+
+
 # ───────────────────────── После адреса + основания → финалка ─────────────────────────
 @registration_renewal_router.message(RegistrationRenewalStates.after_residence_reason_and_location)
 async def handle_registration_renewal_after_residence_reason_and_location(message: Message, state: FSMContext):
@@ -114,13 +137,13 @@ async def handle_registration_renewal_after_residence_reason_and_location(messag
     )
 
     passport = sd.get("passport_data", {}) or {}
-    pn = passport.get("passport_serial_number", "Не найдено")
+    pn  = passport.get("passport_serial_number", "Не найдено")
     pid = passport.get("passport_issue_date", "Не найдено")
     pip = passport.get("passport_issue_place", "Не найдено")
     ped = passport.get("passport_expiry_date", "Не найдено")
     residence_reason = sd.get("residence_reason", "Не найдено")
 
-    # формируем текст по резону (как у тебя было, только с безопасными кавычками)
+    # Формируем текст под основание
     if residence_reason == "residence_reason_patent":
         patient = sd.get("patient_data", {}) or {}
         await state.update_data(who="patient")
@@ -205,9 +228,11 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
             "patient_serial_number": sd.get("patient_data", {}).get("patient_number", ""),
             "patient_issue_place": sd.get("patient_data", {}).get("patient_issue_place", ""),
             "patient_date": sd.get("patient_data", {}).get("patient_date", ""),
-            "phone_parent": sd.get("phone_number", ""),
         }
-        doc = create_user_doc(context=data, template_name="template_for_patient", user_path="pdf_generator", font_name="Arial")
+        doc = create_user_doc(
+            context=data, template_name="template_for_patient",
+            user_path="pdf_generator", font_name="Arial"
+        )
         ready_doc = FSInputFile(doc, filename="Заявление_о_продление_по_патенту.docx")
 
     elif who == "child":
@@ -229,9 +254,11 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
             "passport_issue_date": sd.get("passport_data", {}).get("passport_issue_date", ""),
             "passport_issue_place": sd.get("passport_data", {}).get("passport_issue_place", ""),
             "passport_expiry_date": sd.get("passport_data", {}).get("passport_expiry_date", ""),
-            "phone_parent": sd.get("phone_number", ""),
         }
-        doc = create_user_doc(context=data, template_name="template_for_patient_child", user_path="pdf_generator", font_name="Arial")
+        doc = create_user_doc(
+            context=data, template_name="template_for_patient_child",
+            user_path="pdf_generator", font_name="Arial"
+        )
         ready_doc = FSInputFile(doc, filename="Заявление_о_продлении_по_ребенку.docx")
 
     else:  # marriage
@@ -250,9 +277,11 @@ async def patent_get_pdf(query: CallbackQuery, state: FSMContext):
             "passport_issue_date": sd.get("passport_data", {}).get("passport_issue_date", ""),
             "passport_issue_place": sd.get("passport_data", {}).get("passport_issue_place", ""),
             "passport_expiry_date": sd.get("passport_data", {}).get("passport_expiry_date", ""),
-            "phone_parent": sd.get("phone_number", ""),
         }
-        doc = create_user_doc(context=data, template_name="template_for_patient_marriage_person", user_path="pdf_generator", font_name="Arial")
+        doc = create_user_doc(
+            context=data, template_name="template_for_patient_marriage_person",
+            user_path="pdf_generator", font_name="Arial"
+        )
         ready_doc = FSInputFile(doc, filename="Заявление_о_продлениеи_по_браку.docx")
 
     text = f"{_.get_text('ready_to_download_doc', lang)}\n"

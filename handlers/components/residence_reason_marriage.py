@@ -76,7 +76,7 @@ async def get_marriage_citizenship(message: Message, state: FSMContext):
     await message.answer(f"{title}\n{example}")
 
 
-# ───────────────────────── № свидетельства → дата выдачи ─────────────────────────
+# ───────────────────────── № свидетельства → место выдачи ─────────────────────────
 @residence_reason_marriage_router.message(ResidenceReasonMarriageStates.marriage_number)
 async def get_marriage_number(message: Message, state: FSMContext):
     sd = await state.get_data()
@@ -85,42 +85,29 @@ async def get_marriage_number(message: Message, state: FSMContext):
     marriage_data["marriage_number"] = (message.text or "").strip()
     await state.update_data(marriage_data=marriage_data)
 
-    title = _.get_text("residence_reason_manual_marriage_messages.issue_date.title", lang)
-    example = _.get_text("residence_reason_manual_marriage_messages.issue_date.example_text", lang)
-
-    await state.set_state(ResidenceReasonMarriageStates.issue_date)
-    await message.answer(f"{title}\n{example}")
-
-
-# ───────────────────────── дата выдачи → КЕМ выдано ─────────────────────────
-@residence_reason_marriage_router.message(ResidenceReasonMarriageStates.issue_date)
-async def get_issue_date(message: Message, state: FSMContext):
-    sd = await state.get_data()
-    lang = sd.get("language")
-    marriage_data = dict(sd.get("marriage_data") or {})
-    marriage_data["issue_date"] = (message.text or "").strip()
-    await state.update_data(marriage_data=marriage_data)
-
     title = _.get_text("residence_reason_manual_marriage_messages.marriage_issue_place.title", lang)
     example = _.get_text("residence_reason_manual_marriage_messages.marriage_issue_place.example_text", lang)
 
-    await state.set_state(ResidenceReasonMarriageStates.issue_place)
+    await state.set_state(ResidenceReasonMarriageStates.marriage_issue_place)
     await message.answer(f"{title}\n{example}")
 
 
-# ───────────────────────── КЕМ выдано → адрес проживания ─────────────────────────
-@residence_reason_marriage_router.message(ResidenceReasonMarriageStates.issue_place)
+# ───────────────────────── место выдачи → АДРЕС ─────────────────────────
+@residence_reason_marriage_router.message(ResidenceReasonMarriageStates.marriage_issue_place)
 async def get_marriage_issue_place(message: Message, state: FSMContext):
     sd = await state.get_data()
     lang = sd.get("language")
-
     marriage_data = dict(sd.get("marriage_data") or {})
     marriage_data["marriage_issue_place"] = (message.text or "").strip()
+    await state.update_data(marriage_data=marriage_data)
 
-    await state.update_data(marriage_data=marriage_data, who="marriage", waiting_data="live_adress")
-
-    photo = FSInputFile("static/live_adress_example.png")
-    caption = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
-    await message.answer_photo(photo=photo, caption=caption)
-
+    await state.update_data(waiting_data="live_adress")
     await state.set_state(LiveAdress.adress)
+
+    # опциональная картинка из static
+    try:
+        photo = FSInputFile("static/live_adress_example.png")
+        caption = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
+        await message.answer_photo(photo=photo, caption=caption)
+    except Exception:
+        await message.answer(f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}")
