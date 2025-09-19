@@ -43,12 +43,9 @@ async def handle_passport_manual_start(callback: CallbackQuery, state: FSMContex
 
     if mode == "old":
         passport_title_key = "stamp_transfer_passport_old_title"
-        # ВАЖНО: после старого паспорта должны перейти в мост-хендлер, который стартует ввод НОВОГО
         await state.update_data(
             passport_input_mode="old",
-            # очищаем контейнер для старого паспорта перед вводом (безопаснее)
             old_passport_data={},
-            # Куда перейти после завершения ручного ввода старого паспорта:
             next_states=[Stamp_transfer.after_old_passport],
             from_action=Stamp_transfer.after_old_passport
         )
@@ -227,18 +224,16 @@ async def handle_passport_issue_place_input(message: Message, state: FSMContext)
     data = dict(sd.get(key) or {})
     data["passport_issue_place"] = (message.text or "").strip()
 
+    # Сохраняем «кем выдан»
     await state.update_data(**{key: data})
     data_manager.save_user_data(message.from_user.id, session_id, {key: data})
 
-    # Если очередь задана — используем её; иначе дефолт адрес → телефон
+    # Берём очередь шагов; если не задана — дефолт адрес → телефон
     next_states = list(sd.get("next_states") or [LiveAdress.adress, PhoneNumberStates.phone_number_input])
 
-    # Переходим на первый шаг очереди
-    await state.update_data(next_states=next_states[1:])
-
-    # Если следующий шаг — адрес, подсказка по адресу
+    # Если дальше должен быть ввод адреса — спрашиваем адрес
     if next_states and next_states[0] == LiveAdress.adress:
-        await state.update_data(waiting_data="live_adress")
+        await state.update_data(next_states=next_states[1:], waiting_data="live_adress")
         await state.set_state(LiveAdress.adress)
         title = _.get_text("live_adress.title", lang)
         if title.startswith("[Missing:"):
@@ -249,12 +244,19 @@ async def handle_passport_issue_place_input(message: Message, state: FSMContext)
         await message.answer(f"{title}\n{example}")
         return
 
-    # Если следующий шаг — мост после старого паспорта
+    # ⚡ Вариант A: если дальше «мост» к новому паспорту — запускаем его СРАЗУ
     if next_states and next_states[0] == Stamp_transfer.after_old_passport:
+        # Обновим очередь (мы её «потребили»)
+        await state.update_data(next_states=next_states[1:])
+        # Переключаем состояние на мост
         await state.set_state(Stamp_transfer.after_old_passport)
-        await message.answer("Старый паспорт сохранён. Перехожу к вводу нового паспорта…")
+        # ЛОКАЛЬНЫЙ импорт, чтобы не словить циклический импорт
+        from handlers.stamp_transfer import handle_old_passport_data
+        # Сразу запускаем мост-логику (покажет экран начала ввода НОВОГО паспорта)
+        await handle_old_passport_data(message, state)
         return
 
-    # Иначе просто ставим следующее состояние (на случай расширений)
+    # На случай других расширений — просто переходим в следующий шаг
     if next_states:
+        await state.update_data(next_states=next_states[1:])
         await state.set_state(next_states[0])
