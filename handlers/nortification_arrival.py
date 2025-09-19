@@ -410,25 +410,6 @@ async def true_arrival_doc(event: CallbackQuery, state: FSMContext):
     lang = state_data.get("language")
 
     data = {
-        "char_first_name": state_data.get('passport_data', '').get('full_name', ' ').split(' ')[0],
-        "char_name": state_data.get('passport_data', '').get('full_name', ' ').split(' ')[1],
-        "char_father_name": state_data.get('passport_data', '').get('full_name', ' ').split(' ')[2],
-        "char_latin_first_name": translit(state_data.get('passport_data', '').get('full_name', ' ').split(' ')[0], 'ru'),
-        "char_latin_name": translit(state_data.get('passport_data', '').get('full_name', ' ').split(' ')[1], 'ru'),
-        "char_latin_father_name": translit(state_data.get('passport_data', '').get('full_name', ' ').split(' ')[2], 'ru'),
-        "char_cityzenship": state_data.get('passport_data', '').get('citizenship', ' '),
-        "char_birth_date_day": state_data.get('passport_data', '').get('birth_date', ' ').split('.')[0],
-        "char_birth_date_month": state_data.get('passport_data', '').get('birth_date', ' ').split('.')[1],
-        "char_birth_date_year": state_data.get('passport_data', '').get('birth_date', ' ').split('.')[2],
-        "char_birth_place": '',
-        "char_passport_series": state_data.get('passport_data', '').get('passport_serial_number', ' ').split(' ')[0],
-        "char_passport_numbers": state_data.get('passport_data', '').get('passport_serial_number', '').split(' ')[1],
-        "char_passport_issue_date_day": state_data.get('passport_data', '').get('passport_issue_date', '').split('.')[0],
-        "char_passport_issue_date_month": state_data.get('passport_data', '').get('passport_issue_date', '').split('.')[1],
-        "char_passport_issue_date_year": state_data.get('passport_data', '').get('passport_issue_date', '').split('.')[2],
-        "char_passport_expire_date_day": state_data.get('passport_data', '').get('passport_expiry_date', '').split('.')[0],
-        "char_passport_expire_date_month": state_data.get('passport_data', '').get('passport_expiry_date', '').split('.')[1],
-        "char_passport_expire_date_year": state_data.get('passport_data', '').get('passport_expiry_date', '').split('.')[2],
         "char_job_name": state_data.get('profession', ''),
         "char_arrive_date_day": state_data.get('migration_data', '').get('entry_date', ' ').split('.')[0],
         "char_arrive_date_month": state_data.get('migration_data', '').get('entry_date', ' ').split('.')[1],
@@ -445,31 +426,60 @@ async def true_arrival_doc(event: CallbackQuery, state: FSMContext):
         "corpus": state_data.get('live_adress', '').split(',')[4],
         "room": state_data.get('live_adress', '').split(',')[6],
         "street_name_2": state_data.get('live_adress', '').split(',')[5],
-        "char_doc_name_to_verifi_1": f"Паспорт гражданина {state_data.get('passport_data', '').get('citizenship', ' ')}a",
-        "char_doc_name_to_verifi_2": "Миграционная карта",
-        "char_doc_name_to_verifi_3": state_data.get('docaboutegrn', ''),
-        "char_doc_name_to_verifi_4": "Трудовой договор",
-        "char_doc_name_to_verifi_5": "Регистрация по месту пребывания",
+        # "char_doc_name_to_verifi_1": f"Паспорт гражданина {state_data.get('passport_data', '').get('citizenship', ' ')}a",
+        # "char_doc_name_to_verifi_2": "Миграционная карта",
+        "char_doc_name_to_verifi_1": state_data.get('document_about_home', ''),
+        # "char_doc_name_to_verifi_4": "Трудовой договор",
+        # "char_doc_name_to_verifi_5": "Регистрация по месту пребывания",
     }
 
+    if state_data.get('passport_data'):
+        data["char_what_a_data"] = "ПАСПОРТ"
+        data["char_first_name"] = state_data.get('passport_data', '').get('full_name', ' ').split(' ')[0]
+        data["char_name"] = state_data.get('passport_data', '').get('full_name', ' ').split(' ')[1]
+        data["char_father_name"] =  state_data.get('passport_data', '').get('full_name', ' ').split(' ')[2]
+        data["char_cityzenship"] = state_data.get('passport_data', '').get('citizenship', ' ')
+        data["char_birth_date_day"] = state_data.get('passport_data', '').get('birth_date', ' ').split('.')[0]
+        data["char_birth_date_month"] = state_data.get('passport_data', '').get('birth_date', ' ').split('.')[1]
+        data["char_birth_date_year"] = state_data.get('passport_data', '').get('birth_date', ' ').split('.')[2]
+        # data"char_birth_place": '',
+        data["char_passport_numbers"] = state_data.get('passport_data', '').get('passport_serial_number', '')
+        data["char_passport_issue_date_day"] = state_data.get('passport_data', '').get('passport_issue_date', '').split('.')[0]
+        data["char_passport_issue_date_month"] = state_data.get('passport_data', '').get('passport_issue_date', '').split('.')[1]
+        data["char_passport_issue_date_year"] = state_data.get('passport_data', '').get('passport_issue_date', '').split('.')[2]
+        data["char_passport_expire_date_day"] = state_data.get('passport_data', '').get('passport_expiry_date', '').split('.')[0]
+        data["char_passport_expire_date_month"] = state_data.get('passport_data', '').get('passport_expiry_date', '').split('.')[1]
+        data["char_passport_expire_date_year"] = state_data.get('passport_data', '').get('passport_expiry_date', '').split('.')[2]
+    else:
+        data["char_what_a_data"] = "СВИДЕТЕЛЬСТВО О РОЖД"
+        data["char_first_name"] = state_data.get('child_cert_info', '').get('full_name', ' ').split(' ')[0]
+        data["char_name"] = state_data.get('child_cert_info', '').get('full_name', ' ').split(' ')[1]
+        data["char_father_name"] =  state_data.get('child_cert_info', '').get('full_name', ' ').split(' ')[2]
+        data["char_cityzenship"] = state_data.get('child_cert_info', '').get('child_citizenship', ' ')
+        data["char_birth_date_day"] = state_data.get('child_cert_info', '').get('birth_date', ' ').split('.')[0]
+        data["char_birth_date_month"] = state_data.get('child_cert_info', '').get('birth_date', ' ').split('.')[1]
+        data["char_birth_date_year"] = state_data.get('child_cert_info', '').get('birth_date', ' ').split('.')[2]
+        data["char_passport_numbers"] = state_data.get('child_cert_info', '').get('child_certificate_number', '')
+
+    if state_data.get('age'):
+        data['char_parent_name'] = state_data.get('representative_data').get('full_name').split(' ')[0]
+        data['char_parent_first_name'] = state_data.get('representative_data').get('full_name').split(' ')[1]
+        data['char_parent_last_name'] = state_data.get('representative_data').get('full_name').split(' ')[2]
     if state_data.get('organization_data'):
         data["org"] = "V"
-        print(state_data.get('organization_data', '').get('adress', '').split(','))
-        print(state_data.get('organization_data', '').get('full_name_contact_of_organization', ''))
-        data["char_reciever_city_region"] = state_data.get('organization_data', '').get('adress', '').split(',')[0]
-        data["char_reciever_district_city"] = state_data.get('organization_data', '').get('adress', '').split(',')[1]
-        data["char_reciever_street_name"] = state_data.get('organization_data', '').get('adress', '').split(',')[2]
-        data["reciever_house_adress"] = state_data.get('organization_data', '').get('adress', '').split(',')[3]
-        data["reciever_corpus"] = state_data.get('organization_data', '').get('adress', '').split(',')[4]
-        data["reciever_room"] = state_data.get('organization_data', '').get('adress', '').split(',')[6]
+        data["char_org_sity"] = state_data.get('organization_data', '').get('adress', '').split(',')[0]
+        data["char_hood_pos"] = state_data.get('organization_data', '').get('adress', '').split(',')[1]
+        data["char_hood_org"] = state_data.get('organization_data', '').get('adress', '').split(',')[2]
+        data["numb_house"] = state_data.get('organization_data', '').get('adress', '').split(',')[3]
+        data["corpus_org"] = state_data.get('organization_data', '').get('adress', '').split(',')[4]
+        data["kvartira_org"] = state_data.get('organization_data', '').get('adress', '').split(',')[6]
         data["reciever_street_name_2"] = state_data.get('organization_data', '').get('adress', '').split(',')[5]
         data["char_reciever_father_name"] = state_data.get('organization_data', '').get('full_name_contact_of_organization', '').split(' ')[2]
-        data["char_reciever_name"] = state_data.get('organization_data').get('full_name_contact_of_organization', '').split(' ')[0]
-        data["char_reciever_first_name"] = state_data.get('organization_data').get('full_name_contact_of_organization', '').split(' ')[1]
-        data["char_reciever_name_short_1"] = state_data.get('organization_data').get('name_org', '').split(' ')[0]
-        data["char_reciever_name_short_2"] = state_data.get('organization_data').get('name_org', '').split(' ')[1]
+        data["char_reciever_name"] = state_data.get('organization_data').get('full_name_contact_of_organization', '').split(' ')[1]
+        data["char_reciever_first_name"] = state_data.get('organization_data').get('full_name_contact_of_organization', '').split(' ')[0]
+        data["char_reciever_name_short_1"] = state_data.get('organization_data').get('name_org', '')
         data["char_reciever_inn"] = state_data.get('organization_data').get('inn', '')
-        data["char_phone"] = state_data.get('phone_by_organisation', '')
+        data["char_phone"] = state_data.get('phone_by_organisation', '')[1:]
     else:
         data["f_face"] = "V"
         data["char_reciever_father_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[2]
@@ -506,8 +516,7 @@ async def true_arrival_doc(event: CallbackQuery, state: FSMContext):
         data["char_goal_tourism"] = "V"
 
     print(data)
-
-    doc = create_user_doc(context=data, template_name='notif_arrival', user_path='pdf_generator', font_name="Arial")
+    doc = create_user_doc(context=data, template_name='notif_arrival__orig', user_path='pdf_generator', font_name="Arial")
 
     ready_doc = FSInputFile(doc, filename='Уведомление о прибытии (миграционный учёт).docx')
 

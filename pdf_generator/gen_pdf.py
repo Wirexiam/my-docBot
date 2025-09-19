@@ -25,6 +25,7 @@ def create_docx_from_data(template_name: str, context: dict, user_path: str, fon
             for cell_num, cell in enumerate(cells):
                 for context_key in context:
                     if context_key.startswith("char_"):
+                        print("да делает")
                         context_key_str = "{{"+context_key+"}}"    
                         if context_key_str in cell.text:
                             letters = list(context[context_key])
