@@ -84,7 +84,7 @@ async def on_passport_photo(message: Message, state: FSMContext):
         for f in required_fields:
             p.setdefault(f, "")
 
-        # ⚠️ зеркалим ключ под WA-рендеринг (в WA используется 'passport_issued')
+        # зеркалим ключ под WA/Stay Prolong (в некоторых ветках используется 'passport_issued')
         p["passport_issued"] = p.get("passport_issue_place", "")
 
         key = "old_passport_data" if is_old else "passport_data"
@@ -190,6 +190,12 @@ async def new_ok(cb: CallbackQuery, state: FSMContext):
     elif ocr_flow == "wa" and from_action == PatentedWorkActivity.passport_data:
         kb = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="✅ Всё верно — перейти к патенту", callback_data="wa_after_passport")],
+            [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang), callback_data="new_edit")],
+            [InlineKeyboardButton(text=_.get_text("buttons.new_retry", lang), callback_data="new_retry")],
+        ])
+    elif ocr_flow == "sp":
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="✅ Всё верно — продолжить", callback_data="sp_after_passport")],
             [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang), callback_data="new_edit")],
             [InlineKeyboardButton(text=_.get_text("buttons.new_retry", lang), callback_data="new_retry")],
         ])

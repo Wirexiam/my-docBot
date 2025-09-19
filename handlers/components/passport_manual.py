@@ -48,7 +48,7 @@ async def handle_passport_manual_start(callback: CallbackQuery, state: FSMContex
         )
     else:
         passport_title_key = "stamp_transfer_passport_new_title"
-        # ⚠️ Уважение уже заданных маркеров (например, в work_activity)
+        # ⚠️ Уважение уже заданных маркеров (например, в WA или Stay Prolong)
         updates = {"passport_input_mode": "new", "passport_data": {}}
         if state_data.get("from_action") is None:
             updates["from_action"] = Stamp_transfer.after_new_passport
@@ -220,14 +220,14 @@ async def handle_passport_issue_place_input(message: Message, state: FSMContext)
     data = dict(sd.get(key) or {})
     issue_place = (message.text or "").strip()
     data["passport_issue_place"] = issue_place
-    data["passport_issued"] = issue_place  # ← для совместимости с WA
+    data["passport_issued"] = issue_place  # для совместимости с WA/Stay Prolong
     await state.update_data(**{key: data})
     data_manager.save_user_data(message.from_user.id, session_id, {key: data})
 
     # 2) перечитываем state, чтобы сводка брала уже обновлённые данные
     sd = await state.get_data()
 
-    # 3) спец. логика для work_activity (WA): мини-сводка и кнопка
+    # 3) спец-логика для WA
     if sd.get("ocr_flow") == "wa" and sd.get("from_action") == PatentedWorkActivity.passport_data:
         new_pd = sd.get("passport_data", {})
         old_pd = sd.get("old_passport_data", {})
@@ -238,6 +238,35 @@ async def handle_passport_issue_place_input(message: Message, state: FSMContext)
 
         kb = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="✅ Всё верно — перейти к патенту", callback_data="wa_after_passport")],
+            [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang), callback_data="new_edit")],
+            [InlineKeyboardButton(text=_.get_text("buttons.new_retry", lang), callback_data="new_retry")],
+        ])
+
+        text = (
+            "Проверьте паспортные данные\n\n"
+            f"👤 ФИО: {_val(new_pd, 'full_name')}\n"
+            f"🗓 Дата рождения: {_val(new_pd, 'birth_date')}\n"
+            f"🌍 Гражданство: {_val(new_pd, 'citizenship')}\n"
+            f"📄 Номер: {_val(new_pd, 'passport_serial_number')}\n"
+            f"🏢 Кем выдан / дата: {_val(new_pd, 'passport_issue_place')} / {_val(new_pd, 'passport_issue_date')}\n"
+            f"⏳ Срок действия: {_val(new_pd, 'passport_expiry_date')}\n"
+            + (f"\n📄 Старый паспорт: {_val(old_pd, 'passport_serial_number')} "
+               f"({_val(old_pd, 'passport_issue_place')} / {_val(old_pd, 'passport_issue_date')})" if old_pd else "")
+        )
+        await message.answer(text, reply_markup=kb)
+        return
+
+    # 4) спец-логика для Stay Prolong (sp)
+    if sd.get("ocr_flow") == "sp":
+        new_pd = sd.get("passport_data", {})
+        old_pd = sd.get("old_passport_data", {})
+
+        def _val(d, k, default="—"):
+            v = (d.get(k) or "").strip()
+            return v if v else default
+
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="✅ Всё верно — продолжить", callback_data="sp_after_passport")],
             [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang), callback_data="new_edit")],
             [InlineKeyboardButton(text=_.get_text("buttons.new_retry", lang), callback_data="new_retry")],
         ])

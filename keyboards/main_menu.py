@@ -25,7 +25,7 @@ def get_documents_menu_keyboard(lang: str = "ru"):
     # )
     builder.button(
         text=_.get_text("main_menu.documents.family_stay_extension", lang),
-        callback_data="registration_renewal",
+        callback_data="stay_prolong",
     )
     builder.button(
         text=_.get_text("main_menu.documents.child_stay_extension", lang),
