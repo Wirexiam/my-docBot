@@ -237,4 +237,3 @@ async def handle_change_value_data(callback: CallbackQuery, state: FSMContext):
         text = f"Введите значение для «{human}».\nТекущее: {current_value}"
 
     await callback.message.edit_text(text=text)
-

@@ -239,7 +239,8 @@ async def handle_passport_issue_place_input(message: Message, state: FSMContext)
         await state.set_state(LiveAdress.adress)
 
         class _FakeCB:
-            def __init__(self, msg): self.message = msg
+            def __init__(self, msg):
+                self.message = msg
 
         await ask_live_adress(_FakeCB(message), state)  # ← прикрепит фото и текст
         return
@@ -260,4 +261,3 @@ async def handle_passport_issue_place_input(message: Message, state: FSMContext)
     if next_states:
         await state.update_data(next_states=next_states[1:])
         await state.set_state(next_states[0])
-
