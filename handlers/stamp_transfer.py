@@ -46,7 +46,7 @@ async def handle_stamp_transfer_after_mvd(callback: CallbackQuery, state: FSMCon
     """Переход после выбора МВД: готовим шаг старого паспорта."""
     await state.set_state(Stamp_transfer.after_select_mvd)
     state_data = await state.get_data()
-    lang = state_data["language"]
+    lang = state_data.get("language")
     mvd_adress = state_data.get("mvd_adress")
     session_id = state_data.get("session_id")
 
@@ -71,7 +71,7 @@ async def handle_old_passport_data(message: Message, state: FSMContext):
     from keyboards.passport_preview import old_preview_kb
     """
     Если пришли из правки старого паспорта — сохраняем поле и снова показываем превью старого.
-    Если нет — это «мост» к новому паспорту (как раньше).
+    Если нет — это «мост» к новому паспорту.
     """
     state_data = await state.get_data()
     lang = state_data.get("language")
@@ -79,7 +79,7 @@ async def handle_old_passport_data(message: Message, state: FSMContext):
     waiting_data = state_data.get("waiting_data")
     return_after_edit = state_data.get("return_after_edit")
 
-    # ── если вводим поле словаря old_passport_data.* ──
+    # Сохраняем точечное поле old_passport_data.* если ждали его
     if waiting_data and waiting_data.startswith("old_passport_data."):
         _unused, field = waiting_data.split(".", 1)
         old_pd = dict(state_data.get("old_passport_data") or {})
@@ -87,7 +87,7 @@ async def handle_old_passport_data(message: Message, state: FSMContext):
         await state.update_data(old_passport_data=old_pd, waiting_data=None)
         data_manager.save_user_data(message.from_user.id, session_id, {"old_passport_data": old_pd})
 
-    # ── если пришли ИЗ ПРАВКИ старого паспорта — просто показать превью и не двигаться дальше ──
+    # Возврат из правки старого паспорта → показать превью и выйти
     if return_after_edit == "old_preview":
         p = (await state.get_data()).get("old_passport_data") or {}
         title = _.get_text("ocr.passport.success.title", lang)
@@ -105,14 +105,14 @@ async def handle_old_passport_data(message: Message, state: FSMContext):
         await state.update_data(return_after_edit=None)
         return
 
-    # ── обычный «мост» к новому паспорту ──
+    # Если старый ещё не был скопирован, а в passport_data что-то есть — переносим
     current_pd = state_data.get("passport_data") or {}
     existing_old = state_data.get("old_passport_data") or {}
     if not existing_old and current_pd:
         await state.update_data(old_passport_data=current_pd, passport_data={})
         data_manager.save_user_data(message.from_user.id, session_id, {"old_passport_data": current_pd})
 
-    # перед стартом ввода НОВОГО паспорта гарантируем режим и чистый контейнер
+    # Готовим ввод НОВОГО паспорта
     await state.update_data(
         from_action=Stamp_transfer.after_new_passport,
         passport_title="stamp_transfer_passport_new_title",
@@ -130,13 +130,11 @@ async def handle_old_passport_data(message: Message, state: FSMContext):
 
 @stamp_transfer_router.callback_query(F.data == "goto_adress_phone")
 async def goto_adress_phone(cb: CallbackQuery, state: FSMContext):
-    """
-    Нажали в мини-сводке: идём собирать адрес, затем телефон.
-    """
+    """Нажали в мини-сводке: идём собирать адрес, затем телефон."""
     data = await state.get_data()
     lang = data.get("language")
 
-    # готовим очередь шагов
+    # очередь шагов
     await state.update_data(
         next_states=[LiveAdress.adress, PhoneNumberStates.phone_number_input],
     )
@@ -163,7 +161,6 @@ async def handle_new_passport_data(message: Message, state: FSMContext):
     """
     from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-    # 0) Текущее состояние/маркеры
     state_data = await state.get_data()
     waiting_data = state_data.get("waiting_data")
     lang = state_data.get("language")
@@ -174,25 +171,25 @@ async def handle_new_passport_data(message: Message, state: FSMContext):
         primary_key, secondary_key = waiting_data.split(".", 1)
         primary_key_data = dict(state_data.get(primary_key) or {})
         primary_key_data[secondary_key] = (message.text or "").strip()
-        await state.update_data({primary_key: primary_key_data})
+        # ВАЖНО: распаковка kwargs
+        await state.update_data(**{primary_key: primary_key_data})
         data_manager.save_user_data(message.from_user.id, session_id, {primary_key: primary_key_data})
     elif waiting_data:
         value = (message.text or "").strip()
-        await state.update_data({waiting_data: value})
+        await state.update_data(**{waiting_data: value})
         data_manager.save_user_data(message.from_user.id, session_id, {waiting_data: value})
 
-    # Уже ничего не ждём — сбрасываем маркер ввода
     await state.update_data(waiting_data=None)
 
-    # 2) Маркеры сценария + вычисляем is_edit
+    # 2) Маркеры сценария + флаг редактирования
     await state.update_data(
         from_action=Stamp_transfer.after_new_passport,
         change_data_from_check="stamp_transfer_after_new_passport",
     )
-    state_data = await state.get_data()  # обновим snapshot после update_data
+    state_data = await state.get_data()
     is_edit = state_data.get("return_after_edit") == "stamp_transfer_after_new_passport"
 
-    # 3) ВЕТКА ВОЗВРАТА ИЗ ПРАВКИ: показать МИНИ-СВОДКУ и выйти
+    # 3) Возврат из правки → мини-сводка
     if is_edit:
         new_pd = state_data.get("passport_data") or {}
         old_pd = state_data.get("old_passport_data") or {}
@@ -220,11 +217,10 @@ async def handle_new_passport_data(message: Message, state: FSMContext):
         )
 
         await message.answer(text, reply_markup=kb)
-        # Сбрасываем флаг возврата из правки, чтобы следующий ввод пошёл по обычному потоку
         await state.update_data(return_after_edit=None)
         return
 
-    # 4) Охранники обычного потока: сначала адрес, потом телефон
+    # 4) Обычный поток: сначала адрес, потом телефон
     if not state_data.get("live_adress"):
         await state.update_data(waiting_data="live_adress")
         await state.set_state(LiveAdress.adress)
@@ -243,7 +239,7 @@ async def handle_new_passport_data(message: Message, state: FSMContext):
         await message.answer(prompt)
         return
 
-    # 4.1 Быстрая самопроверка: заполнен ли новый паспорт?
+    # 4.1 Самопроверка: заполнен ли новый паспорт?
     new_passport = state_data.get("passport_data") or {}
     required = ["full_name", "passport_serial_number", "passport_issue_place", "passport_issue_date", "passport_expiry_date"]
     if not any(new_passport.get(k) for k in required):
@@ -256,7 +252,7 @@ async def handle_new_passport_data(message: Message, state: FSMContext):
         )
         return
 
-    # 5) ОБА введены — строим ФИНАЛЬНУЮ сводку
+    # 5) Оба паспорта введены — финальная сводка
     old_passport = state_data.get("old_passport_data") or {}
 
     data_to_view = {
@@ -350,7 +346,7 @@ async def handle_all_true_in_stamp(callback: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
     lang = state_data.get("language")
 
-    # стабильно парсим адрес в город/улицу/дом+хвост
+    # стабильно парсим адрес
     addr = (state_data.get("live_adress") or "").strip()
     parts = [p.strip() for p in addr.split(",") if p.strip()]
     city = parts[0] if len(parts) > 0 else ""
