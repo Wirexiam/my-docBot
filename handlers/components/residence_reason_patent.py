@@ -58,7 +58,7 @@ async def get_patient_date(message: Message, state: FSMContext):
     title = _.get_text("residence_reason_manual_patient_messages.patient_issue_place.title", lang)
     example = _.get_text("residence_reason_manual_patient_messages.patient_issue_place.example_text", lang)
 
-    # ВАЖНО: не прыгаем никуда — ждём ввод «кем выдан»
+    # ВАЖНО: остаёмся ждать ввод «кем выдан»
     await state.set_state(ResidenceReasonPatentStates.issue_place)
     await message.answer(f"{title}\n{example}")
 
@@ -84,3 +84,11 @@ async def get_patient_issue_place(message: Message, state: FSMContext):
 
     # переводим в общий компонент адреса
     await state.set_state(LiveAdress.adress)
+
+
+# ───────────────────────── Back-compat: старые импорты ─────────────────────────
+# В некоторых старых модулях (напр., handlers/doc_child_stay_extension.py)
+# ожидается функция `func_residence_reason_patent`. Делаем алиас на стартовый хэндлер.
+async def func_residence_reason_patent(callback: CallbackQuery, state: FSMContext):
+    """Back-compat wrapper: перенаправляет на актуальный старт 'По патенту'."""
+    await start_patient_flow(callback, state)
