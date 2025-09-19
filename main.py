@@ -76,7 +76,6 @@ async def main():
         from handlers.components.changing_data import changing_data_router
         from handlers.components.individual import individual_router
         from handlers.components.representative import representative_router
-        from handlers.stay_prolong import stay_prolong_router
 
         dp.include_router(birth_certificate_router)
         dp.include_router(representative_router)
@@ -104,7 +103,6 @@ async def main():
         dp.include_router(doc_residence_notification_router)
         dp.include_router(residence_permit_router)
         dp.include_router(sema_components_router)
-        dp.include_router(stay_prolong_router)
 
         await dp.start_polling(bot)
 
