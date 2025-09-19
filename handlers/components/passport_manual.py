@@ -48,11 +48,8 @@ async def handle_passport_manual_start(callback: CallbackQuery, state: FSMContex
         )
     else:
         passport_title_key = "stamp_transfer_passport_new_title"
-        updates = {
-            "passport_input_mode": "new",
-            "passport_data": {}
-        }
-        # ⚠️ Уважение уже заданных WA-маркеров
+        # ⚠️ Уважение уже заданных маркеров (например, в work_activity)
+        updates = {"passport_input_mode": "new", "passport_data": {}}
         if state_data.get("from_action") is None:
             updates["from_action"] = Stamp_transfer.after_new_passport
         if state_data.get("next_states") is None:
@@ -222,6 +219,7 @@ async def handle_passport_issue_place_input(message: Message, state: FSMContext)
     data = dict(sd.get(key) or {})
     data["passport_issue_place"] = (message.text or "").strip()
 
+    # ⚠️ Сначала сохраняем
     await state.update_data(**{key: data})
     data_manager.save_user_data(message.from_user.id, session_id, {key: data})
 
