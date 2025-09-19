@@ -15,7 +15,7 @@ data_manager = SecureDataManager()
 
 
 def _storage_key(state_data: dict) -> str:
-    """Куда сохранять: в old_passport_data (для старого) или passport_data (для нового/обычного)."""
+    """Определяем контейнер: старый или новый паспорт."""
     mode = state_data.get("passport_input_mode")
     return "old_passport_data" if mode == "old" else "passport_data"
 
@@ -28,7 +28,7 @@ def _storage_key(state_data: dict) -> str:
 async def handle_passport_manual_start(callback: CallbackQuery, state: FSMContext):
     """
     Старт ручного ввода. Показываем заголовок + первый промпт (ФИО).
-    Запоминаем режим ввода: old/new (влияет на ключ сохранения данных).
+    Запоминаем режим ввода: old/new (влияет на ключ сохранения данных и очередь next_states).
     """
     # Определяем режим (старый/новый)
     if callback.data.startswith("passport_old_"):
@@ -36,30 +36,31 @@ async def handle_passport_manual_start(callback: CallbackQuery, state: FSMContex
     elif callback.data.startswith("passport_new_"):
         mode = "new"
     else:
-        mode = "new"  # по умолчанию считаем как новый (обычный кейс)
+        mode = "new"  # по умолчанию — ввод нового паспорта
 
     state_data = await state.get_data()
     lang = state_data.get("language")
 
     if mode == "old":
         passport_title_key = "stamp_transfer_passport_old_title"
-        # просто фиксируем режим старого паспорта
+        # ВАЖНО: после старого паспорта должны перейти в мост-хендлер, который стартует ввод НОВОГО
         await state.update_data(
-            passport_input_mode="old"
-        )
-    elif mode == "new":
-        passport_title_key = "stamp_transfer_passport_new_title"
-        # После нового паспорта при перестановке штампа → адрес → телефон
-        # Плюс гарантированно чистим контейнер под новый паспорт
-        await state.update_data(
-            from_action=Stamp_transfer.after_new_passport,
-            next_states=[LiveAdress.adress, PhoneNumberStates.phone_number_input],
-            passport_input_mode="new",
-            passport_data={}
+            passport_input_mode="old",
+            # очищаем контейнер для старого паспорта перед вводом (безопаснее)
+            old_passport_data={},
+            # Куда перейти после завершения ручного ввода старого паспорта:
+            next_states=[Stamp_transfer.after_old_passport],
+            from_action=Stamp_transfer.after_old_passport
         )
     else:
-        passport_title_key = "wa_passport_title"
-        await state.update_data(passport_input_mode="new")
+        passport_title_key = "stamp_transfer_passport_new_title"
+        # После ввода нового паспорта при перестановке штампа → адрес → телефон
+        await state.update_data(
+            passport_input_mode="new",
+            passport_data={},
+            from_action=Stamp_transfer.after_new_passport,
+            next_states=[LiveAdress.adress, PhoneNumberStates.phone_number_input]
+        )
 
     description_key = "passport_manual_full_name.description"
     text = f"{_.get_text(passport_title_key, lang)}\n\n{_.get_text(description_key, lang)}"
@@ -214,7 +215,7 @@ async def handle_passport_expiry_date_input(message: Message, state: FSMContext)
     await state.set_state(PassportManualStates.passport_issue_place_input)
 
 
-# ───────────────────── кем выдан → дальше по очереди ─────────────────────
+# ───────────────────── кем выдан → следующий шаг очереди ─────────────────────
 
 @passport_manual_router.message(PassportManualStates.passport_issue_place_input)
 async def handle_passport_issue_place_input(message: Message, state: FSMContext):
@@ -229,18 +230,31 @@ async def handle_passport_issue_place_input(message: Message, state: FSMContext)
     await state.update_data(**{key: data})
     data_manager.save_user_data(message.from_user.id, session_id, {key: data})
 
-    # Если очередь следующих шагов не задана — по умолчанию адрес → телефон
+    # Если очередь задана — используем её; иначе дефолт адрес → телефон
     next_states = list(sd.get("next_states") or [LiveAdress.adress, PhoneNumberStates.phone_number_input])
 
-    # Ставим ожидание адреса, переключаемся на первый шаг очереди
-    await state.update_data(next_states=next_states[1:], waiting_data="live_adress")
-    await state.set_state(next_states[0])
+    # Переходим на первый шаг очереди
+    await state.update_data(next_states=next_states[1:])
 
-    # Подсказка по адресу
-    title = _.get_text("live_adress.title", lang)
-    if title.startswith("[Missing:"):
-        title = "📝 Укажите адрес проживания в РФ в одной строке."
-    example = _.get_text("live_adress.example", lang)
-    if example.startswith("[Missing:"):
-        example = "Формат: город, улица, дом, корпус/строение (если есть), квартира."
-    await message.answer(f"{title}\n{example}")
+    # Если следующий шаг — адрес, подсказка по адресу
+    if next_states and next_states[0] == LiveAdress.adress:
+        await state.update_data(waiting_data="live_adress")
+        await state.set_state(LiveAdress.adress)
+        title = _.get_text("live_adress.title", lang)
+        if title.startswith("[Missing:"):
+            title = "📝 Укажите адрес проживания в РФ в одной строке."
+        example = _.get_text("live_adress.example", lang)
+        if example.startswith("[Missing:"):
+            example = "Формат: город, улица, дом, корпус/строение (если есть), квартира."
+        await message.answer(f"{title}\n{example}")
+        return
+
+    # Если следующий шаг — мост после старого паспорта
+    if next_states and next_states[0] == Stamp_transfer.after_old_passport:
+        await state.set_state(Stamp_transfer.after_old_passport)
+        await message.answer("Старый паспорт сохранён. Перехожу к вводу нового паспорта…")
+        return
+
+    # Иначе просто ставим следующее состояние (на случай расширений)
+    if next_states:
+        await state.set_state(next_states[0])
