@@ -62,6 +62,7 @@ data_blacklist = [
     "residence_reason",
     "doc_id",
     "return_after_edit",
+    "passport_input_mode",
 ]
 
 
