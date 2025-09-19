@@ -17,13 +17,12 @@ passport_photo_router = Router()
 data_manager = SecureDataManager()
 ocr_service = PassbotOcrService()
 
+
 # ───────────────────────────── стартовые кнопки ─────────────────────────────
 
 @passport_photo_router.callback_query(F.data == "passport_old_photo_start")
 async def start_old(callback: CallbackQuery, state: FSMContext):
-    """Запросить фото СТАРОГО паспорта"""
-    state_data = await state.get_data()
-    lang = state_data.get("language")
+    lang = (await state.get_data()).get("language")
     await state.set_state(PassportPhotoStates.waiting_old_passport_photo)
     title = _.get_text("ocr.passport.send_photo.title", lang)
     hint = _.get_text("ocr.passport.send_photo.hint", lang)
@@ -32,16 +31,14 @@ async def start_old(callback: CallbackQuery, state: FSMContext):
 
 @passport_photo_router.callback_query(F.data == "passport_new_photo_start")
 async def start_new(callback: CallbackQuery, state: FSMContext):
-    """Запросить фото НОВОГО паспорта"""
-    state_data = await state.get_data()
-    lang = state_data.get("language")
+    lang = (await state.get_data()).get("language")
     await state.set_state(PassportPhotoStates.waiting_new_passport_photo)
     title = _.get_text("ocr.passport.send_photo.title", lang)
     hint = _.get_text("ocr.passport.send_photo.hint", lang)
     await callback.message.edit_text(f"{title}\n\n{hint}")
 
 
-# ───────────────────── приём фото (поддержка обоих состояний) ─────────────────────
+# ───────────────────── приём фото (старый/новый) ─────────────────────
 
 @passport_photo_router.message(PassportPhotoStates.waiting_old_passport_photo, F.photo)
 @passport_photo_router.message(PassportPhotoStates.waiting_new_passport_photo, F.photo)
@@ -51,7 +48,6 @@ async def on_passport_photo(message: Message, state: FSMContext):
     session_id = state_data.get("session_id")
     is_old = (await state.get_state()) == PassportPhotoStates.waiting_old_passport_photo.state
 
-    # сохраняем файл
     f = await message.bot.get_file(message.photo[-1].file_id)
     file_bytes = await message.bot.download_file(f.file_path)
     img_path = data_manager.save_file(
@@ -66,7 +62,7 @@ async def on_passport_photo(message: Message, state: FSMContext):
     try:
         result = await ocr_service.process_passport(img_path)
 
-        # ── НОРМАЛИЗАЦИЯ ПОЛЕЙ ОТ OCR ─────────────────────────────────────
+        # нормализация полей
         p = dict(result.passport_data)
         aliases = {
             "doc_id": "passport_serial_number",
@@ -81,18 +77,12 @@ async def on_passport_photo(message: Message, state: FSMContext):
                 p[dst] = p.pop(src)
 
         required_fields = [
-            "full_name",
-            "birth_date",
-            "citizenship",
-            "passport_serial_number",
-            "passport_issue_date",
-            "passport_expiry_date",
-            "passport_issue_place",
+            "full_name", "birth_date", "citizenship",
+            "passport_serial_number", "passport_issue_date",
+            "passport_expiry_date", "passport_issue_place"
         ]
         for f in required_fields:
             p.setdefault(f, "")
-
-        p = {k: v for k, v in p.items() if isinstance(v, str) and v.strip()} | {f: p.get(f, "") for f in required_fields}
 
         key = "old_passport_data" if is_old else "passport_data"
         await state.update_data(**{key: p})
@@ -103,7 +93,7 @@ async def on_passport_photo(message: Message, state: FSMContext):
             full_name=p.get("full_name", "—"),
             birth_date=p.get("birth_date", "—"),
             citizenship=p.get("citizenship", "—"),
-            doc_id=p.get("passport_serial_number", p.get("doc_id", "—")),
+            doc_id=p.get("passport_serial_number", "—"),
             issued_by=p.get("passport_issue_place", "—"),
             issue_date=p.get("passport_issue_date", "—"),
             expiry_date=p.get("passport_expiry_date", "—"),
@@ -119,20 +109,10 @@ async def on_passport_photo(message: Message, state: FSMContext):
         await note_msg.edit_text(f"{fail_title}\n\n{fail_hint}\n\n{e.user_message}")
 
 
-# ─────────────────────────── кнопки предпросмотра: СТАРЫЙ ───────────────────────────
-
-@passport_photo_router.callback_query(F.data == "old_retry")
-async def old_retry(cb: CallbackQuery, state: FSMContext):
-    await state.set_state(PassportPhotoStates.waiting_old_passport_photo)
-    await cb.message.edit_text("🖼 Пришлите другое фото СТАРОГО паспорта.")
-
+# ─────────────────────────── кнопки предпросмотра ───────────────────────────
 
 @passport_photo_router.callback_query(F.data == "old_ok")
 async def old_ok(cb: CallbackQuery, state: FSMContext):
-    """
-    Подтверждён старый паспорт → переносим passport_data -> old_passport_data (если нужно)
-    и предлагаем загрузить НОВЫЙ паспорт (по фото/вручную), без запроса 'кем выдан'.
-    """
     data = await state.get_data()
     session_id = data.get("session_id")
     lang = data.get("language")
@@ -151,65 +131,38 @@ async def old_ok(cb: CallbackQuery, state: FSMContext):
         _.get_text("stamp_transfer_start_new_passport.title", lang) + "\n\n" +
         _.get_text("stamp_transfer_start_new_passport.description", lang)
     )
-    # По фото — сразу предлагаем загрузить
-    await start_new(cb, state)
-
-
-@passport_photo_router.callback_query(F.data == "goto_new_by_photo")
-async def goto_new_by_photo(cb: CallbackQuery, state: FSMContext):
     await start_new(cb, state)
 
 
 @passport_photo_router.callback_query(F.data == "goto_new_manual")
 async def goto_new_manual(cb: CallbackQuery, state: FSMContext):
-    """
-    Мост в РУЧНОЙ ввод нового паспорта:
-    - выставляем нужные ключи в state
-    - программно вызываем старт ручного ввода с колбэком 'passport_new_manual_start'
-    """
     await state.update_data(
         from_action=Stamp_transfer.after_new_passport,
         passport_title="stamp_transfer_passport_new_title",
         next_states=[LiveAdress.adress, PhoneNumberStates.phone_number_input],
     )
-    # локальный импорт, чтобы не ловить циклические зависимости
     from handlers.components.passport_manual import handle_passport_manual_start
     fake_cb = cb.model_copy(update={"data": "passport_new_manual_start"})
     await handle_passport_manual_start(fake_cb, state)
 
 
-# ─────────────────────────── кнопки предпросмотра: НОВЫЙ ───────────────────────────
-
-@passport_photo_router.callback_query(F.data == "new_retry")
-async def new_retry(cb: CallbackQuery, state: FSMContext):
-    await state.set_state(PassportPhotoStates.waiting_new_passport_photo)
-    await cb.message.edit_text("🖼 Пришлите другое фото НОВОГО паспорта.")
-
-
 @passport_photo_router.callback_query(F.data == "new_ok")
 async def new_ok(cb: CallbackQuery, state: FSMContext):
-    """
-    Подтверждён НОВЫЙ паспорт → показываем мини-сводку паспортных данных.
-    - Штамп ВНЖ (DRN): кнопка "перейти к ВНЖ".
-    - Работа по патенту (WA): кнопка "перейти к патенту".
-    - По умолчанию: "адрес/телефон".
-    """
+    """Подтверждение OCR нового паспорта → сводка по сценарию"""
     data = await state.get_data()
     lang = data.get("language")
-
     from_action = data.get("from_action") or Stamp_transfer.after_new_passport
-    ocr_flow = data.get("ocr_flow")  # "drn", "wa" или None
+    ocr_flow = data.get("ocr_flow")
+
     await state.set_state(from_action)
 
-    sd = await state.get_data()
-    new_pd = sd.get("passport_data") or {}
-    old_pd = sd.get("old_passport_data") or {}
+    new_pd = data.get("passport_data") or {}
+    old_pd = data.get("old_passport_data") or {}
 
     def _val(d, k, default="—"):
         v = (d.get(k) or "").strip()
         return v if v else default
 
-    # --- текст мини-сводки ---
     text = (
         "Проверьте паспортные данные\n\n"
         f"👤 ФИО: {_val(new_pd, 'full_name')}\n"
@@ -217,16 +170,14 @@ async def new_ok(cb: CallbackQuery, state: FSMContext):
         f"🌍 Гражданство: {_val(new_pd, 'citizenship')}\n"
         f"📄 Номер: {_val(new_pd, 'passport_serial_number')}\n"
         f"🏢 Кем выдан / дата: {_val(new_pd, 'passport_issue_place')} / {_val(new_pd, 'passport_issue_date')}\n"
-        f"⏳ Срок действия: {_val(new_pd, 'passport_expiry_date')}\n\n"
+        f"⏳ Срок действия: {_val(new_pd, 'passport_expiry_date')}\n"
     )
-
     if old_pd:
         text += (
-            f"📄 Старый паспорт: {_val(old_pd, 'passport_serial_number')} "
+            f"\n📄 Старый паспорт: {_val(old_pd, 'passport_serial_number')} "
             f"({_val(old_pd, 'passport_issue_place')} / {_val(old_pd, 'passport_issue_date')})"
         )
 
-    # --- клавиатура по сценарию ---
     if ocr_flow == "drn" and from_action == DocResidenceNotificationStates.after_passport:
         kb = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="✅ Всё верно — перейти к ВНЖ", callback_data="drn_after_passport")],
@@ -247,28 +198,3 @@ async def new_ok(cb: CallbackQuery, state: FSMContext):
         ])
 
     await cb.message.edit_text(text, reply_markup=kb)
-
-
-
-@passport_photo_router.callback_query(F.data.in_({"old_edit", "new_edit"}))
-async def start_edit_bridge(cb: CallbackQuery, state: FSMContext):
-    data = await state.get_data()
-
-    if cb.data == "old_edit":
-        await state.update_data(
-            change_data_from_check="old_preview",
-            from_action=Stamp_transfer.after_old_passport,
-            return_after_edit="old_preview",
-        )
-    else:
-        await state.update_data(
-            change_data_from_check="stamp_transfer_after_new_passport",
-            from_action=Stamp_transfer.after_new_passport,
-            return_after_edit="stamp_transfer_after_new_passport",
-        )
-
-    # локальный импорт, чтобы избежать циклических зависимостей
-    from handlers.components.changing_data import handle_change_data
-
-    fake_cb = cb.model_copy(update={"data": "change_data_dummy"})
-    await handle_change_data(fake_cb, state)
