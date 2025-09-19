@@ -1,3 +1,4 @@
+# handlers/components/residence_reason_patent.py
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message, FSInputFile
 from aiogram.fsm.context import FSMContext
@@ -5,7 +6,6 @@ from aiogram.fsm.context import FSMContext
 from localization import _
 from states.components.residence_reason_patent import ResidenceReasonPatentStates
 from states.components.live_adress import LiveAdress
-from states.registration_renewal import RegistrationRenewalStates
 
 residence_reason_patient_router = Router()
 
@@ -58,7 +58,6 @@ async def get_patient_date(message: Message, state: FSMContext):
     title = _.get_text("residence_reason_manual_patient_messages.patient_issue_place.title", lang)
     example = _.get_text("residence_reason_manual_patient_messages.patient_issue_place.example_text", lang)
 
-    # ВАЖНО: не прыгаем никуда — ждём ввод «кем выдан»
     await state.set_state(ResidenceReasonPatentStates.issue_place)
     await message.answer(f"{title}\n{example}")
 
@@ -71,16 +70,16 @@ async def get_patient_issue_place(message: Message, state: FSMContext):
 
     patient_data = dict(sd.get("patient_data") or {})
     patient_data["patient_issue_place"] = (message.text or "").strip()
+    await state.update_data(patient_data=patient_data)
 
-    # сохраняем и явно фиксируем «кто» — для генерации шаблона
-    await state.update_data(patient_data=patient_data, who="patient")
-
-    # просим адрес проживания
+    # ждём адрес
     await state.update_data(waiting_data="live_adress")
-
-    photo = FSInputFile("static/live_adress_example.png")
-    caption = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
-    await message.answer_photo(photo=photo, caption=caption)
-
-    # переводим в общий компонент адреса
     await state.set_state(LiveAdress.adress)
+
+    # с подсказкой-изображением из static (если есть)
+    try:
+        photo = FSInputFile("static/live_adress_example.png")
+        caption = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
+        await message.answer_photo(photo=photo, caption=caption)
+    except Exception:
+        await message.answer(f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}")
