@@ -216,14 +216,18 @@ async def handle_passport_issue_place_input(message: Message, state: FSMContext)
     session_id = sd.get("session_id")
     key = _storage_key(sd)
 
+    # 1) сохраняем «кем выдан» и ЗЕРКАЛИМ ключ под WA (`passport_issued`)
     data = dict(sd.get(key) or {})
-    data["passport_issue_place"] = (message.text or "").strip()
-
-    # ⚠️ Сначала сохраняем
+    issue_place = (message.text or "").strip()
+    data["passport_issue_place"] = issue_place
+    data["passport_issued"] = issue_place  # ← для совместимости с WA
     await state.update_data(**{key: data})
     data_manager.save_user_data(message.from_user.id, session_id, {key: data})
 
-    # ⚡ Спец. логика для work_activity (WA)
+    # 2) перечитываем state, чтобы сводка брала уже обновлённые данные
+    sd = await state.get_data()
+
+    # 3) спец. логика для work_activity (WA): мини-сводка и кнопка
     if sd.get("ocr_flow") == "wa" and sd.get("from_action") == PatentedWorkActivity.passport_data:
         new_pd = sd.get("passport_data", {})
         old_pd = sd.get("old_passport_data", {})

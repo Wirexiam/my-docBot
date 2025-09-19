@@ -84,6 +84,9 @@ async def on_passport_photo(message: Message, state: FSMContext):
         for f in required_fields:
             p.setdefault(f, "")
 
+        # ⚠️ зеркалим ключ под WA-рендеринг (в WA используется 'passport_issued')
+        p["passport_issued"] = p.get("passport_issue_place", "")
+
         key = "old_passport_data" if is_old else "passport_data"
         await state.update_data(**{key: p})
         data_manager.save_user_data(message.from_user.id, session_id, {key: p})
