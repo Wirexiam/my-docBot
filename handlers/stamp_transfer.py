@@ -88,7 +88,6 @@ async def handle_old_passport_data(message: Message, state: FSMContext):
         data_manager.save_user_data(message.from_user.id, session_id, {"old_passport_data": old_pd})
 
     # ── если пришли ИЗ ПРАВКИ старого паспорта — просто показать превью и не двигаться дальше ──
-    # внутри handle_old_passport_data(...)
     if return_after_edit == "old_preview":
         p = (await state.get_data()).get("old_passport_data") or {}
         title = _.get_text("ocr.passport.success.title", lang)
@@ -113,10 +112,13 @@ async def handle_old_passport_data(message: Message, state: FSMContext):
         await state.update_data(old_passport_data=current_pd, passport_data={})
         data_manager.save_user_data(message.from_user.id, session_id, {"old_passport_data": current_pd})
 
+    # перед стартом ввода НОВОГО паспорта гарантируем режим и чистый контейнер
     await state.update_data(
         from_action=Stamp_transfer.after_new_passport,
         passport_title="stamp_transfer_passport_new_title",
         next_states=[LiveAdress.adress, PhoneNumberStates.phone_number_input],
+        passport_input_mode="new",
+        passport_data={}
     )
 
     text = (
@@ -134,7 +136,7 @@ async def goto_adress_phone(cb: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     lang = data.get("language")
 
-    # готовим очередь шагов (как у тебя сделано в old_ok)
+    # готовим очередь шагов
     await state.update_data(
         next_states=[LiveAdress.adress, PhoneNumberStates.phone_number_input],
     )
@@ -146,6 +148,7 @@ async def goto_adress_phone(cb: CallbackQuery, state: FSMContext):
     if prompt.startswith("[Missing:"):
         prompt = "📝 Укажите адрес проживания в РФ в одной строке: город, улица, дом, корпус/строение (если есть), квартира."
     await cb.message.edit_text(prompt)
+
 
 @stamp_transfer_router.message(Stamp_transfer.after_new_passport)
 async def handle_new_passport_data(message: Message, state: FSMContext):
@@ -168,7 +171,7 @@ async def handle_new_passport_data(message: Message, state: FSMContext):
 
     # 1) Сохранить введённое значение (поддержка dot-path)
     if waiting_data and "." in waiting_data:
-        primary_key, secondary_key = waiting_data.split(".", 1)          # напр.: "passport_data", "full_name"
+        primary_key, secondary_key = waiting_data.split(".", 1)
         primary_key_data = dict(state_data.get(primary_key) or {})
         primary_key_data[secondary_key] = (message.text or "").strip()
         await state.update_data({primary_key: primary_key_data})
@@ -198,6 +201,12 @@ async def handle_new_passport_data(message: Message, state: FSMContext):
             v = (d.get(k) or "").strip()
             return v if v else default
 
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text=_.get_text("buttons.goto_adress_phone", lang), callback_data="goto_adress_phone")],
+            [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang),          callback_data="new_edit")],
+            [InlineKeyboardButton(text=_.get_text("buttons.new_retry", lang),         callback_data="new_retry")],
+        ])
+
         text = (
             "Проверьте паспортные данные\n\n"
             f"👤 ФИО: {_val(new_pd, 'full_name')}\n"
@@ -209,12 +218,6 @@ async def handle_new_passport_data(message: Message, state: FSMContext):
             f"📄 Старый паспорт: {_val(old_pd, 'passport_serial_number')} "
             f"({_val(old_pd, 'passport_issue_place')} / {_val(old_pd, 'passport_issue_date')})"
         )
-
-        kb = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="✅ Всё верно — перейти к адресу и телефону", callback_data="goto_adress_phone")],
-            [InlineKeyboardButton(text="✏️ Изменить", callback_data="new_edit")],
-            [InlineKeyboardButton(text="🖼 Загрузить другое фото", callback_data="new_retry")],
-        ])
 
         await message.answer(text, reply_markup=kb)
         # Сбрасываем флаг возврата из правки, чтобы следующий ввод пошёл по обычному потоку
@@ -240,8 +243,20 @@ async def handle_new_passport_data(message: Message, state: FSMContext):
         await message.answer(prompt)
         return
 
-    # 5) ОБА введены — строим ФИНАЛЬНУЮ сводку
+    # 4.1 Быстрая самопроверка: заполнен ли новый паспорт?
     new_passport = state_data.get("passport_data") or {}
+    required = ["full_name", "passport_serial_number", "passport_issue_place", "passport_issue_date", "passport_expiry_date"]
+    if not any(new_passport.get(k) for k in required):
+        from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+        await message.answer(
+            "Похоже, данные нового паспорта не заполнены. Вернёмся к вводу?",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang), callback_data="stamp_transfer_after_new_passport")]
+            ])
+        )
+        return
+
+    # 5) ОБА введены — строим ФИНАЛЬНУЮ сводку
     old_passport = state_data.get("old_passport_data") or {}
 
     data_to_view = {
@@ -285,6 +300,7 @@ async def handle_new_passport_data(message: Message, state: FSMContext):
         reply_markup=get_stamp_transfer_check_data_before_gen(lang),
     )
 
+
 @stamp_transfer_router.callback_query(F.data == "stamp_transfer_after_new_passport")
 async def handle_new_passport_data_summary(cb: CallbackQuery, state: FSMContext):
     """
@@ -307,6 +323,12 @@ async def handle_new_passport_data_summary(cb: CallbackQuery, state: FSMContext)
         v = (d.get(k) or "").strip()
         return v if v else default
 
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text=_.get_text("buttons.goto_adress_phone", lang), callback_data="goto_adress_phone")],
+        [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang),          callback_data="new_edit")],
+        [InlineKeyboardButton(text=_.get_text("buttons.new_retry", lang),         callback_data="new_retry")],
+    ])
+
     text = (
         "Проверьте паспортные данные\n\n"
         f"👤 ФИО: {_val(new_pd, 'full_name')}\n"
@@ -319,13 +341,8 @@ async def handle_new_passport_data_summary(cb: CallbackQuery, state: FSMContext)
         f"({_val(old_pd, 'passport_issue_place')} / {_val(old_pd, 'passport_issue_date')})"
     )
 
-    kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="✅ Всё верно — перейти к адресу и телефону", callback_data="goto_adress_phone")],
-        [InlineKeyboardButton(text="✏️ Изменить", callback_data="new_edit")],
-        [InlineKeyboardButton(text="🖼 Загрузить другое фото", callback_data="new_retry")],
-    ])
-
     await cb.message.edit_text(text, reply_markup=kb)
+
 
 @stamp_transfer_router.callback_query(F.data == "all_true_in_stamp")
 async def handle_all_true_in_stamp(callback: CallbackQuery, state: FSMContext):
