@@ -180,22 +180,14 @@ async def new_retry(cb: CallbackQuery, state: FSMContext):
 @passport_photo_router.callback_query(F.data == "new_ok")
 async def new_ok(cb: CallbackQuery, state: FSMContext):
     """
-    Подтверждён НОВЫЙ паспорт → показываем мини-сводку паспортных данных.
-    - Штамп ВНЖ: кнопка "адрес/телефон".
-    - Уведомление по ВНЖ (DRN): кнопка "перейти к ВНЖ".
-    - Работа по патенту (WA): кнопка "перейти к патенту".
+    Подтверждён НОВЫЙ паспорт → показываем МИНИ-СВОДКУ (только паспортные данные),
+    с кнопками: перейти к адресу/телефону ИЛИ редактировать.
     """
     from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-    from states.stamp_transfer import Stamp_transfer
-    from states.doc_residence_notification import DocResidenceNotificationStates
-    from states.work_activity import PatentedWorkActivity
-    from localization import _
-
     data = await state.get_data()
     lang = data.get("language")
 
     from_action = data.get("from_action") or Stamp_transfer.after_new_passport
-    ocr_flow = data.get("ocr_flow")  # "drn", "wa" или None
     await state.set_state(from_action)
 
     sd = await state.get_data()
@@ -206,7 +198,6 @@ async def new_ok(cb: CallbackQuery, state: FSMContext):
         v = (d.get(k) or "").strip()
         return v if v else default
 
-    # --- текст мини-сводки ---
     text = (
         "Проверьте паспортные данные\n\n"
         f"👤 ФИО: {_val(new_pd, 'full_name')}\n"
@@ -215,33 +206,15 @@ async def new_ok(cb: CallbackQuery, state: FSMContext):
         f"📄 Номер: {_val(new_pd, 'passport_serial_number')}\n"
         f"🏢 Кем выдан / дата: {_val(new_pd, 'passport_issue_place')} / {_val(new_pd, 'passport_issue_date')}\n"
         f"⏳ Срок действия: {_val(new_pd, 'passport_expiry_date')}\n\n"
+        f"📄 Старый паспорт: {_val(old_pd, 'passport_serial_number')} "
+        f"({_val(old_pd, 'passport_issue_place')} / {_val(old_pd, 'passport_issue_date')})"
     )
 
-    if old_pd:
-        text += (
-            f"📄 Старый паспорт: {_val(old_pd, 'passport_serial_number')} "
-            f"({_val(old_pd, 'passport_issue_place')} / {_val(old_pd, 'passport_issue_date')})"
-        )
-
-    # --- клавиатура зависит от сценария ---
-    if ocr_flow == "drn" and from_action == DocResidenceNotificationStates.after_passport:
-        kb = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="✅ Всё верно — перейти к ВНЖ", callback_data="drn_after_passport")],
-            [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang), callback_data="new_edit")],
-            [InlineKeyboardButton(text=_.get_text("buttons.new_retry", lang), callback_data="new_retry")],
-        ])
-    elif ocr_flow == "wa" and from_action == PatentedWorkActivity.passport_data:
-        kb = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="✅ Всё верно — перейти к патенту", callback_data="wa_after_passport")],
-            [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang), callback_data="new_edit")],
-            [InlineKeyboardButton(text=_.get_text("buttons.new_retry", lang), callback_data="new_retry")],
-        ])
-    else:
-        kb = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text=_.get_text("buttons.goto_adress_phone", lang), callback_data="goto_adress_phone")],
-            [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang), callback_data="new_edit")],
-            [InlineKeyboardButton(text=_.get_text("buttons.new_retry", lang), callback_data="new_retry")],
-        ])
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✅ Всё верно — перейти к адресу и телефону", callback_data="goto_adress_phone")],
+        [InlineKeyboardButton(text="✏️ Изменить", callback_data="new_edit")],
+        [InlineKeyboardButton(text="🖼 Загрузить другое фото", callback_data="new_retry")],
+    ])
 
     await cb.message.edit_text(text, reply_markup=kb)
 

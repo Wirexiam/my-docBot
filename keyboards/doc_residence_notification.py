@@ -10,7 +10,7 @@ def get_doc_residence_notification_passport_start_keyboard(lang: str = "ru"):
         text=_.get_text(
             "registration_renewal_start_passport.start_passport_photo", lang
         ),
-        callback_data=f"passport_new_photo_start",
+        callback_data=f"passport_photo_start",
     )
     builder.button(
         text=_.get_text(

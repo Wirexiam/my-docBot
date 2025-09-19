@@ -49,9 +49,3 @@ def get_stamp_transfer_check_data_before_gen(lang: str = "ru"):
     builder.adjust(1)
     return builder.as_markup()
 
-def stamp_transfer_passport_start_keyboard(lang: str = "ru"):
-    """
-    Алиас для старого имени функции.
-    Возвращает клавиатуру выбора способа ввода паспорта для "old".
-    """
-    return passport_start_keyboard("old", lang)
