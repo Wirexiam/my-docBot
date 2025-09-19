@@ -20,10 +20,7 @@ from states.components.select_region_and_mvd import SelectRegionStates
 from keyboards.doc_child_stay_extension import (
     get_doc_child_stay_extension_related_child_keyboard,
     get_doc_child_stay_extension_start_keyboard,
-    get_doc_child_stay_extension_passport_start_keyboard,
-    get_main_editor_keyboard,
-    subkeyboard,
-    get_doc_child_accept_data,
+    get_doc_child_stay_extension_passport_start_keyboard, get_main_editor_keyboard, subkeyboard, get_doc_child_accept_data
 )
 
 from localization import _
@@ -35,7 +32,6 @@ data_manager = SecureDataManager()
 import logging
 
 logger = logging.getLogger(__name__)
-
 
 @doc_child_stay_extension_router.callback_query(F.data == "doc_child_stay_extension")
 async def handle_doc_child_stay_extension_start(
@@ -231,9 +227,7 @@ async def handle_child_data(message: Message, state: FSMContext):
     patient_data = state_data.get("patient_data", {})
 
     if "patient_data.patient_issue_place" in state_data:
-        patient_data["patient_issue_place"] = state_data[
-            "patient_data.patient_issue_place"
-        ]
+        patient_data["patient_issue_place"] = state_data["patient_data.patient_issue_place"]
         await state.update_data(patient_data=patient_data)
 
     user_data = {
@@ -312,12 +306,14 @@ async def handle_child_data(message: Message, state: FSMContext):
         _.get_text("phone_number_text", lang),
         f" {data['phone_number']}",
     ]
-
+    
     text = "\n".join(message_lines)
-    await message.answer(text=text, reply_markup=get_doc_child_accept_data(lang))
+    await message.answer(
+        text=text,
+        reply_markup=get_doc_child_accept_data(lang)
+    )
 
-
-@doc_child_stay_extension_router.callback_query(F.data == "child_stay_accept")
+@doc_child_stay_extension_router.callback_query(F.data=="child_stay_accept")
 async def child_get_pdf(query: CallbackQuery, state: FSMContext):
     """Обработчик нажатия кнопки Верно"""
 
@@ -325,67 +321,47 @@ async def child_get_pdf(query: CallbackQuery, state: FSMContext):
     lang = state_data.get("language")
     parent = None
 
-    if state_data.get("related_child", "") == "father":
+    if state_data.get('related_child', '') == "father":
         parent = "Отец"
-    elif state_data.get("related_child", "") == "mother":
+    elif state_data.get('related_child', '') == "mother":
         parent = "Мать"
     else:
         parent = "Опекун"
 
     data = {
-        "extend_child_stay_date": state_data.get("extend_child_stay_date", ""),
-        "child_fio": state_data.get("child_data", "").get("full_name", ""),
-        "child_ship": state_data.get("child_data", "").get("citizenship", ""),
-        "child_date_birth": state_data.get("child_data", "").get("birth_date", ""),
-        "child_passport_serial_number": state_data.get("child_data", "").get(
-            "passport_serial_number", ""
-        ),
-        "child_passport_when_give": state_data.get("child_data", "").get(
-            "passport_issue_date", ""
-        ),
-        "child_passport_who_where_give": state_data.get("child_data", "").get(
-            "passport_data.passport_issue_place", ""
-        ),
-        "child_parent": parent,
-        "patient_number": state_data.get("patient_data").get("patient_number", ""),
-        "patient_date": state_data.get("patient_data").get("patient_date", ""),
-        "live_adress": state_data.get("live_adress", ""),
-        "reason": state_data.get("child_cannot_leave_cause", ""),
-        "mvd_adress": state_data.get("mvd_adress", ""),
-        "fio_parent": state_data.get("parent_passport_data", "").get("full_name", ""),
-        "birth_data_parent": state_data.get("parent_passport_data", "").get(
-            "birth_date", ""
-        ),
-        "citizenship_parent": state_data.get("parent_passport_data", "").get(
-            "citizenship", ""
-        ),
-        "serial_number_parent": state_data.get("parent_passport_data", "").get(
-            "passport_serial_number", ""
-        ),
-        "passport_issue_date_parent": state_data.get("parent_passport_data", "").get(
-            "passport_issue_date", ""
-        ),
-        "passport_issue_place_parent": state_data.get("parent_passport_data", "").get(
-            "passport_issue_place", ""
-        ),
-        "phone_parent": state_data.get("phone_number", ""),
-    }
+        'extend_child_stay_date': state_data.get("extend_child_stay_date", ''),
+        'child_fio': state_data.get('child_data', '').get('full_name', ''),
+        'child_ship': state_data.get('child_data', '').get('citizenship', ''),
+        'child_date_birth': state_data.get('child_data', '').get('birth_date', ''),
+        'child_passport_serial_number': state_data.get('child_data', '').get('passport_serial_number', ''),
+        'child_passport_when_give': state_data.get('child_data', '').get('passport_issue_date', ''),
+        'child_passport_who_where_give': state_data.get('child_data', '').get('passport_data.passport_issue_place', ''),
+        'child_parent': parent,
+        'patient_number': state_data.get('patient_data').get('patient_number', ''),
+        'patient_date': state_data.get('patient_data').get('patient_date', ''),
+        'live_adress': state_data.get('live_adress', ''),
+        'reason': state_data.get('child_cannot_leave_cause', ''),
+        'mvd_adress': state_data.get('mvd_adress', ''),
+        'fio_parent': state_data.get('parent_passport_data', '').get('full_name', ''),
+        'birth_data_parent': state_data.get('parent_passport_data', '').get('birth_date', ''),
+        'citizenship_parent': state_data.get('parent_passport_data', '').get('citizenship', ''),
+        'serial_number_parent': state_data.get('parent_passport_data', '').get('passport_serial_number', ''),
+        'passport_issue_date_parent': state_data.get('parent_passport_data', '').get('passport_issue_date', ''),
+        'passport_issue_place_parent': state_data.get('parent_passport_data', '').get('passport_issue_place', ''),
+        'phone_parent': state_data.get('phone_number', ''),
+        }
+    
+    doc = create_user_doc(context=data, template_name='template_patient_actual', user_path='pdf_generator', font_name="Arial")
 
-    doc = create_user_doc(
-        context=data,
-        template_name="template_patient_actual",
-        user_path="pdf_generator",
-        font_name="Arial",
-    )
-
-    ready_doc = FSInputFile(
-        doc, filename="Заявление_о_продлении_по_патенту_матери.docx"
-    )
+    
+    ready_doc = FSInputFile(doc, filename='Заявление_о_продлении_по_патенту_матери.docx')
     text = f"{_.get_text('ready_to_download_doc', lang)}\n"
-    await query.message.answer_document(document=ready_doc)
+    await query.message.answer_document(
+        document=ready_doc
+    )
 
 
-@doc_child_stay_extension_router.callback_query(F.data == "child_stay_data_edit")
+@doc_child_stay_extension_router.callback_query(F.data=="child_stay_data_edit")
 async def child_stay_editor(query: CallbackQuery, state: FSMContext):
     """Обработчик нажатия кнопки Изменить"""
 
@@ -397,7 +373,8 @@ async def child_stay_editor(query: CallbackQuery, state: FSMContext):
     text = _.get_text("change_menu.title", lang)
 
     await query.message.edit_text(
-        text=text, reply_markup=get_main_editor_keyboard(lang)
+        text=text,
+        reply_markup=get_main_editor_keyboard(lang)
     )
 
 
@@ -416,33 +393,20 @@ async def handler_main_editor(query: CallbackQuery, state: FSMContext):
         await query.message.delete()
         return
 
-    if query_data in [
-        "mother_related",
-        "basis_section",
-        "child_section",
-        "address_section",
-        "extend_section",
-        "mvd_section",
-        "phone_number_text",
-    ]:
+    if query_data in ["mother_related", "basis_section", "child_section", "address_section", "extend_section", "mvd_section", "phone_number_text"]:
         text = _.get_text("change_menu.title", lang)
         if query_data.startswith("basis_"):
             postfix = ["basis_issue_date", "basis_issue_place", "basis_patient"]
             await query.message.edit_text(
-                text=text, reply_markup=subkeyboard(postfix, lang)
+                text=text,
+                reply_markup=subkeyboard(postfix, lang)
             )
 
         if query_data.startswith("mother_"):
-            postfix = [
-                "mother_full_name",
-                "mother_citizenship",
-                "mother_document",
-                "mother_issue_info",
-                "mother_expiry_date",
-                "mother_issue_date",
-            ]
+            postfix = ["mother_full_name", "mother_citizenship", "mother_document", "mother_issue_info", "mother_expiry_date", "mother_issue_date"]
             await query.message.edit_text(
-                text=text, reply_markup=subkeyboard(postfix, lang)
+                text=text,
+                reply_markup=subkeyboard(postfix, lang)
             )
 
         if query_data.startswith("child_"):
@@ -465,25 +429,25 @@ async def handler_main_editor(query: CallbackQuery, state: FSMContext):
                 ]
             )
             await query.message.edit_text(
-                text=text, reply_markup=subkeyboard(child_fields, lang)
+                text=text,
+                reply_markup=subkeyboard(child_fields, lang)
             )
 
-        if query_data in [
-            "address_section",
-            "extend_section",
-            "mvd_section",
-            "phone_number_text",
-        ]:
+
+        if query_data in ["address_section", "extend_section", "mvd_section", "phone_number_text"]:
             if query_data == "address_section":
                 text = f"{_.get_text("live_adress.title", lang)}\n\n{_.get_text("live_adress.example", lang)}"
-                await query.message.edit_text(text=text, reply_markup=None)
+                await query.message.edit_text(
+                    text=text, 
+                    reply_markup=None
+                )
                 await state.update_data(field="live_adress")
                 await state.set_state(DocChildStayExtensionStates.edit_fields)
 
             if query_data == "extend_section":
                 text = f"{_.get_text("extend_child_stay.title", lang)}\n\n{_.get_text("extend_child_stay.description", lang)}"
                 await query.message.edit_text(
-                    text=text,
+                    text=text, 
                 )
                 await state.update_data(field="extend_child_stay_date")
                 await state.set_state(DocChildStayExtensionStates.edit_fields)
@@ -491,7 +455,7 @@ async def handler_main_editor(query: CallbackQuery, state: FSMContext):
             if query_data == "mvd_section":
                 text = f"{_.get_text("region_start_msg.title", lang)}\n\n{_.get_text("region_start_msg.description")}"
                 await query.message.edit_text(
-                    text=text,
+                    text=text, 
                 )
                 await state.update_data(field="mvd_adress")
                 await state.set_state(DocChildStayExtensionStates.edit_fields)
@@ -500,7 +464,7 @@ async def handler_main_editor(query: CallbackQuery, state: FSMContext):
                 text = f"{_.get_text("phone_number.title", lang)}\n\n{_.get_text("phone_number.example_text", lang)}"
 
                 await query.message.edit_text(
-                    text=text,
+                    text=text, 
                 )
                 await state.update_data(field="phone_number")
                 await state.set_state(DocChildStayExtensionStates.edit_fields)
@@ -511,6 +475,7 @@ async def sub_editor(query: CallbackQuery, state: FSMContext):
 
     state_data = await state.get_data()
     lang = state_data.get("language")
+
 
     query_data = query.data.removeprefix("cs_sub_editor_")
 
@@ -524,37 +489,37 @@ async def sub_editor(query: CallbackQuery, state: FSMContext):
         fields_info = {
             "full_name": {
                 "text": f"{_.get_text("stamp_transfer_start_new_passport.description", lang)}",
-                "field": "full_name",
+                "field": "full_name"
             },
             "citizenship": {
                 "text": (
                     f"{_.get_text('passport_manual_citizenship.title', lang)}\n\n"
                     f"{_.get_text('passport_manual_citizenship.example_text', lang)}"
                 ),
-                "field": "citizenship",
+                "field": "citizenship"
             },
             "document": {
                 "text": f"{_.get_text("passport_manual_serial_input.title", lang)}\n\n{_.get_text("passport_manual_serial_input.example_text", lang)}",
-                "field": "passport_serial_number",
+                "field": "passport_serial_number"
             },
             "expiry_date": {
                 "text": (
                     f"{_.get_text('passport_manual_expire_date.title', lang)}\n\n"
                     f"{_.get_text('passport_manual_expire_date.example_text', lang)}"
                 ),
-                "field": "passport_expiry_date",
+                "field": "passport_expiry_date"
             },
             "issue_info": {
                 "text": (
                     f"{_.get_text('passport_manual_issue_place.title', lang)}\n\n"
                     f"{_.get_text('passport_manual_issue_place.example_text', lang)}"
                 ),
-                "field": "passport_issue_place",
+                "field": "passport_issue_place"
             },
             "issue_date": {
                 "text": f"{_.get_text("passport_manual_issue_date.title", lang)}\n\n{_.get_text("passport_manual_issue_date.example_text", lang)}",
-                "field": "passport_issue_date",
-            },
+                "field": "passport_issue_date"
+            }
         }
         if data in fields_info:
             await state.update_data(dict="parent_passport_data")
@@ -568,16 +533,16 @@ async def sub_editor(query: CallbackQuery, state: FSMContext):
         fields_info = {
             "patient": {
                 "text": f"{_.get_text("residence_reason_manual_patient_messages.patient_number.title", lang)}\n\n{_.get_text("residence_reason_manual_patient_messages.patient_number.example_text", lang)}",
-                "field": "patient_number",
+                "field": "patient_number"
             },
             "issue_date": {
                 "text": f"{_.get_text("residence_reason_manual_patient_messages.patient_date.title", lang)}\n\n{_.get_text("residence_reason_manual_patient_messages.patient_date.example_text", lang)}",
-                "field": "patient_date",
+                "field": "patient_date"
             },
             "issue_place": {
                 "text": f"{_.get_text("residence_reason_manual_patient_messages.patient_issue_place.title", lang)}\n\n{_.get_text("residence_reason_manual_patient_messages.patient_issue_place.example_text", lang)}",
-                "field": "patient_issue_place",
-            },
+                "field": "patient_issue_place"
+            }
         }
 
         if data in fields_info:
@@ -586,42 +551,45 @@ async def sub_editor(query: CallbackQuery, state: FSMContext):
             await query.message.edit_text(text=fields_info[data]["text"])
             await state.set_state(DocChildStayExtensionStates.edit_fields)
 
+
     if query_data.startswith("child_"):
         data = query_data.removeprefix("child_")
+
 
         fields_info = {
             "full_name": {
                 "text": f"{_.get_text("stamp_transfer_start_new_passport.description", lang)}",
-                "field": "full_name",
+                "field": "full_name"
             },
             "citizenship": {
                 "text": (
                     f"{_.get_text('passport_manual_citizenship.title', lang)}\n\n"
                     f"{_.get_text('passport_manual_citizenship.example_text', lang)}"
                 ),
-                "field": "citizenship",
+                "field": "citizenship"
             },
             "document": {
                 "text": f"{_.get_text("passport_manual_serial_input.title", lang)}\n\n{_.get_text("passport_manual_serial_input.example_text", lang)}",
-                "field": "passport_serial_number",
+                "field": "passport_serial_number"
             },
             "expiry_date": {
                 "text": (
                     f"{_.get_text('passport_manual_expire_date.title', lang)}\n\n"
                     f"{_.get_text('passport_manual_expire_date.example_text', lang)}"
                 ),
-                "field": "passport_expiry_date",
+                "field": "passport_expiry_date"
             },
             "birth_date": {
                 "text": f"{_.get_text("residence_reason_manual_child_messages.child_birth_date.title", lang)}\n{_.get_text("residence_reason_manual_child_messages.child_birth_date.example_text", lang)}"
+
             },
             "issue_info": {
                 "text": (
                     f"{_.get_text('passport_manual_issue_place.title', lang)}\n\n"
                     f"{_.get_text('passport_manual_issue_place.example_text', lang)}"
                 ),
-                "field": "passport_data.passport_issue_place",
-            },
+                "field": "passport_data.passport_issue_place"
+            }
         }
 
         if data in fields_info:
@@ -653,5 +621,5 @@ async def edit_fields(message: Message, state: FSMContext):
 
     await handle_child_data(message, state)
 
-    # parent_passport_data
+    # parent_passport_data 
     # child_data

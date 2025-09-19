@@ -104,6 +104,7 @@ async def get_issue_date(message: Message, state: FSMContext):
     title = _.get_text("residence_reason_manual_marriage_messages.marriage_issue_place.title", lang)
     example = _.get_text("residence_reason_manual_marriage_messages.marriage_issue_place.example_text", lang)
 
+    # ВАЖНО: остаёмся ждать «кем выдано»
     await state.set_state(ResidenceReasonMarriageStates.issue_place)
     await message.answer(f"{title}\n{example}")
 
@@ -117,6 +118,7 @@ async def get_marriage_issue_place(message: Message, state: FSMContext):
     marriage_data = dict(sd.get("marriage_data") or {})
     marriage_data["marriage_issue_place"] = (message.text or "").strip()
 
+    # фиксируем «кто» + просим адрес проживания
     await state.update_data(marriage_data=marriage_data, who="marriage", waiting_data="live_adress")
 
     photo = FSInputFile("static/live_adress_example.png")

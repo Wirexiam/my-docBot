@@ -2,7 +2,7 @@ from aiogram.fsm.state import State, StatesGroup
 
 
 class ResidenceReasonChildStates(StatesGroup):
-    """States for handling residence reason child input"""
+    """States for handling residence reason patent input"""
 
     choose_photo_or_manual = State()
     child_fio = State()

@@ -145,7 +145,7 @@ async def handle_residence_reason_child_who(callback: CallbackQuery, state: FSMC
     child_data = dict(sd.get("child_data") or {})
     child_data["who_for_child"] = who_for_child
 
-    # фиксируем основание/шаблон и что дальше ждём адрес
+    # КЛЮЧЕВОЕ: фиксируем основание/шаблон и указываем, что дальше ждём адрес
     await state.update_data(
         residence_reason="residence_reason_child",
         who="child",
@@ -153,6 +153,7 @@ async def handle_residence_reason_child_who(callback: CallbackQuery, state: FSMC
         waiting_data="live_adress",
     )
 
+    # Покажем пример + переводим в общий компонент адреса
     photo = FSInputFile("static/live_adress_example.png")
     caption = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
     await callback.message.answer_photo(photo=photo, caption=caption)
