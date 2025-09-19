@@ -421,10 +421,10 @@ async def true_arrival_doc(event: CallbackQuery, state: FSMContext):
         "char_migr_cart_numbers": state_data.get('migration_data', '').get('number_migr_card_arrival', ' ').split(' ')[1],
         "char_city_region": state_data.get('live_adress', '').split(',')[0],
         "char_district_city": state_data.get('live_adress', '').split(',')[1],
-        "char_street_name": state_data.get('live_adress', '').split(',')[2],
-        "house_adress": state_data.get('live_adress', '').split(',')[3],
-        "corpus": state_data.get('live_adress', '').split(',')[4],
-        "room": state_data.get('live_adress', '').split(',')[6],
+        "char_street_name": state_data.get('live_adress', '').split(',')[2].split(' ')[1],
+        "house_adress": state_data.get('live_adress', '').split(',')[3].split(' ')[-1],
+        "corpus": state_data.get('live_adress', '').split(',')[4].split(' ')[-1],
+        "room": state_data.get('live_adress', '').split(',')[6].split(' ')[-1],
         "street_name_2": state_data.get('live_adress', '').split(',')[5],
         # "char_doc_name_to_verifi_1": f"Паспорт гражданина {state_data.get('passport_data', '').get('citizenship', ' ')}a",
         # "char_doc_name_to_verifi_2": "Миграционная карта",
@@ -482,17 +482,17 @@ async def true_arrival_doc(event: CallbackQuery, state: FSMContext):
         data["char_phone"] = state_data.get('phone_by_organisation', '')[1:]
     else:
         data["f_face"] = "V"
-        data["char_reciever_father_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[2]
-        data["char_reciever_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[1]
-        data["char_reciever_first_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[0]
-        data["char_reciever_passport_series"] = state_data.get('individual_data', '').get('passport_serial_number_input', '').split(' ')[0]
-        data["char_reciever_passport_numbers"] = state_data.get('individual_data', '').get('passport_serial_number_input', '').split(' ')[1]
-        data["char_reciever_passport_issue_date_day"] = state_data.get('individual_data', '').get('passport_give_date_input', '').split('.')[0]
-        data["char_reciever_passport_issue_date_month"] = state_data.get('individual_data', '').get('passport_give_date_input', '').split('.')[1]
-        data["char_reciever_passport_issue_date_year"] = state_data.get('individual_data', '').get('passport_give_date_input', '').split('.')[2]
-        data["char_reciever_passport_expire_date_day"] = ""
-        data["char_reciever_passport_expire_date_month"] = ""
-        data["char_reciever_passport_expire_date_year"] = ""
+        data["char_reciever_father_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[2],
+        data["char_reciever_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[1],
+        data["char_reciever_first_name"] = state_data.get('individual_data', '').get('full_name', '').split(' ')[0],
+        data["char_reciever_passport_series"] = state_data.get('individual_data', '').get('passport_serial_number_input', '').split(' ')[0],
+        data["char_reciever_passport_numbers"] = state_data.get('individual_data', '').get('passport_serial_number_input', '').split(' ')[1],
+        data["char_reciever_passport_issue_date_day"] = state_data.get('individual_data', '').get('passport_give_date_input', '').split('.')[0],
+        data["char_reciever_passport_issue_date_month"] = state_data.get('individual_data', '').get('passport_give_date_input', '').split('.')[1],
+        data["char_reciever_passport_issue_date_year"] = state_data.get('individual_data', '').get('passport_give_date_input', '').split('.')[2],
+        data["char_reciever_passport_expire_date_day"] = "",
+        data["char_reciever_passport_expire_date_month"] = "",
+        data["char_reciever_passport_expire_date_year"] = "",
     
     if state_data.get('migration_data').get('place', '') == 'Жилое помещение':
         data['char_living_quarters'] = 'V'

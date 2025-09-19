@@ -124,7 +124,5 @@ async def handle_live_adress(message: Message, state: FSMContext):
     else:
         await state.set_state(next_state)
 
-
-
 # обратная совместимость со старым импортом имени функции
 handle_live_adress_input = handle_live_adress
