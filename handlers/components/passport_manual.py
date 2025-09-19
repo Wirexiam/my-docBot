@@ -38,23 +38,28 @@ async def handle_passport_manual_start(callback: CallbackQuery, state: FSMContex
     else:
         mode = "new"  # по умолчанию считаем как новый (обычный кейс)
 
-    await state.update_data(passport_input_mode=mode)
-
     state_data = await state.get_data()
     lang = state_data.get("language")
 
     if mode == "old":
         passport_title_key = "stamp_transfer_passport_old_title"
-        # после старого обычно перейдём к новому, но очередью шагов займёмся после ввода
+        # просто фиксируем режим старого паспорта
+        await state.update_data(
+            passport_input_mode="old"
+        )
     elif mode == "new":
         passport_title_key = "stamp_transfer_passport_new_title"
         # После нового паспорта при перестановке штампа → адрес → телефон
+        # Плюс гарантированно чистим контейнер под новый паспорт
         await state.update_data(
             from_action=Stamp_transfer.after_new_passport,
             next_states=[LiveAdress.adress, PhoneNumberStates.phone_number_input],
+            passport_input_mode="new",
+            passport_data={}
         )
     else:
         passport_title_key = "wa_passport_title"
+        await state.update_data(passport_input_mode="new")
 
     description_key = "passport_manual_full_name.description"
     text = f"{_.get_text(passport_title_key, lang)}\n\n{_.get_text(description_key, lang)}"
