@@ -2,6 +2,7 @@ from pprint import pprint
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message, FSInputFile
 from aiogram.fsm.context import FSMContext
+from handlers.components.live_adress import ask_live_adress
 
 from pdf_generator.gen_pdf import create_user_doc
 from states.stamp_transfer import Stamp_transfer
@@ -142,11 +143,7 @@ async def goto_adress_phone(cb: CallbackQuery, state: FSMContext):
     # спрашиваем адрес
     await state.update_data(waiting_data="live_adress")
     await state.set_state(LiveAdress.adress)
-    prompt = _.get_text("live_adress.ask", lang)
-    if prompt.startswith("[Missing:"):
-        prompt = "📝 Укажите адрес проживания в РФ в одной строке: город, улица, дом, корпус/строение (если есть), квартира."
-    await cb.message.edit_text(prompt)
-
+    await ask_live_adress(cb, state)  # ← прикрепит фото из static и подпись
 
 @stamp_transfer_router.message(Stamp_transfer.after_new_passport)
 async def handle_new_passport_data(message: Message, state: FSMContext):
