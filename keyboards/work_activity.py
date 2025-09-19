@@ -1,7 +1,6 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from localization import _
 
-
 def kbs_patent_work_activity_start(lang: str = "ru"):
     """Стартовая клавиатура уведомления по труд. деят."""
 
@@ -46,12 +45,12 @@ def kbs_wa_passport_entry(lang: str = "ru"):
     builder = InlineKeyboardBuilder()
     builder.button(
         text=_.get_text("work_activity_passport_req.buttons.passport_photo", lang),
-        callback_data="passport_photo_start"
+        callback_data="wa_passport_photo_start"
     )
 
     builder.button(
         text=_.get_text("work_activity_passport_req.buttons.photo_manual", lang),
-        callback_data="passport_manual_start"
+        callback_data="wa_passport_manual_start"
     )
 
     builder.adjust(1)
