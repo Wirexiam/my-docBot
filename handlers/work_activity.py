@@ -11,11 +11,18 @@ from states.work_activity import PatentedWorkActivity
 from states.components.phone_number import PhoneNumberStates
 
 from keyboards.work_activity import (
-    kbs_patent_work_activity_start, kbs_wa_validation_department_name, kbs_wa_passport_entry,
-    kbs_policy_data_confirmation, kbs_edit_wa_data, kbs_sub_editor_policy, kbs_sub_editor_passport,
-    kbs_sub_editor_patient
+    kbs_patent_work_activity_start,
+    kbs_wa_validation_department_name,
+    kbs_wa_passport_entry,
+    kbs_policy_data_confirmation,
+    kbs_edit_wa_data,
+    kbs_sub_editor_policy,
+    kbs_sub_editor_passport,
+    kbs_sub_editor_patient,
 )
-from keyboards.components.residence_reason_patent import get_residence_reason_photo_or_manual_keyboard
+from keyboards.components.residence_reason_patent import (
+    get_residence_reason_photo_or_manual_keyboard,
+)
 
 # общие компоненты ввода паспортов
 from handlers.components.passport_manual import handle_passport_manual_start
@@ -39,8 +46,7 @@ async def wa_start(callback: CallbackQuery, state: FSMContext):
     )
 
     await callback.message.edit_text(
-        text=text,
-        reply_markup=kbs_patent_work_activity_start(lang)
+        text=text, reply_markup=kbs_patent_work_activity_start(lang)
     )
 
 
@@ -49,11 +55,13 @@ async def wa_start(callback: CallbackQuery, state: FSMContext):
 async def wa_passport_manual_start(cb: CallbackQuery, state: FSMContext):
     # Кладём маршрут и метки для ветки «Работа по патенту»
     await state.update_data(
-        from_action=PatentedWorkActivity.passport_data,         # куда вернёт OCR/ручной после паспорта
-        next_states=[PatentedWorkActivity.patent_entry],        # что спрашиваем дальше — ПАТЕНТ
+        from_action=PatentedWorkActivity.passport_data,  # куда вернёт OCR/ручной после паспорта
+        next_states=[
+            PatentedWorkActivity.patent_entry
+        ],  # что спрашиваем дальше — ПАТЕНТ
         passport_input_mode="new",
         passport_title="wa_passport_title",
-        ocr_flow="wa"                                           # флаг для OCR-кнопок предпросмотра
+        ocr_flow="wa",  # флаг для OCR-кнопок предпросмотра
     )
     # Программно зовём общий стартер ручного ввода нового паспорта
     fake_cb = cb.model_copy(update={"data": "passport_new_manual_start"})
@@ -68,7 +76,7 @@ async def wa_passport_photo_start(cb: CallbackQuery, state: FSMContext):
         next_states=[PatentedWorkActivity.patent_entry],
         passport_input_mode="new",
         passport_title="wa_passport_title",
-        ocr_flow="wa"
+        ocr_flow="wa",
     )
     await start_new(cb, state)  # общий OCR-стартер «новый паспорт»
 
@@ -104,7 +112,9 @@ async def handler_full_name_of_the_department(message: Message, state: FSMContex
         f"{_.get_text('work_activity_department_user_input.title_dep', lang)} {msg}\n\n"
         f"{_.get_text('work_activity_department_user_input.description', lang)}"
     )
-    await message.answer(text=text, reply_markup=kbs_wa_validation_department_name(lang))
+    await message.answer(
+        text=text, reply_markup=kbs_wa_validation_department_name(lang)
+    )
 
 
 @work_activity_router.callback_query(F.data == "correct_department_name")
@@ -121,10 +131,12 @@ async def handler_passport_check(callback: CallbackQuery, state: FSMContext):
     # помним, что дальше по потоку — сбор патента
     await state.update_data(
         from_action=PatentedWorkActivity.passport_data,
-        passport_title="wa_passport_title"
+        passport_title="wa_passport_title",
     )
 
-    await callback.message.edit_text(text=text, reply_markup=kbs_wa_passport_entry(lang))
+    await callback.message.edit_text(
+        text=text, reply_markup=kbs_wa_passport_entry(lang)
+    )
 
 
 # ───────────────────────── мост после OCR/ручного паспорта ─────────────────────────
@@ -144,7 +156,7 @@ async def wa_after_passport(cb: CallbackQuery, state: FSMContext):
         f"{_.get_text('wa_patent.wa_patent_start.title', lang)}\n"
         f"{_.get_text('wa_patent.wa_patent_start.description', lang)}"
     )
-    await cb.message.edit_text(text=text, reply_markup=get_residence_reason_photo_or_manual_keyboard(lang))
+    await cb.message.edit_text(text=text, reply_markup=kbs_wa_passport_entry(lang))
 
 
 # ───────────────────────── при ручном вводе паспорта (последнее поле «кем выдан») ─────────────────────────
@@ -168,7 +180,9 @@ async def handle_passport_data(message: Message, state: FSMContext):
         f"{_.get_text('wa_patent.wa_patent_start.title', lang)}\n"
         f"{_.get_text('wa_patent.wa_patent_start.description', lang)}"
     )
-    await message.answer(text=text, reply_markup=get_residence_reason_photo_or_manual_keyboard(lang))
+    await message.answer(
+        text=text, reply_markup=get_residence_reason_photo_or_manual_keyboard(lang)
+    )
 
 
 # ───────────────────────── дальнейший flow WA (без изменений твоей логики) ─────────────────────────
@@ -187,7 +201,9 @@ async def handle_patient_data(message: Message, state: FSMContext):
         "patient_date": state_data.get("patient_date"),
         "patient_issue_place": state_data.get("patient_issue_place"),
     }
-    data_manager.save_user_data(message.from_user.id, session_id, {"patient_data": patient_data})
+    data_manager.save_user_data(
+        message.from_user.id, session_id, {"patient_data": patient_data}
+    )
 
     text = (
         f"{_.get_text('wa_patent.wa_patent_medical_policy.name_work.title', lang)}\n\n"
@@ -252,7 +268,9 @@ async def get_number_phone(message: Message, state: FSMContext):
         return
 
     await state.set_state(PatentedWorkActivity.medical_policy_number)
-    await message.answer(text=f"{_.get_text('phone_number.title', lang)}\n{_.get_text('phone_number.example_text', lang)}")
+    await message.answer(
+        text=f"{_.get_text('phone_number.title', lang)}\n{_.get_text('phone_number.example_text', lang)}"
+    )
 
 
 @work_activity_router.message(PatentedWorkActivity.medical_policy_number)
@@ -263,7 +281,9 @@ async def get_medical_policy_number(message: Message, state: FSMContext):
 
     phone_number = message.text.strip()
     await state.update_data(phone_number=phone_number)
-    data_manager.save_user_data(message.from_user.id, session_id, {"phone_number": phone_number})
+    data_manager.save_user_data(
+        message.from_user.id, session_id, {"phone_number": phone_number}
+    )
 
     if sd.get("edit_mode"):
         await state.update_data(edit_mode=False)
@@ -364,6 +384,7 @@ def to_uppercase(data: dict) -> dict:
 
 import re
 
+
 def split_series_number(doc: str):
     doc = doc.strip()
     if doc.isdigit():
@@ -384,8 +405,8 @@ async def handle_all_true_in_wa(callback: CallbackQuery, state: FSMContext):
     mvd_adress = state_data.get("department_full_name")
     if mvd_adress:
         mvd_adress_1 = mvd_adress[:31]
-        mvd_adress_2 = mvd_adress[31:31*2]
-        mvd_adress_3 = mvd_adress[31*2:31*3]
+        mvd_adress_2 = mvd_adress[31 : 31 * 2]
+        mvd_adress_3 = mvd_adress[31 * 2 : 31 * 3]
     passport_data = state_data.get("passport_data", {})
     full_name = passport_data.get("full_name", "")
     if full_name:
@@ -402,13 +423,22 @@ async def handle_all_true_in_wa(callback: CallbackQuery, state: FSMContext):
     passport_issue_date = passport_data.get("passport_issue_date", "")
     if passport_issue_date:
         passport_issue_date_parts = passport_issue_date.split(".")
-        passport_issue_date_day = passport_issue_date_parts[0] if len(passport_issue_date_parts) > 0 else ""
-        passport_issue_date_month = passport_issue_date_parts[1] if len(passport_issue_date_parts) > 1 else ""
-        passport_issue_date_year = passport_issue_date_parts[2] if len(passport_issue_date_parts) > 2 else ""
-    passport_issue_place = passport_data.get("passport_issued", "")
+        passport_issue_date_day = (
+            passport_issue_date_parts[0] if len(passport_issue_date_parts) > 0 else ""
+        )
+        passport_issue_date_month = (
+            passport_issue_date_parts[1] if len(passport_issue_date_parts) > 1 else ""
+        )
+        passport_issue_date_year = (
+            passport_issue_date_parts[2] if len(passport_issue_date_parts) > 2 else ""
+        )
+    passport_issue_place = passport_data.get("passport_issue_date", "")
     if passport_issue_place:
         passport_issue_place_1 = passport_issue_place[:25]
-        passport_issue_place_2 = passport_issue_place[25:25*2+1]
+        passport_issue_place_2 = passport_issue_place[25 : 25 * 2 + 1]
+    else:
+        passport_issue_place_1 = ""
+        passport_issue_place_2 = ""
     patient_data = state_data.get("patient_data", {})
     if patient_data:
         patent_series = patient_data.get("patient_number", "")[:2]
@@ -417,33 +447,51 @@ async def handle_all_true_in_wa(callback: CallbackQuery, state: FSMContext):
         patient_date = patient_data.get("patient_date", "")
         if patient_date:
             patient_date_parts = patient_date.split(".")
-            patent_issue_date_day = patient_date_parts[0] if len(patient_date_parts) > 0 else ""
-            patent_issue_date_month = patient_date_parts[1] if len(patient_date_parts) > 1 else ""
-            patent_issue_date_year = patient_date_parts[2] if len(patient_date_parts) > 2 else ""
+            patent_issue_date_day = (
+                patient_date_parts[0] if len(patient_date_parts) > 0 else ""
+            )
+            patent_issue_date_month = (
+                patient_date_parts[1] if len(patient_date_parts) > 1 else ""
+            )
+            patent_issue_date_year = (
+                patient_date_parts[2] if len(patient_date_parts) > 2 else ""
+            )
     job_name = state_data.get("work_name", "")
     if job_name:
         job_name_1 = job_name[:31]
-        job_name_2 = job_name[31:31*2]
-        job_name_3 = job_name[31*2:31*3]
+        job_name_2 = job_name[31 : 31 * 2]
+        job_name_3 = job_name[31 * 2 : 31 * 3]
     work_adress = state_data.get("emp_adress", "")
     if work_adress:
         work_adress_1 = work_adress[:31]
-        work_adress_2 = work_adress[31:31*2]
+        work_adress_2 = work_adress[31 : 31 * 2]
 
     med_data_name = state_data.get("medical_policy_company", "")
     if med_data_name:
         med_data_name_1 = med_data_name[:32]
-        med_data_name_2 = med_data_name[32:32*2]
-        med_data_name_3 = med_data_name[32*2:32*3]
+        med_data_name_2 = med_data_name[32 : 32 * 2]
+        med_data_name_3 = med_data_name[32 * 2 : 32 * 3]
     med_policy_date = state_data.get("medical_policy_polis_date", "")
     if med_policy_date:
         med_policy_date_parts = med_policy_date.split(" по ")
         if len(med_policy_date_parts) == 2:
             med_policy_start_date = med_policy_date_parts[0].replace("с ", "").strip()
             med_policy_start_date_parts = med_policy_start_date.split(".")
-            med_data_issue_date_day = med_policy_start_date_parts[0] if len(med_policy_start_date_parts) > 0 else ""
-            med_data_issue_date_month = med_policy_start_date_parts[1] if len(med_policy_start_date_parts) > 1 else ""
-            med_data_issue_date_year = med_policy_start_date_parts[2] if len(med_policy_start_date_parts) > 2 else ""
+            med_data_issue_date_day = (
+                med_policy_start_date_parts[0]
+                if len(med_policy_start_date_parts) > 0
+                else ""
+            )
+            med_data_issue_date_month = (
+                med_policy_start_date_parts[1]
+                if len(med_policy_start_date_parts) > 1
+                else ""
+            )
+            med_data_issue_date_year = (
+                med_policy_start_date_parts[2]
+                if len(med_policy_start_date_parts) > 2
+                else ""
+            )
         else:
             med_data_issue_date_day = ""
             med_data_issue_date_month = ""
@@ -452,7 +500,6 @@ async def handle_all_true_in_wa(callback: CallbackQuery, state: FSMContext):
     med_policy_sn = split_series_number(med_policy_series_number)
     med_data_series = med_policy_sn.get("серия", "")
     med_data_numbers = med_policy_sn.get("номер", "")
-
     lang = state_data.get("language")
     data = {
         "char_mvd_adress_short_1": mvd_adress_1,
@@ -493,6 +540,7 @@ async def handle_all_true_in_wa(callback: CallbackQuery, state: FSMContext):
         "char_med_data_issue_date_year": med_data_issue_date_year,
         "char_phone": state_data.get("phone_number", ""),
     }
+
     # апперкас только для строк
     def to_uppercase(d: dict) -> dict:
         out = {}
@@ -508,11 +556,13 @@ async def handle_all_true_in_wa(callback: CallbackQuery, state: FSMContext):
     data = to_uppercase(data)
     doc = create_user_doc(
         context=data,
-        template_name='working_notification',
-        user_path='pdf_generator',
-        font_name="Times New Roman"
+        template_name="working_notification",
+        user_path="pdf_generator",
+        font_name="Times New Roman",
     )
-    ready_doc = FSInputFile(doc, filename='Уведомление о трудовой деятельности по патенту.docx')
+    ready_doc = FSInputFile(
+        doc, filename="Уведомление о трудовой деятельности по патенту.docx"
+    )
     await state.clear()
 
     text = f"{_.get_text('ready_to_download_doc', lang)}\n"
@@ -531,7 +581,7 @@ async def edit_wa_data(query: CallbackQuery, state: FSMContext):
 
 @work_activity_router.callback_query(F.data.startswith("wa_edit_"))
 async def wa_editor(query: CallbackQuery, state: FSMContext):
-    param_to_edit = query.data[len("wa_edit_"):]
+    param_to_edit = query.data[len("wa_edit_") :]
     sd = await state.get_data()
     lang = sd.get("language")
 
@@ -539,13 +589,17 @@ async def wa_editor(query: CallbackQuery, state: FSMContext):
         await get_medical_policy_polis_date(query.message, state)
     elif param_to_edit == "passport":
         await query.message.edit_text(
-            text=_.get_text("wa_patent.wa_data_editor.sub_editor_data.passport.title", lang),
-            reply_markup=kbs_sub_editor_passport(lang)
+            text=_.get_text(
+                "wa_patent.wa_data_editor.sub_editor_data.passport.title", lang
+            ),
+            reply_markup=kbs_sub_editor_passport(lang),
         )
     elif param_to_edit == "patent":
         await query.message.edit_text(
-            text=_.get_text("wa_patent.wa_data_editor.sub_editor_data.patent.title", lang),
-            reply_markup=kbs_sub_editor_patient(lang)
+            text=_.get_text(
+                "wa_patent.wa_data_editor.sub_editor_data.patent.title", lang
+            ),
+            reply_markup=kbs_sub_editor_patient(lang),
         )
     elif param_to_edit == "profession":
         text = (
@@ -575,10 +629,14 @@ async def wa_editor(query: CallbackQuery, state: FSMContext):
         await state.set_state(PatentedWorkActivity.medical_policy_inn)
     elif param_to_edit == "policy":
         text = f"{_.get_text('wa_patent.wa_data_editor.sub_editor_data.policy.title', lang)}"
-        await query.message.edit_text(text=text, reply_markup=kbs_sub_editor_policy(lang))
+        await query.message.edit_text(
+            text=text, reply_markup=kbs_sub_editor_policy(lang)
+        )
     elif param_to_edit == "phone_number":
         await state.set_state(PatentedWorkActivity.edit_phone_number)
-        text = _.get_text("wa_patent.wa_data_editor.sub_editor_data.phone_number.title", lang)
+        text = _.get_text(
+            "wa_patent.wa_data_editor.sub_editor_data.phone_number.title", lang
+        )
         await query.message.edit_text(text=text)
     else:
         await get_medical_policy_polis_date(query.message, state)
@@ -593,7 +651,7 @@ async def phone_number_editor(message: Message, state: FSMContext):
 
 @work_activity_router.callback_query(F.data.startswith("edit_policy_"))
 async def medical_policy_editor(query: CallbackQuery, state: FSMContext):
-    param_to_edit = query.data[len("edit_policy_"):]
+    param_to_edit = query.data[len("edit_policy_") :]
     sd = await state.get_data()
     lang = sd.get("language")
 
@@ -627,7 +685,7 @@ async def medical_policy_editor(query: CallbackQuery, state: FSMContext):
 
 @work_activity_router.callback_query(F.data.startswith("edit_passport_"))
 async def edit_passport_data_fields(query: CallbackQuery, state: FSMContext):
-    param_to_edit = query.data[len("edit_passport_"):]
+    param_to_edit = query.data[len("edit_passport_") :]
     sd = await state.get_data()
     lang = sd.get("language")
 
@@ -635,8 +693,15 @@ async def edit_passport_data_fields(query: CallbackQuery, state: FSMContext):
         text = f"{_.get_text('passport_manual_full_name.description', lang)}"
         await query.message.edit_text(text=text)
         await state.update_data(edit_passport_field=param_to_edit)
-    elif param_to_edit in ["passport_serial_number", "passport_issue_date", "passport_issued", "passport_expiry_date"]:
-        text = _.get_text(f"wa_patent.wa_data_editor.sub_editor_data.passport.{param_to_edit}", lang)
+    elif param_to_edit in [
+        "passport_serial_number",
+        "passport_issue_date",
+        "passport_issued",
+        "passport_expiry_date",
+    ]:
+        text = _.get_text(
+            f"wa_patent.wa_data_editor.sub_editor_data.passport.{param_to_edit}", lang
+        )
         await state.update_data(edit_passport_field=param_to_edit)
         await query.message.edit_text(text=text)
 
@@ -657,9 +722,11 @@ async def edit_passport_fields(message: Message, state: FSMContext):
 async def edit_patent_data_fields(query: CallbackQuery, state: FSMContext):
     sd = await state.get_data()
     lang = sd.get("language")
-    param_to_edit = query.data[len("edit_patent_"):]
+    param_to_edit = query.data[len("edit_patent_") :]
     if param_to_edit in ["patient_number", "patient_date", "patient_issue_place"]:
-        text = _.get_text(f"wa_patent.wa_data_editor.sub_editor_data.patent.{param_to_edit}", lang)
+        text = _.get_text(
+            f"wa_patent.wa_data_editor.sub_editor_data.patent.{param_to_edit}", lang
+        )
         await query.message.edit_text(text=text)
         await state.set_state(PatentedWorkActivity.edit_patent_fields)
         await state.update_data(edit_patent_fields=param_to_edit)
@@ -689,11 +756,9 @@ async def accept_wa_patent_data(query: CallbackQuery, state: FSMContext):
         "work_data": {
             "emp_adress": sd.get("emp_adress"),
             "work_name": sd.get("work_name"),
-        }
+        },
     }
     data_manager.save_user_data(
-        user_id=query.from_user.id,
-        session_id=session_id,
-        data=user_data
+        user_id=query.from_user.id, session_id=session_id, data=user_data
     )
     data_manager.load_user_data(query.from_user.id, session_id)
