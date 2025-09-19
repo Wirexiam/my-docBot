@@ -58,7 +58,6 @@ async def get_patient_date(message: Message, state: FSMContext):
     title = _.get_text("residence_reason_manual_patient_messages.patient_issue_place.title", lang)
     example = _.get_text("residence_reason_manual_patient_messages.patient_issue_place.example_text", lang)
 
-    # остаёмся ждать «кем выдан»
     await state.set_state(ResidenceReasonPatentStates.issue_place)
     await message.answer(f"{title}\n{example}")
 
@@ -75,14 +74,12 @@ async def get_patient_issue_place(message: Message, state: FSMContext):
     # сохраняем и фиксируем «кто» — для генерации шаблона
     await state.update_data(patient_data=patient_data, who="patient")
 
-    # просим адрес проживания
+    # просим адрес проживания (общий компонент «адрес» + пример с картинкой)
     await state.update_data(waiting_data="live_adress")
-
     photo = FSInputFile("static/live_adress_example.png")
     caption = f"{_.get_text('live_adress.title', lang)}\n{_.get_text('live_adress.example', lang)}"
     await message.answer_photo(photo=photo, caption=caption)
 
-    # переводим в общий компонент адреса
     await state.set_state(LiveAdress.adress)
 
 

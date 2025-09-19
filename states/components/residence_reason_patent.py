@@ -22,9 +22,6 @@ class ResidenceReasonPatentStates(StatesGroup):
     patient_date = State()
     issue_place = State()
 
-    # ── Алиасы для старого кода, чтобы ничего не падало ──
-    # В некоторых местах могли остаться опечатки:
-    #   patient_numper  →  patient_number
-    #   issue_date      →  patient_date
-    patient_numper = patient_number
-    issue_date = patient_date
+    # ── Алиасы для старого кода ──
+    patient_numper = patient_number     # опечатка в старом коде
+    issue_date = patient_date           # старое имя шага
