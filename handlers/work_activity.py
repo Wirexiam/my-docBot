@@ -131,7 +131,10 @@ async def handler_passport_check(callback: CallbackQuery, state: FSMContext):
     # помним, что дальше по потоку — сбор патента
     await state.update_data(
         from_action=PatentedWorkActivity.passport_data,
+        next_states=[PatentedWorkActivity.patent_entry],
+        passport_input_mode="new",
         passport_title="wa_passport_title",
+        ocr_flow="wa",
     )
 
     await callback.message.edit_text(
@@ -142,22 +145,18 @@ async def handler_passport_check(callback: CallbackQuery, state: FSMContext):
 # ───────────────────────── мост после OCR/ручного паспорта ─────────────────────────
 @work_activity_router.callback_query(F.data == "wa_after_passport")
 async def wa_after_passport(cb: CallbackQuery, state: FSMContext):
-    """
-    Сюда попадаем после подтверждения НОВОГО паспорта в OCR-превью (кнопка «перейти к патенту»).
-    Показываем старт патента (фото/вручную).
-    """
     sd = await state.get_data()
     lang = sd.get("language")
 
-    # на всякий случай фиксируем следующий узел
+    # оставляем маркер следующего узла на всякий случай
     await state.update_data(from_action=PatentedWorkActivity.patent_entry)
 
     text = (
         f"{_.get_text('wa_patent.wa_patent_start.title', lang)}\n"
         f"{_.get_text('wa_patent.wa_patent_start.description', lang)}"
     )
-    await cb.message.edit_text(text=text, reply_markup=kbs_wa_passport_entry(lang))
-
+    from keyboards.components.residence_reason_patent import get_residence_reason_photo_or_manual_keyboard
+    await cb.message.edit_text(text=text, reply_markup=get_residence_reason_photo_or_manual_keyboard(lang))
 
 # ───────────────────────── при ручном вводе паспорта (последнее поле «кем выдан») ─────────────────────────
 @work_activity_router.message(PatentedWorkActivity.passport_data)
@@ -432,7 +431,7 @@ async def handle_all_true_in_wa(callback: CallbackQuery, state: FSMContext):
         passport_issue_date_year = (
             passport_issue_date_parts[2] if len(passport_issue_date_parts) > 2 else ""
         )
-    passport_issue_place = passport_data.get("passport_issue_date", "")
+    passport_issue_place = passport_data.get("passport_issue_place", "")
     if passport_issue_place:
         passport_issue_place_1 = passport_issue_place[:25]
         passport_issue_place_2 = passport_issue_place[25 : 25 * 2 + 1]
