@@ -13,6 +13,7 @@ from states.components.phone_number import PhoneNumberStates
 from states.doc_residence_notification import DocResidenceNotificationStates
 from states.work_activity import PatentedWorkActivity
 from states.registration_renewal import RegistrationRenewalStates
+from states.arrival import Arrival_transfer
 
 passport_photo_router = Router()
 data_manager = SecureDataManager()
@@ -210,6 +211,12 @@ async def new_ok(cb: CallbackQuery, state: FSMContext):
             [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang), callback_data="new_edit")],
             [InlineKeyboardButton(text=_.get_text("buttons.new_retry", lang), callback_data="new_retry")],
         ])
+    elif ocr_flow == "arrival" and from_action == Arrival_transfer.after_passport:
+        # После OCR нового паспорта — сразу к миграционной карте
+        from keyboards.migration_card import kbs_migr_arrival
+        text = f"{_.get_text('migr_card_arrival.title', lang)}\n{_.get_text('migr_card_arrival.description', lang)}"
+        await cb.message.edit_text(text, reply_markup=kbs_migr_arrival(lang))
+        return
     else:
         kb = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text=_.get_text("buttons.goto_adress_phone", lang), callback_data="goto_adress_phone")],

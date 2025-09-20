@@ -11,6 +11,7 @@ from states.components.phone_number import PhoneNumberStates
 from states.stamp_transfer import Stamp_transfer
 from states.registration_renewal import RegistrationRenewalStates
 from states.work_activity import PatentedWorkActivity  # WA-мост
+from states.arrival import Arrival_transfer
 
 passport_manual_router = Router()
 data_manager = SecureDataManager()
@@ -46,8 +47,10 @@ async def handle_passport_manual_start(callback: CallbackQuery, state: FSMContex
             from_action=Stamp_transfer.after_old_passport,
         )
     else:
-        # Авто-распознавание WA-контекста
+        # Авто-распознавание контекста
         is_wa = sd.get("ocr_flow") == "wa" or sd.get("from_action") == PatentedWorkActivity.passport_data
+        is_arrival = sd.get("ocr_flow") == "arrival" or sd.get("from_action") == Arrival_transfer.after_passport
+
         if is_wa:
             passport_title_key = "wa_passport_title"
             await state.update_data(
@@ -56,6 +59,15 @@ async def handle_passport_manual_start(callback: CallbackQuery, state: FSMContex
                 from_action=PatentedWorkActivity.passport_data,
                 next_states=sd.get("next_states") or [PatentedWorkActivity.patent_entry],
                 ocr_flow="wa",
+            )
+        elif is_arrival:
+            # ВАЖНО: ставим точку возврата после паспорта
+            passport_title_key = sd.get("passport_title") or "name_passport.title"
+            await state.update_data(
+                passport_input_mode="new",
+                passport_data={},
+                from_action=Arrival_transfer.after_passport,
+                ocr_flow="arrival",
             )
         else:
             passport_title_key = "stamp_transfer_passport_new_title"
@@ -135,7 +147,9 @@ async def handle_citizenship_input(message: Message, state: FSMContext):
     data_manager.save_user_data(message.from_user.id, session_id, {key: data})
 
     lang = sd.get("language")
-    await message.answer(f"{_.get_text('passport_manual_serial_input.title', lang)}\n{_.get_text('passport_manual_serial_input.example_text', lang)}")
+    await message.answer(
+        f"{_.get_text('passport_manual_serial_input.title', lang)}\n{_.get_text('passport_manual_serial_input.example_text', lang)}"
+    )
     await state.set_state(PassportManualStates.passport_serial_number_input)
 
 
@@ -153,7 +167,9 @@ async def handle_passport_serial_number_input(message: Message, state: FSMContex
     data_manager.save_user_data(message.from_user.id, session_id, {key: data})
 
     lang = sd.get("language")
-    await message.answer(f"{_.get_text('passport_manual_issue_date.title', lang)}\n{_.get_text('passport_manual_issue_date.example_text', lang)}")
+    await message.answer(
+        f"{_.get_text('passport_manual_issue_date.title', lang)}\n{_.get_text('passport_manual_issue_date.example_text', lang)}"
+    )
     await state.set_state(PassportManualStates.passport_issue_date_input)
 
 
@@ -173,11 +189,15 @@ async def handle_passport_issue_date_input(message: Message, state: FSMContext):
     lang = sd.get("language")
     if sd.get("skip_passport_expiry_date"):
         await state.update_data(skip_passport_expiry_date=False)
-        await message.answer(f"{_.get_text('passport_manual_issue_place.title', lang)}\n{_.get_text('passport_manual_issue_place.example_text', lang)}")
+        await message.answer(
+            f"{_.get_text('passport_manual_issue_place.title', lang)}\n{_.get_text('passport_manual_issue_place.example_text', lang)}"
+        )
         await state.set_state(PassportManualStates.passport_issue_place_input)
         return
 
-    await message.answer(f"{_.get_text('passport_manual_expire_date.title', lang)}\n{_.get_text('passport_manual_expire_date.example_text', lang)}")
+    await message.answer(
+        f"{_.get_text('passport_manual_expire_date.title', lang)}\n{_.get_text('passport_manual_expire_date.example_text', lang)}"
+    )
     await state.set_state(PassportManualStates.passport_expiry_date_input)
 
 
@@ -195,7 +215,9 @@ async def handle_passport_expiry_date_input(message: Message, state: FSMContext)
     data_manager.save_user_data(message.from_user.id, session_id, {key: data})
 
     lang = sd.get("language")
-    await message.answer(f"{_.get_text('passport_manual_issue_place.title', lang)}\n{_.get_text('passport_manual_issue_place.example_text', lang)}")
+    await message.answer(
+        f"{_.get_text('passport_manual_issue_place.title', lang)}\n{_.get_text('passport_manual_issue_place.example_text', lang)}"
+    )
     await state.set_state(PassportManualStates.passport_issue_place_input)
 
 
@@ -249,11 +271,32 @@ async def handle_passport_issue_place_input(message: Message, state: FSMContext)
         await handle_old_passport_data(message, state)
         return
 
-    # C. Work Activity (патент) — мост WA: последний ввод «кем выдан» принимает WA-хэндлер
+    # C. Work Activity (патент) — последний ввод «кем выдан» принимает WA-хэндлер
     if from_action == PatentedWorkActivity.passport_data:
         from handlers.work_activity import handle_passport_data
         await state.set_state(PatentedWorkActivity.passport_data)
         await handle_passport_data(message, state)
+        return
+
+    # C2. Arrival (миграционный учёт): сразу показываем Миграционную карту
+    if from_action == Arrival_transfer.after_passport:
+        lang = sd.get("language")
+
+        # Обновим state/passport_data (на всякий случай)
+        await state.update_data(**{key: data})
+
+        # Подготовим «следующие состояния» для блока «о доме» после миграционной карты
+        from states.components.home_migr_data import HomeMigrData
+        next_states = [HomeMigrData.adress, Arrival_transfer.after_about_home]
+        await state.update_data(
+            next_states=next_states,
+            from_action=Arrival_transfer.after_about_home
+        )
+
+        # Рендерим старт миграционной карты
+        from keyboards.migration_card import kbs_migr_arrival
+        text = f"{_.get_text('migr_card_arrival.title', lang)}\n{_.get_text('migr_card_arrival.description', lang)}"
+        await message.answer(text=text, reply_markup=kbs_migr_arrival(lang))
         return
 
     # D. Дефолт — на случай старых веток
