@@ -1,5 +1,6 @@
 from localization import _
 
+
 def text_answer(age, state, stage, lang):
     """
     Находит по входящим параметрам нужный текст и вовзращает

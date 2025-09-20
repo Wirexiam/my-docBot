@@ -1,5 +1,11 @@
 from aiogram import Router, F
-from aiogram.types import CallbackQuery, Message, InlineKeyboardMarkup, InlineKeyboardButton, FSInputFile
+from aiogram.types import (
+    CallbackQuery,
+    Message,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+    FSInputFile,
+)
 from aiogram.fsm.context import FSMContext
 
 from states.stay_prolong import StayProlong
@@ -15,6 +21,7 @@ data_manager = SecureDataManager()
 
 # ───────────────────────────── ВХОД ─────────────────────────────
 
+
 @stay_prolong_router.callback_query(F.data == "stay_prolong")
 async def sp_start(cb: CallbackQuery, state: FSMContext):
     """
@@ -25,18 +32,29 @@ async def sp_start(cb: CallbackQuery, state: FSMContext):
         ocr_flow="sp",
         from_action=StayProlong.after_passport,  # возврат сюда после паспорта
         next_states=[],
-        subflow=None
+        subflow=None,
     )
-    kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="📸 Ввести паспорт по фото (OCR)", callback_data="sp_passport_photo")],
-        [InlineKeyboardButton(text="⌨️ Ввести паспорт вручную", callback_data="sp_passport_manual")],
-        [InlineKeyboardButton(text="🏠 В главное меню", callback_data="main_menu")]
-    ])
+    kb = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="📸 Ввести паспорт по фото (OCR)",
+                    callback_data="sp_passport_photo",
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="⌨️ Ввести паспорт вручную", callback_data="sp_passport_manual"
+                )
+            ],
+            [InlineKeyboardButton(text="🏠 В главное меню", callback_data="main_menu")],
+        ]
+    )
     await state.set_state(StayProlong.start)
     await cb.message.edit_text(
         "Продление пребывания по браку / ребёнку / патенту\n\n"
         "Сначала внесём паспорт. Выберите способ:",
-        reply_markup=kb
+        reply_markup=kb,
     )
 
 
@@ -59,25 +77,45 @@ async def sp_passport_manual(cb: CallbackQuery, state: FSMContext):
 
 # ────────────────── возврат из паспорта (кнопка sp_after_passport) ──────────────────
 
+
 @stay_prolong_router.callback_query(F.data == "sp_after_passport")
 async def sp_after_passport(cb: CallbackQuery, state: FSMContext):
     """
     Пользователь подтвердил паспорт — выбираем основание продления.
     """
-    kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="💍 По браку", callback_data="sp_basis_marriage")],
-        [InlineKeyboardButton(text="👶 По ребёнку", callback_data="sp_basis_child")],
-        [InlineKeyboardButton(text="📑 По патенту", callback_data="sp_basis_patent")],
-        [InlineKeyboardButton(text="🔙 Назад к способу ввода паспорта", callback_data="stay_prolong")]
-    ])
+    kb = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="💍 По браку", callback_data="sp_basis_marriage"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="👶 По ребёнку", callback_data="sp_basis_child"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="📑 По патенту", callback_data="sp_basis_patent"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="🔙 Назад к способу ввода паспорта",
+                    callback_data="stay_prolong",
+                )
+            ],
+        ]
+    )
     await state.set_state(StayProlong.select_basis)
     await cb.message.edit_text(
-        "Выберите основание продления пребывания:",
-        reply_markup=kb
+        "Выберите основание продления пребывания:", reply_markup=kb
     )
 
 
 # ───────────────────────────── БРАК ─────────────────────────────
+
 
 @stay_prolong_router.callback_query(F.data == "sp_basis_marriage")
 async def sp_basis_marriage(cb: CallbackQuery, state: FSMContext):
@@ -147,6 +185,7 @@ async def sp_marriage_cert_issued_by(msg: Message, state: FSMContext):
 
 # ───────────────────────────── РЕБЁНОК ─────────────────────────────
 
+
 @stay_prolong_router.callback_query(F.data == "sp_basis_child")
 async def sp_basis_child(cb: CallbackQuery, state: FSMContext):
     await state.update_data(subflow="child", child_data={})
@@ -215,6 +254,7 @@ async def sp_child_cert_issued_by(msg: Message, state: FSMContext):
 
 # ───────────────────────────── ПАТЕНТ ─────────────────────────────
 
+
 @stay_prolong_router.callback_query(F.data == "sp_basis_patent")
 async def sp_basis_patent(cb: CallbackQuery, state: FSMContext):
     await state.update_data(subflow="patent", patent_data={})
@@ -259,7 +299,9 @@ async def sp_patent_profession(msg: Message, state: FSMContext):
     p["profession"] = (msg.text or "").strip()
     await state.update_data(patent_data=p)
     await state.set_state(StayProlong.patent_employer_address)
-    await msg.answer("Введите юридический адрес работодателя (индекс, город, улица, дом):")
+    await msg.answer(
+        "Введите юридический адрес работодателя (индекс, город, улица, дом):"
+    )
 
 
 @stay_prolong_router.message(StayProlong.patent_employer_address)
@@ -315,6 +357,7 @@ async def sp_patent_dms_period(msg: Message, state: FSMContext):
 # ───────────────────────────── АДРЕС/ТЕЛЕФОН ─────────────────────────────
 # Для простоты делаем свои промпты. Если захочешь — легко заменить на ваш ask_live_adress.
 
+
 async def ask_address(msg_or_cb, state: FSMContext):
     if isinstance(msg_or_cb, Message):
         message = msg_or_cb
@@ -341,6 +384,7 @@ async def sp_phone(msg: Message, state: FSMContext):
 
 
 # ───────────────────────────── СВОДКА + ГЕНЕРАЦИЯ ─────────────────────────────
+
 
 async def show_confirm(msg_or_cb, state: FSMContext):
     if isinstance(msg_or_cb, Message):
@@ -402,10 +446,21 @@ async def show_confirm(msg_or_cb, state: FSMContext):
 
     text += f"\n🏠 Адрес: {addr}\n📞 Телефон: {phone}"
 
-    kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="✅ Всё верно — сформировать документ", callback_data=f"sp_generate::{filename}")],
-        [InlineKeyboardButton(text="✏ Изменить данные", callback_data="stay_prolong")]
-    ])
+    kb = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="✅ Всё верно — сформировать документ",
+                    callback_data=f"sp_generate::{filename}",
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="✏ Изменить данные", callback_data="stay_prolong"
+                )
+            ],
+        ]
+    )
     await state.set_state(StayProlong.confirm)
     await message.answer(text, reply_markup=kb)
 
@@ -444,35 +499,53 @@ async def sp_generate(cb: CallbackQuery, state: FSMContext):
         r.font.size = Pt(11)
 
     line(f"ФИО: {pd.get('full_name', '')}")
-    line(f"Паспорт: {pd.get('passport_serial_number', '')}, "
-         f"{pd.get('passport_issue_date', '')}, "
-         f"{pd.get('passport_issue_place', '')}, "
-         f"{pd.get('passport_expiry_date', '')}")
+    line(
+        f"Паспорт: {pd.get('passport_serial_number', '')}, "
+        f"{pd.get('passport_issue_date', '')}, "
+        f"{pd.get('passport_issue_place', '')}, "
+        f"{pd.get('passport_expiry_date', '')}"
+    )
     if old_pd:
-        line(f"Старый паспорт: {old_pd.get('passport_serial_number', '')} / {old_pd.get('passport_issue_date', '')}")
+        line(
+            f"Старый паспорт: {old_pd.get('passport_serial_number', '')} / {old_pd.get('passport_issue_date', '')}"
+        )
 
     if flow == "marriage":
         m = sd.get("marriage_data") or {}
         doc.add_heading("Основание: Брак", level=2)
-        line(f"Супруг(а): {m.get('spouse_full_name', '')} "
-             f"({m.get('spouse_birth_date', '')}, {m.get('spouse_citizenship', '')})")
-        line(f"Свидетельство о браке: №{m.get('cert_number', '')} от {m.get('cert_date', '')}, "
-             f"{m.get('cert_issued_by', '')}")
+        line(
+            f"Супруг(а): {m.get('spouse_full_name', '')} "
+            f"({m.get('spouse_birth_date', '')}, {m.get('spouse_citizenship', '')})"
+        )
+        line(
+            f"Свидетельство о браке: №{m.get('cert_number', '')} от {m.get('cert_date', '')}, "
+            f"{m.get('cert_issued_by', '')}"
+        )
     elif flow == "child":
         d = sd.get("child_data") or {}
         doc.add_heading("Основание: Ребёнок", level=2)
-        line(f"Ребёнок: {d.get('child_full_name', '')} "
-             f"({d.get('child_birth_date', '')}, {d.get('child_citizenship', '')})")
-        line(f"Свидетельство о рождении: №{d.get('child_cert_number', '')} от {d.get('child_cert_date', '')}, "
-             f"{d.get('child_cert_issued_by', '')}")
+        line(
+            f"Ребёнок: {d.get('child_full_name', '')} "
+            f"({d.get('child_birth_date', '')}, {d.get('child_citizenship', '')})"
+        )
+        line(
+            f"Свидетельство о рождении: №{d.get('child_cert_number', '')} от {d.get('child_cert_date', '')}, "
+            f"{d.get('child_cert_issued_by', '')}"
+        )
     else:
         p = sd.get("patent_data") or {}
         doc.add_heading("Основание: Патент", level=2)
-        line(f"Патент: {p.get('patent_number', '')} от {p.get('patent_issue_date', '')}, "
-             f"{p.get('patent_issued_by', '')}")
+        line(
+            f"Патент: {p.get('patent_number', '')} от {p.get('patent_issue_date', '')}, "
+            f"{p.get('patent_issued_by', '')}"
+        )
         line(f"Профессия: {p.get('profession', '')}")
-        line(f"Работодатель: {p.get('employer_address', '')} | ИНН: {p.get('employer_inn', '')}")
-        line(f"ДМС: {p.get('dms_number', '')}, {p.get('dms_company', '')}, {p.get('dms_period', '')}")
+        line(
+            f"Работодатель: {p.get('employer_address', '')} | ИНН: {p.get('employer_inn', '')}"
+        )
+        line(
+            f"ДМС: {p.get('dms_number', '')}, {p.get('dms_company', '')}, {p.get('dms_period', '')}"
+        )
 
     doc.add_heading("Контакты", level=2)
     line(f"Адрес: {addr}")

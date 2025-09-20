@@ -13,17 +13,12 @@ class DocResidenceNotificationStates(StatesGroup):
     start_worked_last_year = State()
 
 
-
-
-
-
 class TravelOutsideRuStates(StatesGroup):
     """States for stamp transfer process"""
+
     start = State()
     date = State()
     place = State()
-
-
 
 
 class IncomeLastYearStates(StatesGroup):
@@ -32,6 +27,3 @@ class IncomeLastYearStates(StatesGroup):
     start = State()
     income = State()
     after_income = State()
-
-
-

@@ -18,7 +18,9 @@ data_manager = SecureDataManager()
 
 # ───────────────────────── Старт: выбор способа (фото/вручную) ─────────────────────────
 @residence_reason_child_router.callback_query(F.data == "residence_reason_child")
-async def handle_residence_reason_child_start(callback: CallbackQuery, state: FSMContext):
+async def handle_residence_reason_child_start(
+    callback: CallbackQuery, state: FSMContext
+):
     """Запуск ветки 'Продление по ребёнку': выбор способа ввода данных (фото/вручную)."""
     await state.set_state(ResidenceReasonChildStates.choose_photo_or_manual)
     await state.update_data(residence_reason="residence_reason_child")
@@ -28,13 +30,14 @@ async def handle_residence_reason_child_start(callback: CallbackQuery, state: FS
 
     text = _.get_text("start_residence_reason.description", lang)
     await callback.message.edit_text(
-        text=text,
-        reply_markup=get_residence_reason_photo_or_manual_keyboard(lang)
+        text=text, reply_markup=get_residence_reason_photo_or_manual_keyboard(lang)
     )
 
 
 # ───────────────────────── Ручной ввод: ФИО ребёнка ─────────────────────────
-@residence_reason_child_router.callback_query(F.data == "start_residence_reason_child_manual")
+@residence_reason_child_router.callback_query(
+    F.data == "start_residence_reason_child_manual"
+)
 async def handle_start_manual(callback: CallbackQuery, state: FSMContext):
     """Переход к ручному вводу данных ребёнка."""
     await state.set_state(ResidenceReasonChildStates.child_fio)
@@ -103,7 +106,9 @@ async def get_child_citizenship(message: Message, state: FSMContext):
 
 
 # ───────────────────────── № свидетельства → место выдачи ─────────────────────────
-@residence_reason_child_router.message(ResidenceReasonChildStates.child_certificate_number)
+@residence_reason_child_router.message(
+    ResidenceReasonChildStates.child_certificate_number
+)
 async def get_child_certificate_number(message: Message, state: FSMContext):
     sd = await state.get_data()
     child_data = dict(sd.get("child_data") or {})
@@ -120,7 +125,9 @@ async def get_child_certificate_number(message: Message, state: FSMContext):
 
 
 # ───────────────────────── Место выдачи → кто для ребёнка ─────────────────────────
-@residence_reason_child_router.message(ResidenceReasonChildStates.child_certificate_issue_place)
+@residence_reason_child_router.message(
+    ResidenceReasonChildStates.child_certificate_issue_place
+)
 async def get_child_certificate_issue_place(message: Message, state: FSMContext):
     sd = await state.get_data()
     child_data = dict(sd.get("child_data") or {})
@@ -129,12 +136,18 @@ async def get_child_certificate_issue_place(message: Message, state: FSMContext)
 
     await state.set_state(ResidenceReasonChildStates.who_for_child)
     lang = sd.get("language")
-    text = _.get_text("residence_reason_manual_child_messages.who_for_child.description", lang)
-    await message.answer(text=text, reply_markup=get_residence_reason_who_for_child_keyboard(lang))
+    text = _.get_text(
+        "residence_reason_manual_child_messages.who_for_child.description", lang
+    )
+    await message.answer(
+        text=text, reply_markup=get_residence_reason_who_for_child_keyboard(lang)
+    )
 
 
 # ───────────────────────── Выбор: отец/мать/опекун → адрес проживания ─────────────────────────
-@residence_reason_child_router.callback_query(F.data.startswith("residence_reason_child_"))
+@residence_reason_child_router.callback_query(
+    F.data.startswith("residence_reason_child_")
+)
 async def handle_residence_reason_child_who(callback: CallbackQuery, state: FSMContext):
     """Выбрали: residence_reason_child_father / _mother / _guardian → спрашиваем адрес."""
     who_for_child = callback.data.split("child_")[1]  # father|mother|guardian

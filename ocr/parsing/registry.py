@@ -23,18 +23,23 @@ class CompositePassportParser:
                 if m and (m.surname and m.name):
                     # простой скоринг: есть серия/номер/issuer → прибавим очков
                     score = 0
-                    if m.series and m.number: score += 2
-                    if m.issued_by: score += 1
-                    if m.expiry_date: score += 1
+                    if m.series and m.number:
+                        score += 2
+                    if m.issued_by:
+                        score += 1
+                    if m.expiry_date:
+                        score += 1
                     if not best or score > best[0]:
                         best = (score, m)
             except Exception:
                 continue
         return best[1] if best else None
 
+
 _registry = {
     DocType.PASSPORT: CompositePassportParser(),
 }
+
 
 def get_parser(doc_type: DocType):
     return _registry.get(doc_type)

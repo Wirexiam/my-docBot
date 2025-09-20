@@ -1,5 +1,6 @@
 from aiogram.fsm.state import State, StatesGroup
 
+
 class CertificateChildStates(StatesGroup):
     """States for handling residence reason patent input"""
 

@@ -10,7 +10,9 @@ residence_reason_patient_router = Router()
 
 
 # ───────────────────── кнопки выбора способа (из клавиатуры WA) ─────────────────────
-@residence_reason_patient_router.callback_query(F.data == "start_residence_reason_byphoto")
+@residence_reason_patient_router.callback_query(
+    F.data == "start_residence_reason_byphoto"
+)
 async def handle_res_patent_byphoto(callback: CallbackQuery, state: FSMContext):
     sd = await state.get_data()
     lang = sd.get("language")
@@ -18,14 +20,17 @@ async def handle_res_patent_byphoto(callback: CallbackQuery, state: FSMContext):
     note = (
         f"{_.get_text('start_residence_reason.photo_soon.title', lang)}\n\n"
         f"{_.get_text('start_residence_reason.photo_soon.description', lang)}"
-        if hasattr(_, "has_key") and _.has_key("start_residence_reason.photo_soon.title")
+        if hasattr(_, "has_key")
+        and _.has_key("start_residence_reason.photo_soon.title")
         else "📸 Распознавание патента по фото будет доступно позже. Перейдём к вводу данных вручную."
     )
     await callback.message.edit_text(note)
     await start_patient_flow(callback, state)
 
 
-@residence_reason_patient_router.callback_query(F.data == "start_residence_reason_patent_manual")
+@residence_reason_patient_router.callback_query(
+    F.data == "start_residence_reason_patent_manual"
+)
 async def handle_res_patent_manual(callback: CallbackQuery, state: FSMContext):
     await start_patient_flow(callback, state)
 
@@ -42,8 +47,12 @@ async def start_patient_flow(callback: CallbackQuery, state: FSMContext):
         patient_data=sd.get("patient_data", {}) or {},
     )
 
-    title = _.get_text("residence_reason_manual_patient_messages.patient_number.title", lang)
-    example = _.get_text("residence_reason_manual_patient_messages.patient_number.example_text", lang)
+    title = _.get_text(
+        "residence_reason_manual_patient_messages.patient_number.title", lang
+    )
+    example = _.get_text(
+        "residence_reason_manual_patient_messages.patient_number.example_text", lang
+    )
 
     await state.set_state(ResidenceReasonPatentStates.patient_number)
     await callback.message.edit_text(f"{title}\n{example}")
@@ -59,8 +68,12 @@ async def get_patient_number(message: Message, state: FSMContext):
     patient_data["patient_number"] = (message.text or "").strip()
     await state.update_data(patient_data=patient_data)
 
-    title = _.get_text("residence_reason_manual_patient_messages.patient_date.title", lang)
-    example = _.get_text("residence_reason_manual_patient_messages.patient_date.example_text", lang)
+    title = _.get_text(
+        "residence_reason_manual_patient_messages.patient_date.title", lang
+    )
+    example = _.get_text(
+        "residence_reason_manual_patient_messages.patient_date.example_text", lang
+    )
 
     await state.set_state(ResidenceReasonPatentStates.patient_date)
     await message.answer(f"{title}\n{example}")
@@ -76,8 +89,13 @@ async def get_patient_date(message: Message, state: FSMContext):
     patient_data["patient_date"] = (message.text or "").strip()
     await state.update_data(patient_data=patient_data)
 
-    title = _.get_text("residence_reason_manual_patient_messages.patient_issue_place.title", lang)
-    example = _.get_text("residence_reason_manual_patient_messages.patient_issue_place.example_text", lang)
+    title = _.get_text(
+        "residence_reason_manual_patient_messages.patient_issue_place.title", lang
+    )
+    example = _.get_text(
+        "residence_reason_manual_patient_messages.patient_issue_place.example_text",
+        lang,
+    )
 
     await state.set_state(ResidenceReasonPatentStates.issue_place)
     await message.answer(f"{title}\n{example}")

@@ -22,7 +22,6 @@ async def handle_passport_manual_start(callback: CallbackQuery, state: FSMContex
     state_data = await state.get_data()
     lang = state_data.get("language")
 
-
     # Prepare the initial message for manual passport input
     text = f"{_.get_text("name_migr_card_cert.title", lang)}\n{_.get_text("name_migr_card_cert.description", lang)}\n\n{_.get_text("name_migr_card_cert.fio_kid", lang)}\n{_.get_text("name_migr_card_cert.example", lang)}"
 
@@ -83,7 +82,6 @@ async def handle_birth_date_input(message: Message, state: FSMContext):
     text = f"{_.get_text('passport_manual_citizenship.title', lang)}\n{_.get_text('passport_manual_citizenship.example_text', lang)}"
     await message.answer(text=text, reply_markup=None)
 
-
     await state.set_state(CertificateChildStates.child_citizenship)
 
 
@@ -113,7 +111,8 @@ async def handle_citizenship_input(message: Message, state: FSMContext):
     await message.answer(text=text, reply_markup=None)
 
     await state.set_state(CertificateChildStates.child_certificate_number)
-    
+
+
 @birth_certificate_router.message(CertificateChildStates.child_certificate_number)
 async def handle_citizenship_input(message: Message, state: FSMContext):
     """Handle the input of the citizenship in manual passport handling."""
@@ -154,4 +153,3 @@ async def handle_citizenship_input(message: Message, state: FSMContext):
         # If no next states, return to the previous action
         await state.set_state(from_action)
     print(f"Next state set to: {next_state if next_states else from_action}")
-

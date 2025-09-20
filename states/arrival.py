@@ -1,5 +1,6 @@
 from aiogram.fsm.state import State, StatesGroup
 
+
 class Arrival_transfer(StatesGroup):
     """Для процесса состояний по мигр учету"""
 
@@ -13,5 +14,3 @@ class Arrival_transfer(StatesGroup):
     after_about_home = State()
     check_data = State()
     check_child_data = State()
-
-

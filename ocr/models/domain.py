@@ -3,11 +3,12 @@ from pydantic import BaseModel, constr
 from .canonical import CanonicalDoc
 from .doc_types import DocType
 
+
 class PassportUZ(BaseModel):
     surname: constr(strip_whitespace=True, min_length=1)
     name: constr(strip_whitespace=True, min_length=1)
     patronymic: Optional[str] = None
-    birth_date: constr(strip_whitespace=True)               # "DD.MM.YYYY"
+    birth_date: constr(strip_whitespace=True)  # "DD.MM.YYYY"
     issue_date: Optional[str] = None
     expiry_date: Optional[str] = None
     issued_by: Optional[str] = None
@@ -34,5 +35,5 @@ class PassportUZ(BaseModel):
                 "nationality": self.nationality or "",
                 "sex": self.sex or "",
                 "place_of_birth": self.place_of_birth or "",
-            }
+            },
         )

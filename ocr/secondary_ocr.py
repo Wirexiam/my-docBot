@@ -9,6 +9,7 @@ import re
 import unicodedata
 
 import shutil, os
+
 TESSERACT_BIN = os.getenv("TESSERACT_BIN") or shutil.which("tesseract")
 if TESSERACT_BIN:
     pytesseract.pytesseract.tesseract_cmd = TESSERACT_BIN
@@ -19,13 +20,18 @@ def _only_letters(s: str) -> str:
     s = unicodedata.normalize("NFC", s)
     return re.sub(r"[^A-Za-zА-Яа-яЁёʼ’' -]+", "", s).strip()
 
+
 def _norm_up(s: str) -> str:
     s = (s or "").replace("ʼ", "'").replace("’", "'").replace("ʻ", "'")
     return unicodedata.normalize("NFC", s).upper()
 
+
 # RU суффиксы и UZ (o‘g‘li / qizi)
-RX_PATRONYMIC_RU = re.compile(r"\b([A-Z'’`-]{3,}?(?:OVICH|EVICH|YEVICH|OVNA|EVNA|YEVNA))\b", re.I)
+RX_PATRONYMIC_RU = re.compile(
+    r"\b([A-Z'’`-]{3,}?(?:OVICH|EVICH|YEVICH|OVNA|EVNA|YEVNA))\b", re.I
+)
 RX_PATRONYMIC_UZ = re.compile(r"\b([A-Z'’`-]{3,}?(?:O['’`]G?LI|UGLI|QIZI))\b", re.I)
+
 
 def _find_patronymic(text: str) -> Optional[str]:
     for rx in (RX_PATRONYMIC_RU, RX_PATRONYMIC_UZ):
@@ -40,7 +46,9 @@ def _ocr_text(im: Image.Image) -> str:
     gray = ImageOps.exif_transpose(im).convert("L")
     gray = gray.point(lambda p: min(255, int(p * 1.18)))  # чуть контраста
     # eng+rus+uzb — самое полезное комбо
-    return pytesseract.image_to_string(gray, lang="eng+rus+uzb", config="--oem 3 --psm 6")
+    return pytesseract.image_to_string(
+        gray, lang="eng+rus+uzb", config="--oem 3 --psm 6"
+    )
 
 
 # ===== публичные функции =====

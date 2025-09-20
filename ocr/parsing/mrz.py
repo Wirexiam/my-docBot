@@ -7,10 +7,12 @@ from typing import Dict, Optional
 MRZ_LINE_RX = re.compile(r"^[A-Z0-9<]{25,44}$")
 ONLY_AZ09LT = re.compile(r"[^A-Z0-9<]")
 
+
 def _clean(line: str) -> str:
     s = line.upper().replace(" ", "")
     s = ONLY_AZ09LT.sub("", s)
     return s
+
 
 def _split_name(name_field: str) -> (str, str):
     # Surname<<Given<<Middle -> Surname / Given Middle
@@ -18,6 +20,7 @@ def _split_name(name_field: str) -> (str, str):
     surname = parts[0].replace("<", " ").strip()
     given = " ".join(p.replace("<", " ").strip() for p in parts[1:] if p)
     return surname, given
+
 
 def parse_mrz(full_text: str) -> Optional[Dict[str, str]]:
     """
@@ -38,9 +41,12 @@ def parse_mrz(full_text: str) -> Optional[Dict[str, str]]:
     for i in range(len(lines) - 1):
         a, b = lines[i], lines[i + 1]
         if (
-            a.startswith("P<") and "<<" in a and
-            MRZ_LINE_RX.match(a) and MRZ_LINE_RX.match(b) and
-            25 <= len(a) <= 44 and 25 <= len(b) <= 44
+            a.startswith("P<")
+            and "<<" in a
+            and MRZ_LINE_RX.match(a)
+            and MRZ_LINE_RX.match(b)
+            and 25 <= len(a) <= 44
+            and 25 <= len(b) <= 44
         ):
             try:
                 # Для TD3 берём поле после кода страны

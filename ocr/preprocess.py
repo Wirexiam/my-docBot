@@ -18,7 +18,9 @@ def _auto_deskew(gray: np.ndarray) -> np.ndarray:
         angle = -angle
     (h, w) = gray.shape[:2]
     M = cv2.getRotationMatrix2D((w // 2, h // 2), angle, 1.0)
-    return cv2.warpAffine(gray, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+    return cv2.warpAffine(
+        gray, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE
+    )
 
 
 def _unsharp(img: np.ndarray) -> np.ndarray:
@@ -43,8 +45,8 @@ def _find_doc_warp(img: np.ndarray) -> np.ndarray | None:
             s = pts.sum(axis=1)
             diff = np.diff(pts, axis=1).reshape(-1)
             rect = np.zeros((4, 2), dtype=np.float32)
-            rect[0] = pts[np.argmin(s)]     # TL
-            rect[2] = pts[np.argmax(s)]     # BR
+            rect[0] = pts[np.argmin(s)]  # TL
+            rect[2] = pts[np.argmax(s)]  # BR
             rect[1] = pts[np.argmin(diff)]  # TR
             rect[3] = pts[np.argmax(diff)]  # BL
 
@@ -57,7 +59,10 @@ def _find_doc_warp(img: np.ndarray) -> np.ndarray | None:
             maxH = int(max(hA, hB))
             if maxW < 100 or maxH < 100:
                 continue
-            dst = np.array([[0, 0], [maxW - 1, 0], [maxW - 1, maxH - 1], [0, maxH - 1]], dtype=np.float32)
+            dst = np.array(
+                [[0, 0], [maxW - 1, 0], [maxW - 1, maxH - 1], [0, maxH - 1]],
+                dtype=np.float32,
+            )
             M = cv2.getPerspectiveTransform(rect, dst)
             warped = cv2.warpPerspective(img, M, (maxW, maxH))
             return warped
@@ -81,8 +86,9 @@ def _enhance_bgr(bgr: np.ndarray) -> np.ndarray:
     gray = _auto_deskew(gray)
     gray = _unsharp(gray)
     # лёгкая адаптивная бинаризация для улучшения текстов
-    th = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C,
-                               cv2.THRESH_BINARY, 31, 5)
+    th = cv2.adaptiveThreshold(
+        gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 31, 5
+    )
     # смешаем с исходным для сохранения деталей
     mix = cv2.addWeighted(gray, 0.7, th, 0.3, 0)
     return cv2.cvtColor(mix, cv2.COLOR_GRAY2BGR)
@@ -112,9 +118,14 @@ def enhance_save_variants(src_jpg_path: str, out_dir: str) -> List[str]:
 
     # повороты base
     for i, angle in enumerate((90, 180, 270), start=1):
-        rot = cv2.rotate(enh, {90: cv2.ROTATE_90_CLOCKWISE,
-                               180: cv2.ROTATE_180,
-                               270: cv2.ROTATE_90_COUNTERCLOCKWISE}[angle])
+        rot = cv2.rotate(
+            enh,
+            {
+                90: cv2.ROTATE_90_CLOCKWISE,
+                180: cv2.ROTATE_180,
+                270: cv2.ROTATE_90_COUNTERCLOCKWISE,
+            }[angle],
+        )
         pi = os.path.join(out_dir, f"enhanced_rot{angle}.jpg")
         _save_jpg(pi, rot)
         variants.append(pi)
@@ -128,9 +139,14 @@ def enhance_save_variants(src_jpg_path: str, out_dir: str) -> List[str]:
         variants.append(pw)
 
         for angle in (90, 180, 270):
-            rot = cv2.rotate(w_enh, {90: cv2.ROTATE_90_CLOCKWISE,
-                                     180: cv2.ROTATE_180,
-                                     270: cv2.ROTATE_90_COUNTERCLOCKWISE}[angle])
+            rot = cv2.rotate(
+                w_enh,
+                {
+                    90: cv2.ROTATE_90_CLOCKWISE,
+                    180: cv2.ROTATE_180,
+                    270: cv2.ROTATE_90_COUNTERCLOCKWISE,
+                }[angle],
+            )
             pi = os.path.join(out_dir, f"warp_enhanced_rot{angle}.jpg")
             _save_jpg(pi, rot)
             variants.append(pi)

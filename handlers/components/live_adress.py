@@ -57,18 +57,24 @@ async def handle_live_adress(message: Message, state: FSMContext):
     # ── нормализация и лёгкая валидация адреса ─────────────────────
     raw = (message.text or "").strip()
     value = re.sub(r"[ \t]+", " ", raw)  # Убираем лишние пробелы
-    value = re.sub(r"\s*,\s*", ", ", value).strip(", ")  # Убираем лишние пробелы после запятой
+    value = re.sub(r"\s*,\s*", ", ", value).strip(
+        ", "
+    )  # Убираем лишние пробелы после запятой
 
     # Если в строке нет запятой, но это не пустая строка, считаем, что адрес валиден
     if len(value.split(",")) == 1 and value:
         # Если строка состоит только из одного компонента и она не пустая, пропускаем её
         pass
     else:
-        parts = [p for p in value.split(",") if p]  # Разделяем по запятой, убираем пустые элементы
+        parts = [
+            p for p in value.split(",") if p
+        ]  # Разделяем по запятой, убираем пустые элементы
         if len(parts) < 2:  # Если меньше двух компонентов, то это неполный адрес
             hint = _.get_text("live_adress.example", lang)
             if hint.startswith("[Missing:"):
-                hint = "Формат: город, улица, дом, корпус/строение (если есть), квартира."
+                hint = (
+                    "Формат: город, улица, дом, корпус/строение (если есть), квартира."
+                )
             await message.answer("Адрес выглядит неполным. " + hint)
             return
 
@@ -94,6 +100,7 @@ async def handle_live_adress(message: Message, state: FSMContext):
     # выкидываем возможный повтор текущего стейта в голове очереди
     try:
         from states.components.live_adress import LiveAdress as _LA
+
         while next_states and next_states[0] == _LA.adress:
             next_states.pop(0)
     except Exception:
@@ -123,6 +130,7 @@ async def handle_live_adress(message: Message, state: FSMContext):
         await message.answer(prompt)
     else:
         await state.set_state(next_state)
+
 
 # обратная совместимость со старым импортом имени функции
 handle_live_adress_input = handle_live_adress

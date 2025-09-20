@@ -12,7 +12,9 @@ import re
 import threading
 
 # ---- Глобальный троттлинг OCR ----
-_OCR_RPS_LIMIT = float(os.getenv("YC_OCR_RPS", "1"))  # поднимешь, когда Яндекс увеличит квоту
+_OCR_RPS_LIMIT = float(
+    os.getenv("YC_OCR_RPS", "1")
+)  # поднимешь, когда Яндекс увеличит квоту
 _MIN_INTERVAL = 1.0 / max(_OCR_RPS_LIMIT, 0.0001)
 
 _rate_lock = threading.Lock()
@@ -23,6 +25,7 @@ YC_OCR_URL = "https://ocr.api.cloud.yandex.net/ocr/v1/recognizeText"
 
 # ---------------------- утилиты ----------------------
 
+
 def _rate_limit_wait():
     """Гарантирует не более N запросов/сек на процесс."""
     global _last_call_ts
@@ -32,6 +35,7 @@ def _rate_limit_wait():
         if wait > 0:
             time.sleep(wait)
         _last_call_ts = time.monotonic()
+
 
 def _headers() -> Dict[str, str]:
     api_key = os.getenv("YC_VISION_API_KEY")
@@ -46,7 +50,10 @@ def _headers() -> Dict[str, str]:
         "Content-Type": "application/json",
     }
 
-def _req_body(img_bytes: bytes, mime: str, model: Optional[str], langs: List[str]) -> Dict:
+
+def _req_body(
+    img_bytes: bytes, mime: str, model: Optional[str], langs: List[str]
+) -> Dict:
     body = {
         "content": base64.b64encode(img_bytes).decode("ascii"),
         "mimeType": mime,
@@ -56,6 +63,7 @@ def _req_body(img_bytes: bytes, mime: str, model: Optional[str], langs: List[str
     if model:
         body["model"] = model
     return body
+
 
 def _call(body: Dict, max_tries: int = 6) -> Dict:
     """
@@ -75,13 +83,13 @@ def _call(body: Dict, max_tries: int = 6) -> Dict:
 
             if r.status_code == 429:
                 last_err = f"OCR HTTP 429: {r.text[:400]}"
-                backoff = (1.2 ** attempt) + random.uniform(0.2, 0.6)
+                backoff = (1.2**attempt) + random.uniform(0.2, 0.6)
                 time.sleep(backoff)
                 continue
 
             if 500 <= r.status_code < 600:
                 last_err = f"OCR HTTP {r.status_code}: {r.text[:400]}"
-                backoff = (1.2 ** attempt) + random.uniform(0.2, 0.6)
+                backoff = (1.2**attempt) + random.uniform(0.2, 0.6)
                 time.sleep(backoff)
                 continue
 
@@ -89,10 +97,11 @@ def _call(body: Dict, max_tries: int = 6) -> Dict:
 
         except httpx.HTTPError as e:
             last_err = f"HTTPError: {e}"
-            backoff = (1.2 ** attempt) + random.uniform(0.2, 0.6)
+            backoff = (1.2**attempt) + random.uniform(0.2, 0.6)
             time.sleep(backoff)
 
     raise RuntimeError(last_err or "OCR: неизвестная ошибка")
+
 
 def _find_first_fulltext(node: Any) -> Optional[str]:
     """Рекурсивно найдём первое поле fullText (где бы оно ни лежало)."""
@@ -110,6 +119,7 @@ def _find_first_fulltext(node: Any) -> Optional[str]:
                 return ft
     return None
 
+
 def _find_entities(node: Any) -> List[Dict]:
     """Рекурсивно соберём первый встретившийся массив entities."""
     if isinstance(node, dict):
@@ -126,6 +136,7 @@ def _find_entities(node: Any) -> List[Dict]:
                 return ents
     return []
 
+
 def _extract_text_entities(resp: Dict) -> Tuple[str, List[Dict]]:
     """Вытащить fullText и entities из любого слоёного ответа Vision."""
     ta = resp.get("textAnnotation")
@@ -139,10 +150,12 @@ def _extract_text_entities(resp: Dict) -> Tuple[str, List[Dict]]:
     ents = _find_entities(resp) or []
     return full, ents
 
+
 def _reencode_jpeg(img_bytes: bytes, quality: int = 85) -> bytes:
     """Перекодировать JPEG (на случай экзотических маркеров/слишком большого файла)."""
     try:
         import cv2, numpy as np
+
         arr = np.frombuffer(img_bytes, dtype=np.uint8)
         img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
         if img is None:
@@ -151,6 +164,7 @@ def _reencode_jpeg(img_bytes: bytes, quality: int = 85) -> bytes:
         return buf.tobytes() if ok else img_bytes
     except Exception:
         return img_bytes
+
 
 def _recognize_safely(img: bytes, model: Optional[str], langs: List[str]) -> Dict:
     """
@@ -184,18 +198,19 @@ def _recognize_safely(img: bytes, model: Optional[str], langs: List[str]) -> Dic
     full4, ents4 = _extract_text_entities(r4)
     return {"fullText": full4, "entities": ents4, "_raw": r4}
 
+
 def _tess_text(path: str) -> str:
     try:
         return pytesseract.image_to_string(
-            Image.open(path),
-            lang="rus+eng+uzb+kaz",
-            config="--oem 3 --psm 6"
+            Image.open(path), lang="rus+eng+uzb+kaz", config="--oem 3 --psm 6"
         )
     except Exception:
         return ""
 
+
 def _clean_len(s: str) -> int:
     return len(re.sub(r"[^0-9A-Za-zА-Яа-яЁё\n]+", "", s or ""))
+
 
 def _read_bytes(path: str) -> bytes:
     with open(path, "rb") as f:
@@ -203,6 +218,7 @@ def _read_bytes(path: str) -> bytes:
 
 
 # ---------------------- основной выбор «лучшего» варианта ----------------------
+
 
 def _iter_variants(variants: List[Any]) -> List[Tuple[str, str]]:
     """
@@ -227,6 +243,7 @@ def _iter_variants(variants: List[Any]) -> List[Tuple[str, str]]:
         out.append((str(p), str(t)))
     return out
 
+
 def ocr_best(variants: List[Any]) -> Dict[str, Any]:
     """
     variants: допускаются и ["path", ...], и [("path","tag"), ...]
@@ -240,7 +257,7 @@ def ocr_best(variants: List[Any]) -> Dict[str, Any]:
     """
     engine_report: List[Dict[str, Any]] = []
     best: Dict[str, Any] = {"text": "", "entities": [], "variant_path": ""}
-    best_score = -10**9
+    best_score = -(10**9)
 
     norm_variants = _iter_variants(variants)
     if not norm_variants:
@@ -252,27 +269,43 @@ def ocr_best(variants: List[Any]) -> Dict[str, Any]:
         # 1) Yandex Vision: общий
         j1 = _recognize_safely(img_bytes, None, ["uz", "ru", "en"])
         txt1, ents1 = j1["fullText"], j1["entities"]
-        engine_report.append({"engine": "yc-general", "variant": tag, "len": _clean_len(txt1)})
+        engine_report.append(
+            {"engine": "yc-general", "variant": tag, "len": _clean_len(txt1)}
+        )
 
         # 2) Yandex Vision: паспортная модель
         j2 = _recognize_safely(img_bytes, "passport", ["uz", "ru", "en"])
         txt2, ents2 = j2["fullText"], j2["entities"]
-        engine_report.append({"engine": "yc-passport", "variant": tag, "len": _clean_len(txt2)})
+        engine_report.append(
+            {"engine": "yc-passport", "variant": tag, "len": _clean_len(txt2)}
+        )
 
         txt_yc = txt1 if len(txt1) >= len(txt2) else txt2
-        ents   = ents2 or ents1
+        ents = ents2 or ents1
 
         # 3) Скоринг по ключам + длина
         score = 0
-        for nm in ("surname", "name", "middle_name", "birth_date", "issue_date", "expiration_date"):
-            if any(e.get("name") == nm and e.get("text") and e["text"] != "-" for e in (ents2 or [])):
+        for nm in (
+            "surname",
+            "name",
+            "middle_name",
+            "birth_date",
+            "issue_date",
+            "expiration_date",
+        ):
+            if any(
+                e.get("name") == nm and e.get("text") and e["text"] != "-"
+                for e in (ents2 or [])
+            ):
                 score += 6
         score += _clean_len(txt_yc) // 200
 
         # 4) Fallback Tesseract при слабом тексте
         if score < 12 or _clean_len(txt_yc) < 400:
             t = _tess_text(path)
-            engine_report.append({"engine": "tesseract", "variant": tag, "len": _clean_len(t)})
+            engine_report.append(
+                {"engine": "tesseract", "variant": tag, "len": _clean_len(t)}
+            )
             txt_final = t if _clean_len(t) > _clean_len(txt_yc) else txt_yc
         else:
             txt_final = txt_yc

@@ -2,6 +2,7 @@ from typing import Dict, Optional
 from pydantic import BaseModel, Field
 from .doc_types import DocType
 
+
 class CanonicalDoc(BaseModel):
     doc_type: DocType
     person_fullname: Optional[str] = None

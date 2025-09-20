@@ -23,7 +23,7 @@ data_manager = SecureDataManager()
 #     # Get the user's language preference from state data
 #     state_data = await state.get_data()
 #     lang = state_data.get("language")
-    
+
 #     # Prepare the initial message for manual passport input
 #     migr_desc = state_data.get("migr_desc", "name_migr_card_arrival.description")
 #     age = state_data.get("age", False)
@@ -37,7 +37,7 @@ data_manager = SecureDataManager()
 #     await callback.message.edit_text(
 #         text=text, reply_markup=None  # No keyboard for this step
 #     )
-    
+
 # @migration_manual_router.message(MigrCardManualStates.migr_card_start_manual)
 # async def handle_migr_manual_start(message: Message, state: FSMContext):
 #     """Handle the start of manual migratuion card input."""
@@ -48,7 +48,7 @@ data_manager = SecureDataManager()
 #     # Get the user's language preference from state data
 #     state_data = await state.get_data()
 #     lang = state_data.get("language")
-    
+
 #     # Prepare the initial message for manual passport input
 #     text = f"{_.get_text('name_migr_card_arrival.title')}\n\n{_.get_text('name_migr_card_arrival.description', lang)}"
 
@@ -74,7 +74,9 @@ async def request_birth_date_input(call: CallbackQuery, state: FSMContext):
         await state.update_data(migr_title="migr_manual_citizenship_kid.title")
 
     text = f"{_.get_text('data_migr_card_arrival.title', lang)}\n{_.get_text('data_migr_card_arrival.example_text', lang)}"
-    await call.message.edit_text(text=text, reply_markup=None)  # No keyboard for this step
+    await call.message.edit_text(
+        text=text, reply_markup=None
+    )  # No keyboard for this step
     # Move to the next state
     await state.set_state(MigrCardManualStates.place_point_input)
 
@@ -104,7 +106,6 @@ async def handle_citizenship_input(message: Message, state: FSMContext):
     await state.set_state(MigrCardManualStates.pretria_period_input)
 
 
-
 @migration_manual_router.message(MigrCardManualStates.pretria_period_input)
 async def handle_number_migr_card_arrival_input(message: Message, state: FSMContext):
     """Handle the input of the passport issue date in manual passport handling."""
@@ -129,15 +130,18 @@ async def handle_number_migr_card_arrival_input(message: Message, state: FSMCont
     await message.answer(text=text, reply_markup=kbs_for_no_specified(lang))
 
     await state.set_state(MigrCardManualStates.goal)
-    
+
+
 @migration_manual_router.callback_query(MigrCardManualStates.goal)
-async def handle_number_migr_card_pretria_period_callback(call: CallbackQuery, state: FSMContext):
+async def handle_number_migr_card_pretria_period_callback(
+    call: CallbackQuery, state: FSMContext
+):
     """Handle the input of the passport issue date in manual passport handling."""
     migration_data = await state.get_data()
     migration_data = migration_data.get("migration_data")
     entry_data = datetime.strptime(migration_data["entry_date"], "%d.%m.%Y")
     entry_data_no_specified = entry_data + timedelta(days=90)
-    entry_data_str = entry_data_no_specified.strftime("%d.%m.%Y") 
+    entry_data_str = entry_data_no_specified.strftime("%d.%m.%Y")
     migration_data["pretria_period"] = entry_data_str
 
     # Get the user's language preference from state data
@@ -154,8 +158,8 @@ async def handle_number_migr_card_pretria_period_callback(call: CallbackQuery, s
 
     text = f"{_.get_text('goals_migr_card_arrival.title', lang)}"
     await call.message.answer(text=text, reply_markup=kbs_for_goals(lang))
-    await state.update_data(waiting_data = "migration_data.goal")
-    
+    await state.update_data(waiting_data="migration_data.goal")
+
     next_states = state_data.get("next_states", [])
     from_action = state_data.get("from_action")
     print(f"Next states: {next_states}, From action: {from_action}")
@@ -175,7 +179,7 @@ async def handle_number_migr_card_pretria_period_callback(call: CallbackQuery, s
         await state.set_state(from_action)
     # print(f"Next state set to: {next_state if next_states else from_action}")
 
-     
+
 @migration_manual_router.message(MigrCardManualStates.goal)
 async def handle_number_migr_card_pretria_period(message: Message, state: FSMContext):
     """Handle the input of the passport issue date in manual passport handling."""
@@ -193,7 +197,7 @@ async def handle_number_migr_card_pretria_period(message: Message, state: FSMCon
     user_data = {
         "migration_data": migration_data,
     }
-    await state.update_data(fill_goal = True)
+    await state.update_data(fill_goal=True)
     session_id = state_data.get("session_id")
     data_manager.save_user_data(message.from_user.id, session_id, user_data)
 
@@ -223,23 +227,23 @@ async def handle_number_migr_card_pretria_period(message: Message, state: FSMCon
 @migration_manual_router.callback_query(F.data == "other")
 async def handle_passport_expiry_goal_manual(call: CallbackQuery, state: FSMContext):
     """Handle the input of the passport expiry date in manual passport handling."""
-    
+
     # Get the user's language preference from state data
     migration_data = await state.get_data()
     migration_data = migration_data.get("migration_data")
     state_data = await state.get_data()
     lang = state_data.get("language")
-    
+
     text = f"{_.get_text('goal_migr_card_arrival.title', lang)}\n{_.get_text('goal_migr_card_arrival.example', lang)}"
     await call.message.edit_text(text=text, reply_markup=None)
-    
+
     await state.update_data(migration_data=migration_data)
     user_data = {
         "migration_data": migration_data,
     }
     session_id = state_data.get("session_id")
     data_manager.save_user_data(call.from_user.id, session_id, user_data)
-    
+
     next_states = state_data.get("next_states", [])
     from_action = state_data.get("from_action")
     print(f"Next states: {next_states}, From action: {from_action}")
@@ -255,8 +259,8 @@ async def handle_passport_expiry_goal_manual(call: CallbackQuery, state: FSMCont
         # If no next states, return to the previous action
         await state.set_state(from_action)
     print(f"Next state set to: {next_state if next_states else from_action}")
-    
-    
+
+
 @migration_manual_router.message(MigrCardManualStates.after_select_goal)
 async def handle_passport_expiry_goal_manual(message: Message, state: FSMContext):
     """Handle the input of the passport expiry date in manual passport handling."""

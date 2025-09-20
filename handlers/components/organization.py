@@ -17,12 +17,12 @@ data_manager = SecureDataManager()
 @organization_router.callback_query(F.data == "organization_accept")
 async def handle_organization_start(callback: CallbackQuery, state: FSMContext):
     """Handle the start of manual passport input."""
-    print('Оббработчик')
+    print("Оббработчик")
 
     # Get the user's language preference from state data
     state_data = await state.get_data()
     lang = state_data.get("language")
-    await state.update_data(who_accept = "org")
+    await state.update_data(who_accept="org")
     # passport_title = state_data.get("passport_title", "")
     # passport_description = state_data.get("passport_description", 'passport_manual_full_name.description')
 
@@ -32,9 +32,7 @@ async def handle_organization_start(callback: CallbackQuery, state: FSMContext):
     # Update the state with the action context
     await state.set_state(OrganizationStates.inn)
     # Send the initial message to the user
-    await callback.message.edit_text(
-        text=text, reply_markup=None
-    )
+    await callback.message.edit_text(text=text, reply_markup=None)
 
 
 @organization_router.message(OrganizationStates.inn)
@@ -47,7 +45,7 @@ async def request_inn_organization_input(message: Message, state: FSMContext):
     state_data = await state.get_data()
     lang = state_data.get("language")
     # Update the state with the full name
-    await state.update_data(organization_data=organization_data )
+    await state.update_data(organization_data=organization_data)
     user_data = {
         "organization_data ": organization_data,
     }
@@ -58,13 +56,14 @@ async def request_inn_organization_input(message: Message, state: FSMContext):
     await message.answer(text=text, reply_markup=inn_organization(lang))
     # Move to the next state
     await state.set_state(OrganizationStates.adress)
-    
+
+
 @organization_router.callback_query(F.data == "no_have_inn", OrganizationStates.adress)
 async def handle_inn_inp(call: CallbackQuery, state: FSMContext):
     """Handle the input of the birth date in manual passport handling."""
-    organization_data= await state.get_data()
+    organization_data = await state.get_data()
     organization_data = organization_data.get("organization_data")
-    organization_data["inn"] = ''
+    organization_data["inn"] = ""
     # Get the user's language preference from state data
     state_data = await state.get_data()
     lang = state_data.get("language")
@@ -80,11 +79,12 @@ async def handle_inn_inp(call: CallbackQuery, state: FSMContext):
     await call.message.edit_text(text=text, reply_markup=None)
 
     await state.set_state(OrganizationStates.full_name_contact_of_organization)
-    
+
+
 @organization_router.message(OrganizationStates.adress)
 async def handle_inn_inp(message: Message, state: FSMContext):
     """Handle the input of the birth date in manual passport handling."""
-    organization_data= await state.get_data()
+    organization_data = await state.get_data()
     organization_data = organization_data.get("organization_data")
     inn = message.text.strip()
     organization_data["inn"] = inn
@@ -108,7 +108,7 @@ async def handle_inn_inp(message: Message, state: FSMContext):
 @organization_router.message(OrganizationStates.full_name_contact_of_organization)
 async def handle_adress_inp(message: Message, state: FSMContext):
     """Handle the input of the birth date in manual passport handling."""
-    organization_data= await state.get_data()
+    organization_data = await state.get_data()
     organization_data = organization_data.get("organization_data")
     adress = message.text.strip()
     organization_data["adress"] = adress
@@ -135,7 +135,9 @@ async def handle_full_name_contact_of_organization(message: Message, state: FSMC
     organization_data = await state.get_data()
     organization_data = organization_data.get("organization_data")
     full_name_contact_of_organization = message.text.strip()
-    organization_data["full_name_contact_of_organization"] = full_name_contact_of_organization
+    organization_data["full_name_contact_of_organization"] = (
+        full_name_contact_of_organization
+    )
 
     # Get the user's language preference from state data
     state_data = await state.get_data()
@@ -192,4 +194,3 @@ async def handle_job(message: Message, state: FSMContext):
         # If no next states, return to the previous action
         await state.set_state(from_action)
     # print(f"Next state set to: {next_state if next_states else from_action}")
-

@@ -15,6 +15,7 @@ from ocr.services.translit import uz_lat_to_cyr
 import os
 import re
 
+
 @dataclass
 class OcrResult:
     passport_data: Dict[str, str]
@@ -89,7 +90,7 @@ class PassbotOcrService:
         2) если есть surname/name/patronymic в extras → склеиваем 'Ф И О'
         3) иначе пытаемся переупорядочить из одной строки (И О Ф → Ф И О)
         """
-        ex = (getattr(doc, "extras", None) or {})
+        ex = getattr(doc, "extras", None) or {}
         fio_cyr = ex.get("fio_cyr")
         if fio_cyr:
             return fio_cyr.strip()
@@ -136,7 +137,9 @@ class PassbotOcrService:
         s = issuer_raw.upper()
 
         # Базовые замены по структуре
-        s = s.replace("IIB", "ГУ МВД УЗБЕКИСТАНА")  # Ichki Ishlar Bo'limi → МВД Узбекистана
+        s = s.replace(
+            "IIB", "ГУ МВД УЗБЕКИСТАНА"
+        )  # Ichki Ishlar Bo'limi → МВД Узбекистана
         s = s.replace("IIV", "ГУ МВД УЗБЕКИСТАНА")  # иногда пишут IIV
 
         # Гео-токены
@@ -198,7 +201,9 @@ class PassbotOcrService:
     def _to_passport_data(self, doc: CanonicalDoc) -> Dict[str, str]:
         series = (doc.extras or {}).get("series") or ""
         number = (doc.extras or {}).get("number") or ""
-        doc_id = (f"{series} {number}".strip() if (series or number) else (doc.doc_id or "")).strip()
+        doc_id = (
+            f"{series} {number}".strip() if (series or number) else (doc.doc_id or "")
+        ).strip()
 
         full_name = self._normalize_fullname_fio(doc)
         issuer_ru = self._normalize_issuer_uz_to_ru(doc.issuer or "")
@@ -220,4 +225,3 @@ class PassbotOcrService:
             "passport_issue_place": issuer_ru,  # ← нормализуем «кем выдан»
             "doc_id": doc_id,
         }
-

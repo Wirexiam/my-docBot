@@ -15,5 +15,3 @@ class DocChildStayExtensionStates(StatesGroup):
 
     data_editor = State()
     edit_fields = State()
-
-

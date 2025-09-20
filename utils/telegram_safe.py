@@ -1,8 +1,10 @@
 # utils/telegram_safe.py
 from aiogram.exceptions import TelegramBadRequest
 
+
 def _kb_dump(kb) -> str:
     return kb.model_dump_json(exclude_none=True, by_alias=True) if kb else ""
+
 
 async def safe_edit_text(msg, text: str, reply_markup=None):
     try:
@@ -15,6 +17,7 @@ async def safe_edit_text(msg, text: str, reply_markup=None):
         if "message is not modified" in str(e):
             return
         raise
+
 
 async def safe_edit_reply_markup(msg, reply_markup):
     try:

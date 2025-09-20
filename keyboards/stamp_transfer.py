@@ -48,4 +48,3 @@ def get_stamp_transfer_check_data_before_gen(lang: str = "ru"):
     )
     builder.adjust(1)
     return builder.as_markup()
-

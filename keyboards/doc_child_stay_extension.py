@@ -40,20 +40,17 @@ def get_doc_child_stay_extension_passport_start_keyboard(lang: str = "ru"):
     return builder.as_markup()
 
 
-
-
 def get_doc_child_accept_data(lang: str = "ru"):
     builder = InlineKeyboardBuilder()
 
-
     builder.button(
         text=_.get_text("child_stay_extension.buttons.accept", lang),
-        callback_data="child_stay_accept"
+        callback_data="child_stay_accept",
     )
 
     builder.button(
         text=_.get_text("child_stay_extension.buttons.edit", lang),
-        callback_data="child_stay_data_edit"
+        callback_data="child_stay_data_edit",
     )
 
     builder.adjust(1)
@@ -64,71 +61,64 @@ def get_doc_child_stay_extension_related_child_keyboard(lang: str = "ru"):
     """Клавиатура ожидания подтверждения начала Продление пребывания ребёнка для отношения"""
     builder = InlineKeyboardBuilder()
     builder.button(
-        text=_.get_text(
-            "how_you_are_related_to_the_child.mother_btn", lang
-        ),
+        text=_.get_text("how_you_are_related_to_the_child.mother_btn", lang),
         callback_data=f"mother",
     )
     builder.button(
-        text=_.get_text(
-            "how_you_are_related_to_the_child.father_btn", lang
-        ),
+        text=_.get_text("how_you_are_related_to_the_child.father_btn", lang),
         callback_data=f"father",
     )
     builder.button(
-        text=_.get_text(
-            "how_you_are_related_to_the_child.guardian_btn", lang
-        ),
+        text=_.get_text("how_you_are_related_to_the_child.guardian_btn", lang),
         callback_data=f"guardian",
     )
     builder.adjust(1)
     return builder.as_markup()
 
 
-
 def get_main_editor_keyboard(lang: str = "ru"):
-    
+
     builder = InlineKeyboardBuilder()
     core = "child_stay_extension"
 
     builder.button(
         text=_.get_text(f"{core}.mother_related", lang).rstrip(": ").strip(),
-        callback_data="cs_editor_mother_related"
+        callback_data="cs_editor_mother_related",
     )
 
     builder.button(
         text=_.get_text(f"{core}.basis_section", lang).rstrip(": ").strip(),
-        callback_data="cs_editor_basis_section"
+        callback_data="cs_editor_basis_section",
     ),
 
     builder.button(
         text=_.get_text(f"{core}.child_section", lang).rstrip(": ").strip(),
-        callback_data="cs_editor_child_section"
+        callback_data="cs_editor_child_section",
     )
 
     builder.button(
         text=_.get_text(f"{core}.address_section", lang).rstrip(": ").strip(),
-        callback_data="cs_editor_address_section"
+        callback_data="cs_editor_address_section",
     )
 
     builder.button(
         text=_.get_text(f"{core}.extend_section", lang).rstrip(": ").strip(),
-        callback_data="cs_editor_extend_section"
+        callback_data="cs_editor_extend_section",
     )
 
     builder.button(
         text=_.get_text(f"{core}.mvd_section", lang).rstrip(": ").strip(),
-        callback_data="cs_editor_mvd_section"
+        callback_data="cs_editor_mvd_section",
     )
 
     builder.button(
         text=_.get_text("phone_number_text", lang).rstrip(": ").strip(),
-        callback_data="cs_editor_phone_number_text"
+        callback_data="cs_editor_phone_number_text",
     )
 
     builder.button(
         text=_.get_text("startarrival.cancel_button", lang),
-        callback_data="cs_editor_back_to_child_stay"
+        callback_data="cs_editor_back_to_child_stay",
     )
 
     builder.adjust(1)
@@ -144,14 +134,11 @@ def subkeyboard(postfix: list[str], lang: str = "ru"):
 
     for key in postfix:
         label = _.get_text(f"{core}.{key}", lang).removesuffix(": ").strip()
-        builder.button(
-            text=label,
-            callback_data=f"cs_sub_editor_{key}"
-        )
+        builder.button(text=label, callback_data=f"cs_sub_editor_{key}")
 
     builder.button(
         text=_.get_text("startarrival.cancel_button", lang),
-        callback_data="cs_sub_editor_back"
+        callback_data="cs_sub_editor_back",
     )
 
     builder.adjust(1)

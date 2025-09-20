@@ -11,12 +11,14 @@ import subprocess
 import os
 
 
-def create_docx_from_data(template_name: str, context: dict, user_path: str, font_name="Arial") -> str:
+def create_docx_from_data(
+    template_name: str, context: dict, user_path: str, font_name="Arial"
+) -> str:
     # Загружаем шаблон
     doc = Document(f"pdf_generator/templates/{template_name}.docx")
 
     letters = string.ascii_lowercase
-    name = ''.join(random.choice(letters) for _ in range(8))
+    name = "".join(random.choice(letters) for _ in range(8))
 
     # Загружаем шаблон
     for table in doc.tables:
@@ -26,7 +28,7 @@ def create_docx_from_data(template_name: str, context: dict, user_path: str, fon
                 for context_key in context:
                     if context_key.startswith("char_"):
                         print("да делает")
-                        context_key_str = "{{"+context_key+"}}"    
+                        context_key_str = "{{" + context_key + "}}"
                         if context_key_str in cell.text:
                             letters = list(context[context_key])
                             for i, ch in enumerate(letters):
@@ -34,8 +36,12 @@ def create_docx_from_data(template_name: str, context: dict, user_path: str, fon
                                     target_cell = row.cells[cell_num + i]
                                     target_cell.text = ch
 
-                                    target_cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-                                    target_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+                                    target_cell.paragraphs[0].alignment = (
+                                        WD_ALIGN_PARAGRAPH.CENTER
+                                    )
+                                    target_cell.vertical_alignment = (
+                                        WD_ALIGN_VERTICAL.CENTER
+                                    )
 
                                     run = target_cell.paragraphs[0].runs[0]
                                     run.font.name = font_name
@@ -43,10 +49,10 @@ def create_docx_from_data(template_name: str, context: dict, user_path: str, fon
 
     doc.save(f"{user_path}/{name}.docx")
 
-    #заполняем шаблон после заполнения клеток
+    # заполняем шаблон после заполнения клеток
     # Загружаем шаблон
     doc = DocxTemplate(f"{user_path}/{name}.docx")
-    
+
     # Данные для подстановки
     # Рендерим документ
     doc.render(context)
@@ -75,7 +81,7 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
 
     temp_user_dir = "/tmp/libreoffice_user"
     os.makedirs(temp_user_dir, exist_ok=True)
-    os.environ['HOME'] = temp_user_dir
+    os.environ["HOME"] = temp_user_dir
 
     # The command to run LibreOffice in headless mode
     command = [
@@ -94,11 +100,10 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
         base_name = os.path.splitext(os.path.basename(input_docx_path))[0]
         pdf_path = os.path.join(user_path, f"{base_name}.pdf")
 
-        
         pprint(f"Successfully converted '{input_docx_path}' to PDF in '{user_path}'.")
 
         return pdf_path
-        
+
     except FileNotFoundError:
         pprint(
             "Error: LibreOffice executable not found. Please ensure it's installed and in your PATH."
@@ -107,6 +112,7 @@ def convert_docx_to_pdf_libreoffice(input_docx_path, user_path=None):
         pprint(f"An error occurred during conversion:")
         pprint(f"Command output: {e.stdout}")
         pprint(f"Command error: {e.stderr}")
+
 
 def create_user_doc(user_path, template_name, context, font_name="Arial"):
     user_path_docx = create_docx_from_data(
@@ -119,4 +125,3 @@ def create_user_doc(user_path, template_name, context, font_name="Arial"):
     pprint(f"{user_path_docx}------------")
     # pdf_path = convert_docx_to_pdf_libreoffice(input_docx_path=user_path_docx, user_path=user_path)
     return user_path_docx
-

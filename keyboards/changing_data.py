@@ -3,7 +3,10 @@ from localization import _
 
 
 def start_changing_data_keyboard(
-    return_from_change: str | None = None, lang: str = "ru", buttons: list = [], custom_text=False
+    return_from_change: str | None = None,
+    lang: str = "ru",
+    buttons: list = [],
+    custom_text=False,
 ):
     """Клавиатура для начала изменения данных"""
     if return_from_change is None:
@@ -19,7 +22,7 @@ def start_changing_data_keyboard(
             text=btn_text,
             callback_data=button["callback_text"],
         )
-    
+
     builder.button(
         text=_.get_text("return_from_change_data", lang),
         callback_data=return_from_change,

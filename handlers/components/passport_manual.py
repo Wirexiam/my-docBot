@@ -24,7 +24,13 @@ def _storage_key(state_data: dict) -> str:
 
 # ───────────────────────── старт ручного ввода ─────────────────────────
 @passport_manual_router.callback_query(
-    F.data.in_({"passport_manual_start", "passport_old_manual_start", "passport_new_manual_start"})
+    F.data.in_(
+        {
+            "passport_manual_start",
+            "passport_old_manual_start",
+            "passport_new_manual_start",
+        }
+    )
 )
 async def handle_passport_manual_start(callback: CallbackQuery, state: FSMContext):
     # определяем режим
@@ -48,8 +54,14 @@ async def handle_passport_manual_start(callback: CallbackQuery, state: FSMContex
         )
     else:
         # Авто-распознавание контекста
-        is_wa = sd.get("ocr_flow") == "wa" or sd.get("from_action") == PatentedWorkActivity.passport_data
-        is_arrival = sd.get("ocr_flow") == "arrival" or sd.get("from_action") == Arrival_transfer.after_passport
+        is_wa = (
+            sd.get("ocr_flow") == "wa"
+            or sd.get("from_action") == PatentedWorkActivity.passport_data
+        )
+        is_arrival = (
+            sd.get("ocr_flow") == "arrival"
+            or sd.get("from_action") == Arrival_transfer.after_passport
+        )
 
         if is_wa:
             passport_title_key = "wa_passport_title"
@@ -57,7 +69,8 @@ async def handle_passport_manual_start(callback: CallbackQuery, state: FSMContex
                 passport_input_mode="new",
                 passport_data={},
                 from_action=PatentedWorkActivity.passport_data,
-                next_states=sd.get("next_states") or [PatentedWorkActivity.patent_entry],
+                next_states=sd.get("next_states")
+                or [PatentedWorkActivity.patent_entry],
                 ocr_flow="wa",
             )
         elif is_arrival:
@@ -255,10 +268,21 @@ async def handle_passport_issue_place_input(message: Message, state: FSMContext)
             f"⏳ Срок действия: {_v(pd,'passport_expiry_date')}\n"
         )
         from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
         kb = InlineKeyboardMarkup(
             inline_keyboard=[
-                [InlineKeyboardButton(text="✅ Всё верно — перейти к выбору основания", callback_data="sp_after_passport")],
-                [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang), callback_data="new_edit")],
+                [
+                    InlineKeyboardButton(
+                        text="✅ Всё верно — перейти к выбору основания",
+                        callback_data="sp_after_passport",
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        text=_.get_text("buttons.new_edit", lang),
+                        callback_data="new_edit",
+                    )
+                ],
             ]
         )
         await message.answer(text, reply_markup=kb)
@@ -267,6 +291,7 @@ async def handle_passport_issue_place_input(message: Message, state: FSMContext)
     # B. Штамп ВНЖ — мост старого паспорта
     if from_action == Stamp_transfer.after_old_passport:
         from handlers.stamp_transfer import handle_old_passport_data
+
         await state.set_state(Stamp_transfer.after_old_passport)
         await handle_old_passport_data(message, state)
         return
@@ -274,6 +299,7 @@ async def handle_passport_issue_place_input(message: Message, state: FSMContext)
     # C. Work Activity (патент) — последний ввод «кем выдан» принимает WA-хэндлер
     if from_action == PatentedWorkActivity.passport_data:
         from handlers.work_activity import handle_passport_data
+
         await state.set_state(PatentedWorkActivity.passport_data)
         await handle_passport_data(message, state)
         return
@@ -287,20 +313,24 @@ async def handle_passport_issue_place_input(message: Message, state: FSMContext)
 
         # Подготовим «следующие состояния» для блока «о доме» после миграционной карты
         from states.components.home_migr_data import HomeMigrData
+
         next_states = [HomeMigrData.adress, Arrival_transfer.after_about_home]
         await state.update_data(
-            next_states=next_states,
-            from_action=Arrival_transfer.after_about_home
+            next_states=next_states, from_action=Arrival_transfer.after_about_home
         )
 
         # Рендерим старт миграционной карты
         from keyboards.migration_card import kbs_migr_arrival
+
         text = f"{_.get_text('migr_card_arrival.title', lang)}\n{_.get_text('migr_card_arrival.description', lang)}"
         await message.answer(text=text, reply_markup=kbs_migr_arrival(lang))
         return
 
     # D. Дефолт — на случай старых веток
-    next_states = list(sd.get("next_states") or [LiveAdress.adress, PhoneNumberStates.phone_number_input])
+    next_states = list(
+        sd.get("next_states")
+        or [LiveAdress.adress, PhoneNumberStates.phone_number_input]
+    )
     if next_states:
         await state.update_data(next_states=next_states[1:])
         await state.set_state(next_states[0])

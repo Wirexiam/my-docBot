@@ -8,17 +8,15 @@ def get_callback_btns(btns: dict[str, str], lang, sizes: tuple[int] = (1,), url=
     keyboard = InlineKeyboardBuilder()
 
     for key, data in btns.items():
-        keyboard.add(InlineKeyboardButton(text=_.get_text(key, lang), callback_data=data))
+        keyboard.add(
+            InlineKeyboardButton(text=_.get_text(key, lang), callback_data=data)
+        )
 
     if url:
         for text, data in url.items():
             keyboard.add(InlineKeyboardButton(text=text, url=data))
-    
 
     return keyboard.adjust(*sizes).as_markup()
-
-
-
 
 
 def get_check_data_before_gen(lang: str = "ru"):

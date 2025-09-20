@@ -1,6 +1,6 @@
 from pprint import pprint
 from aiogram import Router, F
-from aiogram.types import CallbackQuery, Message,FSInputFile
+from aiogram.types import CallbackQuery, Message, FSInputFile
 from aiogram.filters import StateFilter
 
 from aiogram.fsm.context import FSMContext
@@ -91,9 +91,8 @@ async def get_income_last_year_msg(callback, state):
         "income_last_year.message_1.btn_0": "btn_0",
     }
 
-
     if not is_now_edit:
-        btns['income_last_year.message_1.btn_back'] = 'btn_back'
+        btns["income_last_year.message_1.btn_back"] = "btn_back"
     await callback.message.edit_text(text, reply_markup=get_callback_btns(btns, lang))
     await state.set_state(IncomeLastYearStates.start)
 
@@ -677,6 +676,7 @@ async def edit_doc_residence_notification(message: Message, state: FSMContext):
 
     await check_doc_residence_notification(message, state)
 
+
 # {'RP_issue_date': '14.11.2023',
 #  'RP_issue_place': 'ГУ МВД России по г. Санкт-Петербургу и Ленинградской обл',
 #  'RP_serial_number': '83№08725021',
@@ -726,7 +726,9 @@ async def edit_doc_residence_notification(message: Message, state: FSMContext):
 #                                       'к.1,лит.А, кв.68'}]}
 
 
-@doc_residence_notification_router.callback_query(F.data == "all_true_in_doc_residence_notification",)
+@doc_residence_notification_router.callback_query(
+    F.data == "all_true_in_doc_residence_notification",
+)
 async def generate_doc_residence_notification(
     callback: CallbackQuery, state: FSMContext
 ):
@@ -742,33 +744,75 @@ async def generate_doc_residence_notification(
     live_adress_short = live_adress[:75]
     live_adress_split = live_adress[75:]
     worked_last_year = state_data.get("worked_last_year", [])
-    working_start_1 = worked_last_year[0].get("hiring_date", "") if len(worked_last_year) > 0 else ""
-    working_start_2 = worked_last_year[1].get("hiring_date", "") if len(worked_last_year) > 1 else ""
-    working_start_3 = worked_last_year[2].get("hiring_date", "") if len(worked_last_year) > 2 else ""
-    working_end_1 = worked_last_year[0].get("dismissal_date", "") if len(worked_last_year) > 0 else ""
-    working_end_2 = worked_last_year[1].get("dismissal_date", "") if len(worked_last_year) > 1 else ""
-    working_end_3 = worked_last_year[2].get("dismissal_date", "") if len(worked_last_year) > 2 else ""
-    working_org_1 = worked_last_year[0].get("org_name", "") if len(worked_last_year) > 0 else ""
-    working_org_2 = worked_last_year[1].get("org_name", "") if len(worked_last_year) > 1 else ""
-    working_org_3 = worked_last_year[2].get("org_name", "") if len(worked_last_year) > 2 else ""
-    working_job_1 = worked_last_year[0].get("job_title", "") if len(worked_last_year) > 0 else ""
-    working_job_2 = worked_last_year[1].get("job_title", "") if len(worked_last_year) > 1 else ""
-    working_job_3 = worked_last_year[2].get("job_title", "") if len(worked_last_year) > 2 else ""
+    working_start_1 = (
+        worked_last_year[0].get("hiring_date", "") if len(worked_last_year) > 0 else ""
+    )
+    working_start_2 = (
+        worked_last_year[1].get("hiring_date", "") if len(worked_last_year) > 1 else ""
+    )
+    working_start_3 = (
+        worked_last_year[2].get("hiring_date", "") if len(worked_last_year) > 2 else ""
+    )
+    working_end_1 = (
+        worked_last_year[0].get("dismissal_date", "")
+        if len(worked_last_year) > 0
+        else ""
+    )
+    working_end_2 = (
+        worked_last_year[1].get("dismissal_date", "")
+        if len(worked_last_year) > 1
+        else ""
+    )
+    working_end_3 = (
+        worked_last_year[2].get("dismissal_date", "")
+        if len(worked_last_year) > 2
+        else ""
+    )
+    working_org_1 = (
+        worked_last_year[0].get("org_name", "") if len(worked_last_year) > 0 else ""
+    )
+    working_org_2 = (
+        worked_last_year[1].get("org_name", "") if len(worked_last_year) > 1 else ""
+    )
+    working_org_3 = (
+        worked_last_year[2].get("org_name", "") if len(worked_last_year) > 2 else ""
+    )
+    working_job_1 = (
+        worked_last_year[0].get("job_title", "") if len(worked_last_year) > 0 else ""
+    )
+    working_job_2 = (
+        worked_last_year[1].get("job_title", "") if len(worked_last_year) > 1 else ""
+    )
+    working_job_3 = (
+        worked_last_year[2].get("job_title", "") if len(worked_last_year) > 2 else ""
+    )
     if working_org_1 == "не работаю":
         working_place_1 = "не работаю"
     else:
-        working_place_1= f"{working_org_1}, {working_job_1}" if len(worked_last_year) > 0 else ""
+        working_place_1 = (
+            f"{working_org_1}, {working_job_1}" if len(worked_last_year) > 0 else ""
+        )
     if working_org_2 == "не работаю":
         working_place_2 = "не работаю"
     else:
-        working_place_2= f"{working_org_2}, {working_job_2}" if len(worked_last_year) > 1 else ""
+        working_place_2 = (
+            f"{working_org_2}, {working_job_2}" if len(worked_last_year) > 1 else ""
+        )
     if working_org_3 == "не работаю":
         working_place_3 = "не работаю"
     else:
-        working_place_3= f"{working_org_3}, {working_job_3}" if len(worked_last_year) > 2 else ""
-    working_adress_1 = worked_last_year[0].get("work_adress", "") if len(worked_last_year) > 0 else ""
-    working_adress_2 = worked_last_year[1].get("work_adress", "") if len(worked_last_year) > 1 else ""
-    working_adress_3 = worked_last_year[2].get("work_adress", "") if len(worked_last_year) > 2 else ""
+        working_place_3 = (
+            f"{working_org_3}, {working_job_3}" if len(worked_last_year) > 2 else ""
+        )
+    working_adress_1 = (
+        worked_last_year[0].get("work_adress", "") if len(worked_last_year) > 0 else ""
+    )
+    working_adress_2 = (
+        worked_last_year[1].get("work_adress", "") if len(worked_last_year) > 1 else ""
+    )
+    working_adress_3 = (
+        worked_last_year[2].get("work_adress", "") if len(worked_last_year) > 2 else ""
+    )
     outside_ru = state_data.get("travel_outside_Ru", [])
     outside_country_1 = outside_ru[0].get("place", "") if len(outside_ru) > 0 else ""
     outside_country_2 = outside_ru[1].get("place", "") if len(outside_ru) > 1 else ""
@@ -777,20 +821,40 @@ async def generate_doc_residence_notification(
     outside_time_2 = outside_ru[1].get("date", "") if len(outside_ru) > 1 else ""
     outside_time_3 = outside_ru[2].get("date", "") if len(outside_ru) > 2 else ""
     income_last_year = state_data.get("income_last_year", [])
-    source_of_income_1 = income_last_year[0].get("form_NDFL", "") if len(income_last_year) > 0 else ""
-    source_of_income_2 = income_last_year[1].get("form_NDFL", "") if len(income_last_year) > 1 else ""
-    source_of_income_3 = income_last_year[2].get("form_NDFL", "") if len(income_last_year) > 2 else ""
-    source_of_income_4 = income_last_year[3].get("form_NDFL", "") if len(income_last_year) > 3 else ""
-    source_of_income_5 = income_last_year[4].get("form_NDFL", "") if len(income_last_year) > 4 else ""
-    salary_of_income_1 = income_last_year[0].get("income", "") if len(income_last_year) > 0 else ""
-    salary_of_income_2 = income_last_year[1].get("income", "") if len(income_last_year) > 1 else ""
-    salary_of_income_3 = income_last_year[2].get("income", "") if len(income_last_year) > 2 else ""
-    salary_of_income_4 = income_last_year[3].get("income", "") if len(income_last_year) > 3 else ""
-    salary_of_income_5 = income_last_year[4].get("income", "") if len(income_last_year) > 4 else ""
+    source_of_income_1 = (
+        income_last_year[0].get("form_NDFL", "") if len(income_last_year) > 0 else ""
+    )
+    source_of_income_2 = (
+        income_last_year[1].get("form_NDFL", "") if len(income_last_year) > 1 else ""
+    )
+    source_of_income_3 = (
+        income_last_year[2].get("form_NDFL", "") if len(income_last_year) > 2 else ""
+    )
+    source_of_income_4 = (
+        income_last_year[3].get("form_NDFL", "") if len(income_last_year) > 3 else ""
+    )
+    source_of_income_5 = (
+        income_last_year[4].get("form_NDFL", "") if len(income_last_year) > 4 else ""
+    )
+    salary_of_income_1 = (
+        income_last_year[0].get("income", "") if len(income_last_year) > 0 else ""
+    )
+    salary_of_income_2 = (
+        income_last_year[1].get("income", "") if len(income_last_year) > 1 else ""
+    )
+    salary_of_income_3 = (
+        income_last_year[2].get("income", "") if len(income_last_year) > 2 else ""
+    )
+    salary_of_income_4 = (
+        income_last_year[3].get("income", "") if len(income_last_year) > 3 else ""
+    )
+    salary_of_income_5 = (
+        income_last_year[4].get("income", "") if len(income_last_year) > 4 else ""
+    )
     ndfl_values = {
-        "form_3_NDFL":"Декларация по форме 3-НДФЛ",
-        "form_2_NDFL":"Справка по форме 2-НДФЛ",
-        "no":"Нет дохода",
+        "form_3_NDFL": "Декларация по форме 3-НДФЛ",
+        "form_2_NDFL": "Справка по форме 2-НДФЛ",
+        "no": "Нет дохода",
     }
     data = {
         "mvd_adress_short_1": mvd_adress_short_1,
@@ -820,13 +884,21 @@ async def generate_doc_residence_notification(
         "outside_time_1": outside_time_1,
         "outside_time_2": outside_time_2,
         "outside_time_3": outside_time_3,
-        "pass_num" : state_data.get("passport_data", {}).get("passport_serial_number", ""),
-        "pass_isp" : state_data.get("passport_data", {}).get("passport_issue_place", ""),
-        "pas_isd" : state_data.get("passport_data", {}).get("passport_issue_date", ""),
-        "pas_exp" : state_data.get("passport_data", {}).get("passport_expiry_date", ""),
-        "residence_permit_serial_number" : state_data.get("residence_permit", {}).get("serial_number", ""),
-        "residence_permit_issue_date" : state_data.get("residence_permit", {}).get("issue_date", ""),
-        "residence_permit_issue_place" : state_data.get("residence_permit", {}).get("issue_place", ""),
+        "pass_num": state_data.get("passport_data", {}).get(
+            "passport_serial_number", ""
+        ),
+        "pass_isp": state_data.get("passport_data", {}).get("passport_issue_place", ""),
+        "pas_isd": state_data.get("passport_data", {}).get("passport_issue_date", ""),
+        "pas_exp": state_data.get("passport_data", {}).get("passport_expiry_date", ""),
+        "residence_permit_serial_number": state_data.get("residence_permit", {}).get(
+            "serial_number", ""
+        ),
+        "residence_permit_issue_date": state_data.get("residence_permit", {}).get(
+            "issue_date", ""
+        ),
+        "residence_permit_issue_place": state_data.get("residence_permit", {}).get(
+            "issue_place", ""
+        ),
         "source_of_income_1": ndfl_values.get(source_of_income_1, ""),
         "source_of_income_2": ndfl_values.get(source_of_income_2, ""),
         "source_of_income_3": ndfl_values.get(source_of_income_3, ""),
@@ -837,13 +909,15 @@ async def generate_doc_residence_notification(
         "salary_of_income_3": salary_of_income_3,
         "salary_of_income_4": salary_of_income_4,
         "salary_of_income_5": salary_of_income_5,
-    }    
-    doc = create_user_doc(context=data, template_name='check_living_vnj', user_path='pdf_generator')
-    ready_doc = FSInputFile(doc, filename='Уведомление о подтверждении проживания по ВНЖ.docx')
+    }
+    doc = create_user_doc(
+        context=data, template_name="check_living_vnj", user_path="pdf_generator"
+    )
+    ready_doc = FSInputFile(
+        doc, filename="Уведомление о подтверждении проживания по ВНЖ.docx"
+    )
     await state.clear()
 
     text = f"{_.get_text('ready_to_download_doc', lang)}\n"
     await callback.message.edit_text(text=text)
-    await callback.message.answer_document(
-        document=ready_doc
-    )
+    await callback.message.answer_document(document=ready_doc)

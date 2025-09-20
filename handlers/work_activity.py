@@ -155,8 +155,14 @@ async def wa_after_passport(cb: CallbackQuery, state: FSMContext):
         f"{_.get_text('wa_patent.wa_patent_start.title', lang)}\n"
         f"{_.get_text('wa_patent.wa_patent_start.description', lang)}"
     )
-    from keyboards.components.residence_reason_patent import get_residence_reason_photo_or_manual_keyboard
-    await cb.message.edit_text(text=text, reply_markup=get_residence_reason_photo_or_manual_keyboard(lang))
+    from keyboards.components.residence_reason_patent import (
+        get_residence_reason_photo_or_manual_keyboard,
+    )
+
+    await cb.message.edit_text(
+        text=text, reply_markup=get_residence_reason_photo_or_manual_keyboard(lang)
+    )
+
 
 # ───────────────────────── при ручном вводе паспорта (последнее поле «кем выдан») ─────────────────────────
 @work_activity_router.message(PatentedWorkActivity.passport_data)

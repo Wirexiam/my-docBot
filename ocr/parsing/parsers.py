@@ -6,7 +6,6 @@ from typing import Dict, List, Optional, Tuple
 from ocr.parsing.mrz import parse_mrz
 
 
-
 # --- политика регистра для ФИО ---
 # варианты:
 #   "title"    -> Имя Отчество Фамилия (Title Case)
@@ -16,11 +15,13 @@ CASE_POLICY = "title"
 
 # плохие паттерны для токенов ФИО
 BAD_NAME_PATTERNS = [
-    re.compile(r"[0-9]"),                 # цифры в имени
-    re.compile(r"[=+*/\\|]"),             # спецсимволы
-    re.compile(r"[A-Z]{15,}"),            # слишком длинные "слова" без пробела
+    re.compile(r"[0-9]"),  # цифры в имени
+    re.compile(r"[=+*/\\|]"),  # спецсимволы
+    re.compile(r"[A-Z]{15,}"),  # слишком длинные "слова" без пробела
 ]
-TAG_RX = re.compile(r"<[^>\n]{1,80}>")  # срежем любые текстовые "теги" в угловых скобках
+TAG_RX = re.compile(
+    r"<[^>\n]{1,80}>"
+)  # срежем любые текстовые "теги" в угловых скобках
 
 # whitelist для отчества по-узбекски
 VALID_PATRONYMIC_SUFFIX = re.compile(r"(O['’`]G?LI|UGLI|QIZI)$", re.I)
@@ -32,43 +33,109 @@ DATE_RX = re.compile(r"\b(\d{1,2})[.\-/ ](\d{1,2})[.\-/ ](\d{2,4})\b")
 # слова/метки, которые не являются персональными значениями
 BAD_TOKENS = {
     # системные/фоновые
-    "shaxsiyimzo", "holderssignature", "holder'ssignature",
-    "o'zbekistonrespublikasi", "uzbekistonrespublikasi", "respublikasi",
-    "republicofuzbekistan", "republic",
-    "passport", "pasport", "pasporti",
+    "shaxsiyimzo",
+    "holderssignature",
+    "holder'ssignature",
+    "o'zbekistonrespublikasi",
+    "uzbekistonrespublikasi",
+    "respublikasi",
+    "republicofuzbekistan",
+    "republic",
+    "passport",
+    "pasport",
+    "pasporti",
     # метки полей
-    "familiyasi", "surname",
-    "ismi", "givenname", "givennames", "name",
-    "otasiningismi", "middlename", "fathersname",
-    "tug'ilgansanasi", "tugilgan sanasi", "tugilgan", "sanasi",
-    "dateofbirth", "date of birth",
-    "tugilganjoyi", "tug'ilgan joyi", "tugilgan joyi", "joyi", "joy",
-    "placeofbirth", "place of birth",
-    "dateofbirth", "date of birth",
-    "dateofissue", "date of issue",
-    "dateofexpiry", "date of expiry",
-    "jinsi", "sex",
-    "fuqaroligi", "nationality",
-    "berilgansanasi", "dateofissue",
-    "amalqilishmuddati", "dateofexpiry",
-    "davlatkodi", "countrycode",
-    "statepersonalizationcentre", "personalizationcentre", "authorit", "centre",
+    "familiyasi",
+    "surname",
+    "ismi",
+    "givenname",
+    "givennames",
+    "name",
+    "otasiningismi",
+    "middlename",
+    "fathersname",
+    "tug'ilgansanasi",
+    "tugilgan sanasi",
+    "tugilgan",
+    "sanasi",
+    "dateofbirth",
+    "date of birth",
+    "tugilganjoyi",
+    "tug'ilgan joyi",
+    "tugilgan joyi",
+    "joyi",
+    "joy",
+    "placeofbirth",
+    "place of birth",
+    "dateofbirth",
+    "date of birth",
+    "dateofissue",
+    "date of issue",
+    "dateofexpiry",
+    "date of expiry",
+    "jinsi",
+    "sex",
+    "fuqaroligi",
+    "nationality",
+    "berilgansanasi",
+    "dateofissue",
+    "amalqilishmuddati",
+    "dateofexpiry",
+    "davlatkodi",
+    "countrycode",
+    "statepersonalizationcentre",
+    "personalizationcentre",
+    "authorit",
+    "centre",
     # справочное
-    "uzbekistan", "uzbekiston", "uzb", "erkak", "erkek", "male", "female",
+    "uzbekistan",
+    "uzbekiston",
+    "uzb",
+    "erkak",
+    "erkek",
+    "male",
+    "female",
     # шум OCR / техтеги
-    "hw", "h/w", "rot", "rot0", "rot90", "rot180", "rot270",
-
+    "hw",
+    "h/w",
+    "rot",
+    "rot0",
+    "rot90",
+    "rot180",
+    "rot270",
 }
 
 # слова и фразы, которые НИКОГДА не являются частями ФИО
 STOPWORDS = {
     # подпись / служебные
-    "signature", "holder", "holders", "imzo", "shaxsiy", "shaxsiyimzo",
-    "personalization", "centre", "center", "state", "authority", "organ", "organi",
-    "passport", "pasport", "type", "country", "code", "nationality",
-    "male", "female", "erkak", "ayol",
+    "signature",
+    "holder",
+    "holders",
+    "imzo",
+    "shaxsiy",
+    "shaxsiyimzo",
+    "personalization",
+    "centre",
+    "center",
+    "state",
+    "authority",
+    "organ",
+    "organi",
+    "passport",
+    "pasport",
+    "type",
+    "country",
+    "code",
+    "nationality",
+    "male",
+    "female",
+    "erkak",
+    "ayol",
     # общие «служебные» слова
-    "republic", "uzbekistan", "uzbekiston", "respublikasi",
+    "republic",
+    "uzbekistan",
+    "uzbekiston",
+    "respublikasi",
 }
 
 # карты заголовков
@@ -101,14 +168,36 @@ RU_HEADINGS = {
 
 # ---------- утилиты нормализации ----------
 
-_DIACRIT_MAP = str.maketrans({
-    "Ä": "A", "Å": "A", "Á": "A", "Â": "A", "Ã": "A", "Ā": "A",
-    "Ö": "O", "Ó": "O", "Ô": "O", "Õ": "O", "Ō": "O",
-    "Ü": "U", "Ú": "U", "Û": "U", "Ū": "U",
-    "É": "E", "È": "E", "Ê": "E", "Ē": "E",
-    "Í": "I", "Ì": "I", "Î": "I", "Ī": "I",
-    "Ç": "C", "Ñ": "N",
-})
+_DIACRIT_MAP = str.maketrans(
+    {
+        "Ä": "A",
+        "Å": "A",
+        "Á": "A",
+        "Â": "A",
+        "Ã": "A",
+        "Ā": "A",
+        "Ö": "O",
+        "Ó": "O",
+        "Ô": "O",
+        "Õ": "O",
+        "Ō": "O",
+        "Ü": "U",
+        "Ú": "U",
+        "Û": "U",
+        "Ū": "U",
+        "É": "E",
+        "È": "E",
+        "Ê": "E",
+        "Ē": "E",
+        "Í": "I",
+        "Ì": "I",
+        "Î": "I",
+        "Ī": "I",
+        "Ç": "C",
+        "Ñ": "N",
+    }
+)
+
 
 def _norm_unicode(s: str) -> str:
     if not s:
@@ -116,11 +205,20 @@ def _norm_unicode(s: str) -> str:
     s = unicodedata.normalize("NFC", s)
     return s.translate(_DIACRIT_MAP)
 
+
 def _normalize_quotes(s: str) -> str:
-    return _norm_unicode(s).replace("ʼ", "'").replace("ʻ", "'").replace("’", "'").replace("‘", "'")
+    return (
+        _norm_unicode(s)
+        .replace("ʼ", "'")
+        .replace("ʻ", "'")
+        .replace("’", "'")
+        .replace("‘", "'")
+    )
+
 
 def _compact(s: str) -> str:
     return re.sub(r"[^a-z0-9]+", "", _normalize_quotes(s).lower())
+
 
 def _contains_bad_token(s: str) -> bool:
     c = _compact(s)
@@ -136,17 +234,19 @@ def _contains_bad_token(s: str) -> bool:
         return True
     return False
 
+
 def _only_letters(s: str) -> str:
     return re.sub(r"[^A-Za-zА-Яа-яЁёʼ’' -]+", "", _norm_unicode(s)).strip()
+
 
 def _is_person_value(s: str) -> bool:
     t = _only_letters(s)
     if not t:
         return False
-    if _contains_bad_token(t):   # ← стоп-слова/токены
+    if _contains_bad_token(t):  # ← стоп-слова/токены
         return False
     letters_only = re.sub(r"[^A-Za-zА-Яа-яЁё]", "", t)
-    if len(letters_only) <= 2:   # одно-/двухбуквенные шумы
+    if len(letters_only) <= 2:  # одно-/двухбуквенные шумы
         return False
     if len(t) > 64:
         return False
@@ -159,11 +259,12 @@ def _is_person_value(s: str) -> bool:
         return False
     return True
 
+
 def _pretty_case(s: str, from_mrz: bool = False) -> str:
     """Форматирование регистра для ФИО согласно CASE_POLICY.
-       - "title"    : всегда Title Case
-       - "upper"    : всегда UPPER
-       - "mrz_caps" : если from_mrz=True -> UPPER, иначе Title Case
+    - "title"    : всегда Title Case
+    - "upper"    : всегда UPPER
+    - "mrz_caps" : если from_mrz=True -> UPPER, иначе Title Case
     """
     if not s:
         return ""
@@ -176,6 +277,7 @@ def _pretty_case(s: str, from_mrz: bool = False) -> str:
     # mrz_caps (по умолчанию поведение «умное»)
     return s.upper() if from_mrz else s.title()
 
+
 def _clean_line_soft(s: str) -> str:
     if not s:
         return ""
@@ -186,13 +288,16 @@ def _clean_line_soft(s: str) -> str:
 
 # ---------- даты ----------
 
+
 def _norm_date_any(s: str) -> Optional[str]:
     if not s:
         return None
     m = DATE_RX.search(s.replace(",", " "))
     if not m:
         return None
-    d = int(m.group(1)); mth = int(m.group(2)); y = int(m.group(3))
+    d = int(m.group(1))
+    mth = int(m.group(2))
+    y = int(m.group(3))
     if y < 100:
         y = 2000 + y if y <= 25 else 1900 + y
     try:
@@ -201,16 +306,19 @@ def _norm_date_any(s: str) -> Optional[str]:
     except Exception:
         return None
 
+
 def _mrz_date(s: Optional[str]) -> Optional[str]:
     if not s or len(s) < 6:
         return None
     yy, mm, dd = s[0:2], s[2:4], s[4:6]
-    y = int(yy); y += 2000 if y <= 25 else 1900
+    y = int(yy)
+    y += 2000 if y <= 25 else 1900
     try:
         _ = date(y, int(mm), int(dd))
         return f"{int(dd):02d}.{int(mm):02d}.{y:04d}"
     except Exception:
         return None
+
 
 def _plausible(b: Optional[str], i: Optional[str], e: Optional[str]) -> Dict[str, bool]:
     def to_date(x: Optional[str]) -> Optional[date]:
@@ -218,6 +326,7 @@ def _plausible(b: Optional[str], i: Optional[str], e: Optional[str]) -> Dict[str
             return datetime.strptime(x, "%d.%m.%Y").date() if x else None
         except Exception:
             return None
+
     bd, idt, ex = map(to_date, (b, i, e))
     ok = {"birth": False, "issue": False, "expiry": False}
     today = date.today()
@@ -235,7 +344,9 @@ def _plausible(b: Optional[str], i: Optional[str], e: Optional[str]) -> Dict[str
         ok["expiry"] = False
     return ok
 
+
 # ---------- работа с entities ----------
+
 
 def _ent(entities: List[Dict], key: str) -> Optional[str]:
     for e in entities or []:
@@ -246,6 +357,7 @@ def _ent(entities: List[Dict], key: str) -> Optional[str]:
                 return t if _is_person_value(t) else None
     return None
 
+
 def _ent_date(entities: List[Dict], key: str) -> Optional[str]:
     for e in entities or []:
         if (e.get("name") or "").lower() == key:
@@ -255,60 +367,101 @@ def _ent_date(entities: List[Dict], key: str) -> Optional[str]:
                 return x
     return None
 
+
 # ---------- эвристики на ФИО ----------
 
 _SURNAME_SUFFIXES = {
-    "OV","OVA","EV","EVA","YEV","YEVA",
-    "OVICH","OVNA","EVICH","EVNA","YEVICH","YEVNA",
-    "LI","OVI","OVIY",
+    "OV",
+    "OVA",
+    "EV",
+    "EVA",
+    "YEV",
+    "YEVA",
+    "OVICH",
+    "OVNA",
+    "EVICH",
+    "EVNA",
+    "YEVICH",
+    "YEVNA",
+    "LI",
+    "OVI",
+    "OVIY",
 }
+
 
 def _norm_up(s: str) -> str:
     return _normalize_quotes(_only_letters(s)).upper()
+
 
 def _is_patronymic_uz(s: str) -> bool:
     t = _norm_up(s)
     return bool(re.search(r"(O['’`]G?LI|UGLI|QIZI)$", t))
 
+
 def _is_patronymic_ru(s: str) -> bool:
     t = _norm_up(s)
-    return t.endswith(("OVICH","EVICH","YEVICH","OVNA","EVNA","YEVNA"))
+    return t.endswith(("OVICH", "EVICH", "YEVICH", "OVNA", "EVNA", "YEVNA"))
+
 
 def _surname_score(s: str) -> int:
     t = _norm_up(s)
     if not _is_person_value(t):
         return 0
     score = 10
-    if len(t) >= 4: score += 10
-    if len(t) >= 6: score += 10
-    if any(t.endswith(suf) for suf in _SURNAME_SUFFIXES): score += 35
-    if " " not in t: score += 5
+    if len(t) >= 4:
+        score += 10
+    if len(t) >= 6:
+        score += 10
+    if any(t.endswith(suf) for suf in _SURNAME_SUFFIXES):
+        score += 35
+    if " " not in t:
+        score += 5
     return score
+
 
 def _name_score(s: str) -> int:
     t = _norm_up(s)
     if not _is_person_value(t):
         return 0
-    name_suffix_hits = any(t.endswith(end) for end in ("JON","BEK","BEKJON","IDDIN"))
-    common = {"ISLOMDJON","ISLOM","ABDULLOH","MUHAMMAD","DILSHOD","SHERZOD","JASUR","KAMOL","ILHOM","RUSTAM","OGABEK"}
+    name_suffix_hits = any(t.endswith(end) for end in ("JON", "BEK", "BEKJON", "IDDIN"))
+    common = {
+        "ISLOMDJON",
+        "ISLOM",
+        "ABDULLOH",
+        "MUHAMMAD",
+        "DILSHOD",
+        "SHERZOD",
+        "JASUR",
+        "KAMOL",
+        "ILHOM",
+        "RUSTAM",
+        "OGABEK",
+    }
     score = 10 + (15 if name_suffix_hits else 0) + (20 if t in common else 0)
-    if len(t) >= 3: score += 10
+    if len(t) >= 3:
+        score += 10
     return score
+
 
 def _mname_score(s: str) -> int:
     t = _norm_up(s)
     if not _is_person_value(t):
         return 0
     score = 0
-    if _is_patronymic_uz(t) or _is_patronymic_ru(t): score += 50
-    if len(t) >= 6: score += 10
+    if _is_patronymic_uz(t) or _is_patronymic_ru(t):
+        score += 50
+    if len(t) >= 6:
+        score += 10
     return score
 
+
 # ---------- извлечение по заголовкам ----------
+
 
 def _has_heading(s: str, heads: List[str]) -> bool:
     low = _normalize_quotes(s).lower()
     return any(h in low for h in heads)
+
 
 def _extract_after_heading(lines: List[str], heads: List[str]) -> Optional[str]:
     for i, raw in enumerate(lines):
@@ -321,6 +474,7 @@ def _extract_after_heading(lines: List[str], heads: List[str]) -> Optional[str]:
                         return cand
     return None
 
+
 def _extract_date_by_headings(lines: List[str], heads: List[str]) -> Optional[str]:
     for i, raw in enumerate(lines):
         if _has_heading(raw, heads):
@@ -330,6 +484,7 @@ def _extract_date_by_headings(lines: List[str], heads: List[str]) -> Optional[st
                     if x:
                         return x
     return None
+
 
 def _extract_surname_strict(lines: List[str]) -> Optional[str]:
     """
@@ -358,6 +513,7 @@ def _extract_surname_strict(lines: List[str]) -> Optional[str]:
             break
     return best
 
+
 def _fallback_surname_global(lines: List[str]) -> Optional[str]:
     """
     Если ничего не нашли: пробегаем все строки и берём слово с максимальным surname-score.
@@ -378,8 +534,8 @@ def _fallback_surname_global(lines: List[str]) -> Optional[str]:
     return best
 
 
-
 # ---------- основной парсинг ----------
+
 
 def _gather_candidates(lines: List[str]) -> Tuple[List[str], List[str], List[str]]:
     """Возвращает (surname_candidates, name_candidates, mname_candidates) из всех строк."""
@@ -401,13 +557,15 @@ def _gather_candidates(lines: List[str]) -> Tuple[List[str], List[str], List[str
     return s_c, n_c, m_c
 
 
-
 def _best(items: List[str], scorer) -> Optional[str]:
     if not items:
         return None
     return max(items, key=lambda x: scorer(x) or 0)
 
-def _merge_with_mrz(person: Dict[str, Optional[str]], mrz: Optional[Dict[str, str]]) -> Dict[str, Optional[str]]:
+
+def _merge_with_mrz(
+    person: Dict[str, Optional[str]], mrz: Optional[Dict[str, str]]
+) -> Dict[str, Optional[str]]:
     if not mrz:
         return person
 
@@ -431,8 +589,9 @@ def _merge_with_mrz(person: Dict[str, Optional[str]], mrz: Optional[Dict[str, st
     return person
 
 
-
-def parse_passport(lines: List[str], full_text: str, entities: List[Dict]) -> Dict[str, str]:
+def parse_passport(
+    lines: List[str], full_text: str, entities: List[Dict]
+) -> Dict[str, str]:
     """
     Вход:
       lines     — список строк full_text (по одной строке на элемент OCR)
@@ -456,44 +615,46 @@ def parse_passport(lines: List[str], full_text: str, entities: List[Dict]) -> Di
     mname = _ent(entities, "middle_name")
     birth = _ent_date(entities, "birth_date")
     issue = _ent_date(entities, "issue_date")
-    expiry = _ent_date(entities, "expiration_date") or _ent_date(entities, "expiry_date")
+    expiry = _ent_date(entities, "expiration_date") or _ent_date(
+        entities, "expiry_date"
+    )
 
     # 3) Второй уровень — заголовки (UZ → EN → RU)
     if not surname:
         surname = (
-            _extract_after_heading(lines, UZ_HEADINGS["surname"]) or
-            _extract_after_heading(lines, EN_HEADINGS["surname"]) or
-            _extract_after_heading(lines, RU_HEADINGS["surname"])
+            _extract_after_heading(lines, UZ_HEADINGS["surname"])
+            or _extract_after_heading(lines, EN_HEADINGS["surname"])
+            or _extract_after_heading(lines, RU_HEADINGS["surname"])
         )
     if not name:
         name = (
-            _extract_after_heading(lines, UZ_HEADINGS["name"]) or
-            _extract_after_heading(lines, EN_HEADINGS["name"]) or
-            _extract_after_heading(lines, RU_HEADINGS["name"])
+            _extract_after_heading(lines, UZ_HEADINGS["name"])
+            or _extract_after_heading(lines, EN_HEADINGS["name"])
+            or _extract_after_heading(lines, RU_HEADINGS["name"])
         )
     if not mname:
         mname = (
-            _extract_after_heading(lines, UZ_HEADINGS["mname"]) or
-            _extract_after_heading(lines, EN_HEADINGS["mname"]) or
-            _extract_after_heading(lines, RU_HEADINGS["mname"])
+            _extract_after_heading(lines, UZ_HEADINGS["mname"])
+            or _extract_after_heading(lines, EN_HEADINGS["mname"])
+            or _extract_after_heading(lines, RU_HEADINGS["mname"])
         )
     if not birth:
         birth = (
-            _extract_date_by_headings(lines, UZ_HEADINGS["dob"]) or
-            _extract_date_by_headings(lines, EN_HEADINGS["dob"]) or
-            _extract_date_by_headings(lines, RU_HEADINGS["dob"])
+            _extract_date_by_headings(lines, UZ_HEADINGS["dob"])
+            or _extract_date_by_headings(lines, EN_HEADINGS["dob"])
+            or _extract_date_by_headings(lines, RU_HEADINGS["dob"])
         )
     if not issue:
         issue = (
-            _extract_date_by_headings(lines, UZ_HEADINGS["issue"]) or
-            _extract_date_by_headings(lines, EN_HEADINGS["issue"]) or
-            _extract_date_by_headings(lines, RU_HEADINGS["issue"])
+            _extract_date_by_headings(lines, UZ_HEADINGS["issue"])
+            or _extract_date_by_headings(lines, EN_HEADINGS["issue"])
+            or _extract_date_by_headings(lines, RU_HEADINGS["issue"])
         )
     if not expiry:
         expiry = (
-            _extract_date_by_headings(lines, UZ_HEADINGS["expiry"]) or
-            _extract_date_by_headings(lines, EN_HEADINGS["expiry"]) or
-            _extract_date_by_headings(lines, RU_HEADINGS["expiry"])
+            _extract_date_by_headings(lines, UZ_HEADINGS["expiry"])
+            or _extract_date_by_headings(lines, EN_HEADINGS["expiry"])
+            or _extract_date_by_headings(lines, RU_HEADINGS["expiry"])
         )
 
     # 4) Третий уровень — эвристики и кандидаты
@@ -514,7 +675,14 @@ def parse_passport(lines: List[str], full_text: str, entities: List[Dict]) -> Di
 
     # 5) MRZ-валидация / дополнение
     mrz = parse_mrz(full_text or "")
-    person = {"surname": surname, "name": name, "mname": mname, "birth": birth, "issue": issue, "expiry": expiry}
+    person = {
+        "surname": surname,
+        "name": name,
+        "mname": mname,
+        "birth": birth,
+        "issue": issue,
+        "expiry": expiry,
+    }
     person = _merge_with_mrz(person, mrz)
 
     if not person.get("surname"):
@@ -527,7 +695,9 @@ def parse_passport(lines: List[str], full_text: str, entities: List[Dict]) -> Di
                 person["surname"] = glob_s
 
     # 6) Форматируем ФИО по политике регистра
-    surname_fmt = _pretty_case(person.get("surname"), from_mrz=bool(mrz and mrz.get("surname")))
+    surname_fmt = _pretty_case(
+        person.get("surname"), from_mrz=bool(mrz and mrz.get("surname"))
+    )
     name_fmt = _pretty_case(person.get("name"), from_mrz=bool(mrz and mrz.get("name")))
     mname_fmt = _pretty_case(person.get("mname"), from_mrz=False)
 

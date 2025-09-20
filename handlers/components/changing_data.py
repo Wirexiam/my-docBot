@@ -212,7 +212,9 @@ async def handle_change_dict_data(callback: CallbackQuery, state: FSMContext):
 @changing_data_router.callback_query(F.data.startswith("change_value_"))
 async def handle_change_value_data(callback: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
-    dict_key = callback.data.split("change_value_")[1]   # например: passport_data.full_name
+    dict_key = callback.data.split("change_value_")[
+        1
+    ]  # например: passport_data.full_name
     lang = state_data.get("language", "ru")
 
     # 1) ставим маркер ожидания и переводим FSM на нужный handler

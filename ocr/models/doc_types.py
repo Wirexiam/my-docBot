@@ -1,6 +1,7 @@
 # app/models/doc_types.py
 from enum import Enum
 
+
 class DocType(str, Enum):
     PASSPORT = "passport"
     VNZH_RESIDENCE_NOTICE = "vnzh_residence_notice"

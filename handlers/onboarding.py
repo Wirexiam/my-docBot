@@ -40,18 +40,17 @@ async def consent_agreed(callback: CallbackQuery, state: FSMContext):
         language_text, reply_markup=get_language_keyboard()
     )
 
+
 @onboarding_router.callback_query(F.data == "consent_refuse")
 async def consent_refused(callback: CallbackQuery, state: FSMContext):
     """Пользователь отказался от обработки данных"""
     await state.clear()
-
 
     refusal_text = (
         f"{_.get_text('refusal.title')}\n" f"{_.get_text('refusal.description')}"
     )
 
     await callback.message.edit_text(refusal_text, reply_markup=get_refusal_keyboard())
-
 
 
 @onboarding_router.callback_query(F.data == "back_to_consent")
@@ -94,7 +93,6 @@ async def language_selected(callback: CallbackQuery, state: FSMContext):
     )
 
 
-
 @onboarding_router.message(Command("lang"))
 async def consent_agreed(message: Message, state: FSMContext):
     """Пользователь согласился на обработку данных"""
@@ -102,6 +100,4 @@ async def consent_agreed(message: Message, state: FSMContext):
 
     language_text = f"{_.get_text('language.title')}\n" f"{_.get_text('language.note')}"
 
-    await message.answer(
-        language_text, reply_markup=get_language_keyboard()
-    )
+    await message.answer(language_text, reply_markup=get_language_keyboard())

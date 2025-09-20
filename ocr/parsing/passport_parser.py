@@ -11,13 +11,15 @@ from ocr.parsing.mrz import parse_mrz
 # ───────── нормализация серий/номеров ─────────
 # Поддерживаем: №4010 123456, 4010 123456, AA 5737888, AA5737888 (включая кейс Узбекистана)
 _RX_SERNUM = re.compile(
-    r"(?:№|N[o°]?)\s*?([A-ZА-Я]{0,3}\s*\d{2,4})\s*[-\s]?\s*([A-ZА-Я]?\d{6,9})",
-    re.I
+    r"(?:№|N[o°]?)\s*?([A-ZА-Я]{0,3}\s*\d{2,4})\s*[-\s]?\s*([A-ZА-Я]?\d{6,9})", re.I
 )
-_TRANS_NUM = str.maketrans({"O": "0", "o": "0", "I": "1", "l": "1", "|": "1", "S": "5", "B": "8"})
+_TRANS_NUM = str.maketrans(
+    {"O": "0", "o": "0", "I": "1", "l": "1", "|": "1", "S": "5", "B": "8"}
+)
 
 # ───────── эвристики ФИО ─────────
 _RX_PATRON_VALID = re.compile(r"(?:ov?ich|evna|ovna|o'g'li|og'li|o‘g‘li|qizi)$", re.I)
+
 
 def _split_fio_anyorder(fio: str) -> Optional[Tuple[str, str, Optional[str]]]:
     """
@@ -35,11 +37,13 @@ def _split_fio_anyorder(fio: str) -> Optional[Tuple[str, str, Optional[str]]]:
         return parts[1], parts[0], None
     return parts[-1], parts[0], " ".join(parts[1:-1]) or None
 
+
 def _sanitize_patronymic(p: Optional[str]) -> Optional[str]:
     if not p:
         return None
     p = re.sub(r"[^A-Za-zА-Яа-яЁё'‘’ʼ`´\- ]+", "", p).strip()
     return p if _RX_PATRON_VALID.search(p) else None
+
 
 def _extract_issuer(lines: List[str]) -> Optional[str]:
     """
@@ -48,11 +52,18 @@ def _extract_issuer(lines: List[str]) -> Optional[str]:
     """
     up = [ln.upper() for ln in lines]
     for i, ln in enumerate(up):
-        if (" IIB" in ln) or (" МВ" in ln) or ("УМВД" in ln) or (" МВД " in ln) or ("MVD" in ln):
+        if (
+            (" IIB" in ln)
+            or (" МВ" in ln)
+            or ("УМВД" in ln)
+            or (" МВД " in ln)
+            or ("MVD" in ln)
+        ):
             prev = lines[i - 1].strip() if i > 0 else ""
             cur = lines[i].strip()
             return re.sub(r"\s+", " ", f"{prev} {cur}".strip())
     return None
+
 
 def _extract_series_number(blob: str) -> Tuple[Optional[str], Optional[str]]:
     """
@@ -64,7 +75,8 @@ def _extract_series_number(blob: str) -> Tuple[Optional[str], Optional[str]]:
     # 0) Явные метки "PASSPORT"/"PASPORT" (+ опциональный UZB на своей строке)
     m_label = re.search(
         r"(?:PASSPORT|PASPORT)\b[^\n]{0,40}\n(?:\s*UZB\s*\n)?\s*([A-Z]{1,3})\s*?(\d{6,9})",
-        t, re.I
+        t,
+        re.I,
     )
     if m_label:
         return m_label.group(1).upper(), m_label.group(2)
@@ -98,6 +110,7 @@ def _extract_series_number(blob: str) -> Tuple[Optional[str], Optional[str]]:
 
     return None, None
 
+
 def _fmt_mrz_date(yymmdd: Optional[str]) -> Optional[str]:
     if not yymmdd or len(yymmdd) != 6 or not yymmdd.isdigit():
         return None
@@ -105,9 +118,16 @@ def _fmt_mrz_date(yymmdd: Optional[str]) -> Optional[str]:
     century = "20" if int(yy) <= 49 else "19"
     return f"{dd}.{mm}.{century}{yy}"
 
+
 _DATE_TOKEN = r"(\d{2})[ ./-](\d{2})[ ./-](\d{2,4})"
 
-def _pick_date(blob: str, labels: List[str], exclude: Optional[str] = None, allow_fallback: bool = False) -> Optional[str]:
+
+def _pick_date(
+    blob: str,
+    labels: List[str],
+    exclude: Optional[str] = None,
+    allow_fallback: bool = False,
+) -> Optional[str]:
     """
     Ищем дату формата DD[ ./-]MM[ ./-]YYYY только в «окне» после одной из меток.
     - labels: список regex-меток (напр. DATE OF EXPIRY, AMAL QILISH MUDDATI)
@@ -139,7 +159,9 @@ def _pick_date(blob: str, labels: List[str], exclude: Optional[str] = None, allo
 
 
 class PassportUZParser:
-    def parse(self, lines: List[str], full_text: str, entities: list) -> Optional[PassportUZ]:
+    def parse(
+        self, lines: List[str], full_text: str, entities: list
+    ) -> Optional[PassportUZ]:
         """
         Стратегия:
         1) Rule-based (твой parse_passport) → базовые поля/ФИО.
@@ -165,8 +187,8 @@ class PassportUZParser:
             mrz = parse_mrz(full_text or "")
             if mrz:
                 surname = surname or (mrz.get("surname") or "").title()
-                name    = name    or (mrz.get("name") or "").title()
-                raw.setdefault("date_of_birth",  _fmt_mrz_date(mrz.get("birth_date")))
+                name = name or (mrz.get("name") or "").title()
+                raw.setdefault("date_of_birth", _fmt_mrz_date(mrz.get("birth_date")))
                 raw.setdefault("date_of_expiry", _fmt_mrz_date(mrz.get("expiry_date")))
 
         if not (surname and name):
@@ -200,21 +222,25 @@ class PassportUZParser:
                 full_text or "",
                 labels=[r"(?:DATE OF ISSUE|BERILGAN SANASI|BERILGAN\s+SANASI)"],
                 exclude=dob,
-                allow_fallback=False  # для issue тоже не берём «первую попавшуюся»
+                allow_fallback=False,  # для issue тоже не берём «первую попавшуюся»
             )
 
         if not expiry_date:
             expiry_date = _pick_date(
                 full_text or "",
-                labels=[r"(?:DATE OF EXPIRY|AMAL QILISH MUDDATI|AMAL\s+QILISH\s+MUDDATI)"],
+                labels=[
+                    r"(?:DATE OF EXPIRY|AMAL QILISH MUDDATI|AMAL\s+QILISH\s+MUDDATI)"
+                ],
                 exclude=dob,
-                allow_fallback=False  # для expiry запрещаем глобальный фолбэк вообще
+                allow_fallback=False,  # для expiry запрещаем глобальный фолбэк вообще
             )
 
         # ---- гражданство (для шаблонов)
         nationality = raw.get("nationality")
         if not nationality:
-            mnat = re.search(r"\b(UZB|UZBEKISTAN|RUS|RUSSIA|UZBEK)\b", (full_text or "").upper())
+            mnat = re.search(
+                r"\b(UZB|UZBEKISTAN|RUS|RUSSIA|UZBEK)\b", (full_text or "").upper()
+            )
             if mnat:
                 nationality = mnat.group(1)
 

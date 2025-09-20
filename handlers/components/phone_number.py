@@ -26,12 +26,22 @@ def _normalize_phone(raw: str) -> str | None:
     elif len(digits) == 10 and digits.startswith("9"):
         digits = "7" + digits
     # '+7...' уже норм — убрали все нецифры выше
-    if len(digits) == 11 and digits.startswith("7") and PHONE_STORE_RE.fullmatch(digits):
+    if (
+        len(digits) == 11
+        and digits.startswith("7")
+        and PHONE_STORE_RE.fullmatch(digits)
+    ):
         return digits
     return None
 
 
-async def _store_phone(user_id: int, session_id: str | None, state: FSMContext, phone: str, waiting_key: str | None):
+async def _store_phone(
+    user_id: int,
+    session_id: str | None,
+    state: FSMContext,
+    phone: str,
+    waiting_key: str | None,
+):
     """
     Кладём телефон канонически (phone_number) и, при необходимости, дублируем под waiting_key
     для обратной совместимости со старым кодом.
@@ -114,7 +124,9 @@ async def _after_phone_routing(message: Message, state: FSMContext, lang: str):
             change_data_from_check="stamp_transfer_after_new_passport",
         )
         text = _build_summary_text(lang, data)
-        await message.answer(text=text, reply_markup=get_stamp_transfer_check_data_before_gen(lang))
+        await message.answer(
+            text=text, reply_markup=get_stamp_transfer_check_data_before_gen(lang)
+        )
         return
 
     # Фолбэк, если сводка отключена
@@ -161,5 +173,6 @@ async def handle_phone_number_contact(message: Message, state: FSMContext):
 
     await _store_phone(message.from_user.id, session_id, state, phone, waiting)
     await _after_phone_routing(message, state, lang)
+
 
 handle_phone_number_input = handle_phone_number_text

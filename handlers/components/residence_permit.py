@@ -30,6 +30,7 @@ async def func_residence_permit(message: Message, state: FSMContext, text_key=No
         text=text, reply_markup=get_residence_permit_photo_or_manual_keyboard(lang)
     )
 
+
 @residence_permit_router.callback_query(F.data == "start_residence_permit_manual")
 async def handle_start_manual(callback: CallbackQuery, state: FSMContext):
     """Handle the start of manual input for residence reason ."""

@@ -15,15 +15,20 @@ _RX_SUBDIV = re.compile(r"\b(\d{3}-\d{3})\b")
 _RX_SER_NUM_INTERNAL = re.compile(r"\b(\d{2})\s?(\d{2})\s?(\d{6})\b")
 _RX_SER_NUM_ZAG = re.compile(r"\b(\d{2})\s?(\d{7})\b")
 # маркеры «кем выдан»
-_RX_ISSUER_HINT = re.compile(r"(ГУ\s*МВД|МВД|УФМС|ОТДЕЛ(?:ОМ)?|ОВД|ОУФМС|ТП\s*№|ГУМВД)", re.I)
+_RX_ISSUER_HINT = re.compile(
+    r"(ГУ\s*МВД|МВД|УФМС|ОТДЕЛ(?:ОМ)?|ОВД|ОУФМС|ТП\s*№|ГУМВД)", re.I
+)
+
 
 def _norm_spaces(text: str) -> str:
     return re.sub(r"\s+", " ", (text or "").strip())
+
 
 def _fmt_century(dd: str, mm: str, yy: str) -> str:
     if len(yy) == 2:
         yy = ("20" if int(yy) <= 49 else "19") + yy
     return f"{dd}.{mm}.{yy}"
+
 
 def _fmt_mrz_date(yymmdd: Optional[str]) -> Optional[str]:
     if not (yymmdd and yymmdd.isdigit() and len(yymmdd) == 6):
@@ -31,10 +36,12 @@ def _fmt_mrz_date(yymmdd: Optional[str]) -> Optional[str]:
     yy, mm, dd = yymmdd[0:2], yymmdd[2:4], yymmdd[4:6]
     return _fmt_century(dd, mm, yy)
 
+
 def _pick_near(lines: List[str], idx: int) -> str:
     prev = lines[idx - 1].strip() if idx > 0 else ""
     cur = lines[idx].strip()
     return _norm_spaces(f"{prev} {cur}".strip())
+
 
 def _collapse_spaced_caps(text: str) -> str:
     """
@@ -43,10 +50,11 @@ def _collapse_spaced_caps(text: str) -> str:
     """
     return re.sub(r"(?:\b[А-ЯЁ]\b\s*)+", lambda m: m.group(0).replace(" ", ""), text)
 
+
 def _clean_issuer(issuer: str) -> str:
     if not issuer:
         return issuer
-    t = issuer.replace('"', ' ').replace("«", " ").replace("»", " ")
+    t = issuer.replace('"', " ").replace("«", " ").replace("»", " ")
     t = _collapse_spaced_caps(t.upper())
     # убрать заголовок страницы «РОССИЙСКАЯ ФЕДЕРАЦИЯ»
     t = re.sub(r"\bРОССИЙСКАЯ\s*ФЕДЕРАЦИЯ\b", "", t)
@@ -54,6 +62,7 @@ def _clean_issuer(issuer: str) -> str:
     t = t.replace("ГУМВД", "ГУ МВД")
     t = re.sub(r"\s{2,}", " ", t).strip()
     return t.title()
+
 
 def _extract_series_number_from_text(text: str) -> Tuple[Optional[str], Optional[str]]:
     """
@@ -69,9 +78,11 @@ def _extract_series_number_from_text(text: str) -> Tuple[Optional[str], Optional
         return m2.group(1), m2.group(2)
     return None, None
 
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Основной парсер
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 class PassportRUSParser:
     """
@@ -81,20 +92,23 @@ class PassportRUSParser:
                дата выдачи / срок действия (по меткам; у внутр. паспорта expiry обычно пуст).
     """
 
-    def parse(self, lines: List[str], full_text: str, entities: list) -> Optional[PassportUZ]:
+    def parse(
+        self, lines: List[str], full_text: str, entities: list
+    ) -> Optional[PassportUZ]:
         text = full_text or ""
         ent_map: Dict[str, str] = {
             (e.get("name") or ""): (e.get("text") or "").strip()
-            for e in (entities or []) if isinstance(e, dict)
+            for e in (entities or [])
+            if isinstance(e, dict)
         }
 
         # Базовые значения из entities
         surname = (ent_map.get("surname") or "").title()
-        name    = (ent_map.get("name") or "").title()
-        patron  = (ent_map.get("middle_name") or "") or None
-        birth   = ent_map.get("birth_date") or ""
-        issue   = ent_map.get("issue_date") or ""
-        expiry  = ent_map.get("expiration_date") or ""
+        name = (ent_map.get("name") or "").title()
+        patron = (ent_map.get("middle_name") or "") or None
+        birth = ent_map.get("birth_date") or ""
+        issue = ent_map.get("issue_date") or ""
+        expiry = ent_map.get("expiration_date") or ""
         nationality = (ent_map.get("citizenship") or "").upper() or None
 
         series = None
@@ -104,9 +118,9 @@ class PassportRUSParser:
         mrz = parse_mrz(text)
         if mrz:
             surname = (mrz.get("surname") or surname or "").title()
-            name    = (mrz.get("name") or name or "").title()
+            name = (mrz.get("name") or name or "").title()
             # отчество MRZ чаще пусто — оставляем OCR-вариант, если он был
-            birth_mrz  = _fmt_mrz_date(mrz.get("birth_date"))
+            birth_mrz = _fmt_mrz_date(mrz.get("birth_date"))
             expiry_mrz = _fmt_mrz_date(mrz.get("expiry_date"))
             if birth_mrz:
                 birth = birth_mrz
@@ -142,7 +156,9 @@ class PassportRUSParser:
                 base = _pick_near(lines, i)
                 # если следующая строка — уточнение уровня («ОБЛАСТИ», «КРАЯ», «ГОРОДА …»), добавим её
                 tail = lines[i + 1].strip() if i + 1 < len(lines) else ""
-                if re.fullmatch(r"(ОБЛАСТИ|КРАЯ|ГОРОДА\s+.+|РЕСПУБЛИКИ\s+.+)", tail.upper()):
+                if re.fullmatch(
+                    r"(ОБЛАСТИ|КРАЯ|ГОРОДА\s+.+|РЕСПУБЛИКИ\s+.+)", tail.upper()
+                ):
                     base = f"{base} {tail}"
                 issuer = _clean_issuer(base)
                 break
@@ -161,11 +177,19 @@ class PassportRUSParser:
 
         # 5) Даты «выдачи/срок» (строго возле меток; не путать с DOB)
         if not issue:
-            m = re.search(r"(Дата\s+выдачи|Выдан[ао]?)\W{0,120}" + _RX_DATE.pattern, text, re.I | re.S)
+            m = re.search(
+                r"(Дата\s+выдачи|Выдан[ао]?)\W{0,120}" + _RX_DATE.pattern,
+                text,
+                re.I | re.S,
+            )
             if m:
                 issue = _fmt_century(m.group(2), m.group(3), m.group(4))
         if not expiry:
-            m = re.search(r"(Срок\s+действия|Действителен\s+до)\W{0,120}" + _RX_DATE.pattern, text, re.I | re.S)
+            m = re.search(
+                r"(Срок\s+действия|Действителен\s+до)\W{0,120}" + _RX_DATE.pattern,
+                text,
+                re.I | re.S,
+            )
             if m:
                 expiry = _fmt_century(m.group(2), m.group(3), m.group(4))
 

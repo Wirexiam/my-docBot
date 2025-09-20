@@ -14,6 +14,7 @@ def kbs_start_arrival(lang: str):
     builder.adjust(1)
     return builder.as_markup()
 
+
 def kbs_start_arrival_kids(lang: str):
     builder = InlineKeyboardBuilder()
     builder.button(
@@ -26,10 +27,12 @@ def kbs_start_arrival_kids(lang: str):
     builder.adjust(1)
     return builder.as_markup()
 
+
 def to_kid_kbs(lang: str):
     builder = InlineKeyboardBuilder()
     builder.button(
-        text=_.get_text("to_kid_manual_select.start_passport_manual", lang), callback_data="arrival_agree"
+        text=_.get_text("to_kid_manual_select.start_passport_manual", lang),
+        callback_data="arrival_agree",
     )
     builder.button(
         text=_.get_text("to_kid_manual_select.start_birth_certificate", lang),
@@ -42,7 +45,8 @@ def to_kid_kbs(lang: str):
 def kbs_cert_arrival(lang: str):
     builder = InlineKeyboardBuilder()
     builder.button(
-        text=_.get_text("stamp_transfer_passport_start.passport_photo", lang), callback_data="arrival_agree"
+        text=_.get_text("stamp_transfer_passport_start.passport_photo", lang),
+        callback_data="arrival_agree",
     )
     builder.button(
         text=_.get_text("stamp_transfer_passport_start.passport_manual", lang),
@@ -51,10 +55,12 @@ def kbs_cert_arrival(lang: str):
     builder.adjust(1)
     return builder.as_markup()
 
+
 def kbs_passport_arrival(lang: str):
     builder = InlineKeyboardBuilder()
     builder.button(
-        text=_.get_text("stamp_transfer_passport_start.passport_photo", lang), callback_data="ad"
+        text=_.get_text("stamp_transfer_passport_start.passport_photo", lang),
+        callback_data="ad",
     )
     builder.button(
         text=_.get_text("stamp_transfer_passport_start.passport_manual", lang),
@@ -62,6 +68,7 @@ def kbs_passport_arrival(lang: str):
     )
     builder.adjust(1)
     return builder.as_markup()
+
 
 def kbs_start_arrival_who(lang: str):
     builder = InlineKeyboardBuilder()
