@@ -1,10 +1,5 @@
 from aiogram import Router, F
-from aiogram.types import (
-    CallbackQuery,
-    Message,
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
-)
+from aiogram.types import CallbackQuery, Message, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
 
 from keyboards.passport_preview import old_preview_kb, new_preview_kb
@@ -31,9 +26,7 @@ async def start_old(callback: CallbackQuery, state: FSMContext):
     sd = await state.get_data()
     lang = sd.get("language")
     await state.set_state(PassportPhotoStates.waiting_old_passport_photo)
-    await callback.message.edit_text(
-        f"{_.get_text('ocr.passport.send_photo.title', lang)}\n\n{_.get_text('ocr.passport.send_photo.hint', lang)}"
-    )
+    await callback.message.edit_text(f"{_.get_text('ocr.passport.send_photo.title', lang)}\n\n{_.get_text('ocr.passport.send_photo.hint', lang)}")
 
 
 @passport_photo_router.callback_query(F.data == "passport_new_photo_start")
@@ -41,9 +34,7 @@ async def start_new(callback: CallbackQuery, state: FSMContext):
     sd = await state.get_data()
     lang = sd.get("language")
     await state.set_state(PassportPhotoStates.waiting_new_passport_photo)
-    await callback.message.edit_text(
-        f"{_.get_text('ocr.passport.send_photo.title', lang)}\n\n{_.get_text('ocr.passport.send_photo.hint', lang)}"
-    )
+    await callback.message.edit_text(f"{_.get_text('ocr.passport.send_photo.title', lang)}\n\n{_.get_text('ocr.passport.send_photo.hint', lang)}")
 
 
 # ───────────────────── приём фото (старый/новый) ─────────────────────
@@ -53,18 +44,13 @@ async def on_passport_photo(message: Message, state: FSMContext):
     sd = await state.get_data()
     lang = sd.get("language")
     session_id = sd.get("session_id")
-    is_old = (
-        await state.get_state()
-    ) == PassportPhotoStates.waiting_old_passport_photo.state
+    is_old = (await state.get_state()) == PassportPhotoStates.waiting_old_passport_photo.state
 
     # сохранить файл
     f = await message.bot.get_file(message.photo[-1].file_id)
     file_bytes = await message.bot.download_file(f.file_path)
     img_path = data_manager.save_file(
-        message.from_user.id,
-        session_id,
-        file_bytes.read(),
-        filename=("old_passport.jpg" if is_old else "new_passport.jpg"),
+        message.from_user.id, session_id, file_bytes.read(), filename=("old_passport.jpg" if is_old else "new_passport.jpg")
     )
 
     note_msg = await message.answer(_.get_text("ocr.passport.progress", lang))
@@ -86,15 +72,7 @@ async def on_passport_photo(message: Message, state: FSMContext):
             if src in p and dst not in p:
                 p[dst] = p.pop(src)
 
-        required = [
-            "full_name",
-            "birth_date",
-            "citizenship",
-            "passport_serial_number",
-            "passport_issue_date",
-            "passport_expiry_date",
-            "passport_issue_place",
-        ]
+        required = ["full_name", "birth_date", "citizenship", "passport_serial_number", "passport_issue_date", "passport_expiry_date", "passport_issue_place"]
         for f in required:
             p.setdefault(f, "")
 
@@ -118,9 +96,7 @@ async def on_passport_photo(message: Message, state: FSMContext):
         await note_msg.edit_text(f"{title}\n\n{preview}", reply_markup=kb)
 
     except OcrError as e:
-        await note_msg.edit_text(
-            f"{_.get_text('ocr.passport.fail.title', lang)}\n\n{_.get_text('ocr.passport.fail.hint', lang)}\n\n{e.user_message}"
-        )
+        await note_msg.edit_text(f"{_.get_text('ocr.passport.fail.title', lang)}\n\n{_.get_text('ocr.passport.fail.hint', lang)}\n\n{e.user_message}")
 
 
 # ───────────────────── предпросмотр: СТАРЫЙ ─────────────────────
@@ -148,9 +124,7 @@ async def old_ok(cb: CallbackQuery, state: FSMContext):
     )
 
     await cb.message.edit_text(
-        _.get_text("stamp_transfer_start_new_passport.title", lang)
-        + "\n\n"
-        + _.get_text("stamp_transfer_start_new_passport.description", lang)
+        _.get_text("stamp_transfer_start_new_passport.title", lang) + "\n\n" + _.get_text("stamp_transfer_start_new_passport.description", lang)
     )
     await start_new(cb, state)
 
@@ -169,7 +143,6 @@ async def goto_new_manual(cb: CallbackQuery, state: FSMContext):
         next_states=[LiveAdress.adress, PhoneNumberStates.phone_number_input],
     )
     from handlers.components.passport_manual import handle_passport_manual_start
-
     fake_cb = cb.model_copy(update={"data": "passport_new_manual_start"})
     await handle_passport_manual_start(fake_cb, state)
 
@@ -219,111 +192,62 @@ async def new_ok(cb: CallbackQuery, state: FSMContext):
     if old_pd:
         text += f"📄 Старый паспорт: {_v(old_pd,'passport_serial_number')} ({_v(old_pd,'passport_issue_place')} / {_v(old_pd,'passport_issue_date')})"
 
-    # Клавиатуры по сценарию
-    if (
-        ocr_flow == "drn"
-        and from_action == DocResidenceNotificationStates.after_passport
-    ):
-        kb = InlineKeyboardMarkup(
-            inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text="✅ Всё верно — перейти к ВНЖ",
-                        callback_data="drn_after_passport",
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text=_.get_text("buttons.new_edit", lang),
-                        callback_data="new_edit",
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text=_.get_text("buttons.new_retry", lang),
-                        callback_data="new_retry",
-                    )
-                ],
-            ]
-        )
+    # Клавиатуры по сценариям
+    if ocr_flow == "drn" and from_action == DocResidenceNotificationStates.after_passport:
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="✅ Всё верно — перейти к ВНЖ", callback_data="drn_after_passport")],
+            [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang), callback_data="new_edit")],
+            [InlineKeyboardButton(text=_.get_text("buttons.new_retry", lang), callback_data="new_retry")],
+        ])
+
     elif ocr_flow == "wa" and from_action == PatentedWorkActivity.passport_data:
-        kb = InlineKeyboardMarkup(
-            inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text="✅ Всё верно — перейти к патенту",
-                        callback_data="wa_after_passport",
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text=_.get_text("buttons.new_edit", lang),
-                        callback_data="new_edit",
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text=_.get_text("buttons.new_retry", lang),
-                        callback_data="new_retry",
-                    )
-                ],
-            ]
-        )
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="✅ Всё верно — перейти к патенту", callback_data="wa_after_passport")],
+            [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang), callback_data="new_edit")],
+            [InlineKeyboardButton(text=_.get_text("buttons.new_retry", lang), callback_data="new_retry")],
+        ])
+
     elif ocr_flow == "sp" and from_action == RegistrationRenewalStates.after_passport:
-        kb = InlineKeyboardMarkup(
-            inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text="✅ Всё верно — перейти к выбору основания",
-                        callback_data="sp_after_passport",
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text=_.get_text("buttons.new_edit", lang),
-                        callback_data="new_edit",
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text=_.get_text("buttons.new_retry", lang),
-                        callback_data="new_retry",
-                    )
-                ],
-            ]
-        )
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="✅ Всё верно — перейти к выбору основания", callback_data="sp_after_passport")],
+            [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang), callback_data="new_edit")],
+            [InlineKeyboardButton(text=_.get_text("buttons.new_retry", lang), callback_data="new_retry")],
+        ])
+
     elif ocr_flow == "arrival" and from_action == Arrival_transfer.after_passport:
-        # После OCR нового паспорта — сразу к миграционной карте
+        # === ФИКС ДЛЯ OCR-ПУТИ «Уведомление о прибытии» ===
+        # Делаем то же, что ручной путь: мостим к блоку «О доме»
+        from states.components.home_migr_data import HomeMigrData
         from keyboards.migration_card import kbs_migr_arrival
 
-        text = f"{_.get_text('migr_card_arrival.title', lang)}\n{_.get_text('migr_card_arrival.description', lang)}"
-        await cb.message.edit_text(text, reply_markup=kbs_migr_arrival(lang))
-        return
-    else:
-        kb = InlineKeyboardMarkup(
-            inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text=_.get_text("buttons.goto_adress_phone", lang),
-                        callback_data="goto_adress_phone",
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text=_.get_text("buttons.new_edit", lang),
-                        callback_data="new_edit",
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text=_.get_text("buttons.new_retry", lang),
-                        callback_data="new_retry",
-                    )
-                ],
-            ]
+        await state.update_data(
+            next_states=[HomeMigrData.adress, Arrival_transfer.after_about_home],
+            from_action=Arrival_transfer.after_about_home,
+            passport_title="name_migr_card_arrival.title",
         )
 
+        # Детский сценарий — свои подсказки
+        if data.get("age"):
+            await state.update_data(
+                migr_desc="name_migr_card_arrival_kid.description",
+                home_migr_title="addres_details_kid_migr_card_arrival.title",
+            )
+            text = f"{_.get_text('Kid_arrival_data.title', lang)}\n{_.get_text('Kid_arrival_data.description', lang)}"
+        else:
+            text = f"{_.get_text('migr_card_arrival.title', lang)}\n{_.get_text('migr_card_arrival.description', lang)}"
+
+        await cb.message.edit_text(text, reply_markup=kbs_migr_arrival(lang))
+        return
+
+    else:
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text=_.get_text("buttons.goto_adress_phone", lang), callback_data="goto_adress_phone")],
+            [InlineKeyboardButton(text=_.get_text("buttons.new_edit", lang), callback_data="new_edit")],
+            [InlineKeyboardButton(text=_.get_text("buttons.new_retry", lang), callback_data="new_retry")],
+        ])
+
     await cb.message.edit_text(text, reply_markup=kb)
+
 
 
 @passport_photo_router.callback_query(F.data.in_({"old_edit", "new_edit"}))
@@ -342,6 +266,5 @@ async def start_edit_bridge(cb: CallbackQuery, state: FSMContext):
             return_after_edit="stamp_transfer_after_new_passport",
         )
     from handlers.components.changing_data import handle_change_data
-
     fake_cb = cb.model_copy(update={"data": "change_data_dummy"})
     await handle_change_data(fake_cb, state)
